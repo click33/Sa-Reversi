@@ -144,7 +144,7 @@ export const useGameStore = defineStore({
             // 收集所有应该转换的棋子，开始转换 
             let selectStore = useSelectStore();
             const tranArr = getTranList(x, y, downType, this.qiPanData, selectStore.xCount, selectStore.yCount);
-            this.changeQiZiArrType(tranArr);
+            this.changeQiZiArrType_anim(tranArr);
         },
 
         // 切换一组棋子类型
@@ -152,6 +152,17 @@ export const useGameStore = defineStore({
             tranArr.forEach(item => {
                 this.changeQiZiType(item);
             })
+        },
+        // 切换一组棋子类型（带延迟动画）
+        changeQiZiArrType_anim: function (tranArr, i = 0) {
+            if(i >= tranArr.length) {
+                return;
+            }
+            setTimeout(() => {
+                this.changeQiZiType(tranArr[i]);
+                i++;
+                this.changeQiZiArrType_anim(tranArr, i);
+            }, 200)
         },
         // 切换一个棋子类型
         changeQiZiType: function (qiZi) {
