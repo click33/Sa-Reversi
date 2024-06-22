@@ -1,4 +1,4 @@
 # Sa-Reversi
 ...
 
-test
+开发中... 即将 release 
