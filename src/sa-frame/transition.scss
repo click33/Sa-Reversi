@@ -1,0 +1,110 @@
+// 全局 css 动画
+
+/* ------------------ 切页动画 ------------------ */
+.left-jump-left-leave-active,
+.left-jump-left-enter-active,
+.right-jump-right-leave-active,
+.right-jump-right-enter-active,
+.left-jump-right-enter-active,
+.left-jump-right-leave-active,
+.right-jump-left-enter-active,
+.right-jump-left-leave-active {
+    transition: all .5s ease;
+    position: absolute;
+}
+
+/* --- right-jump-left  左出左进 --- */
+.left-jump-left-enter-from {opacity: 0; transform: translateX(30px);}
+.left-jump-left-leave-to {opacity: 0; transform: translateX(-30px);}
+
+/* --- right-jump-right  右出右进 --- */
+.right-jump-right-enter-from {opacity: 0; transform: translateX(-30px);}
+.right-jump-right-leave-to {opacity: 0; transform: translateX(30px);}
+
+/* --- left-jump-right 左出右进 --- */
+.left-jump-right-enter-from, .left-jump-right-leave-to {opacity: 0;transform: translateX(-30px);}
+
+/* --- right-jump-left 右出左进 --- */
+.right-jump-left-enter-from, .right-jump-left-leave-to {opacity: 0; transform: translateX(30px);}
+
+/* --- opacity 渐变 --- */
+.opacity-enter-active,
+.opacity-leave-active {
+    transition: all 0.7s ease;
+    position: absolute;
+}
+.opacity-enter-from,
+.opacity-leave-to {
+    opacity: 0;
+}
+
+
+/* ------------------ 其它动画 ------------------ */
+
+/* 从右向左 渐入 */
+@keyframes right-to-left {
+    0% {transform: translateX(60px); opacity: 0;}
+    100% {transform: translateX(0); opacity: 1;}
+}
+
+/* 从左向右 渐入 */
+@keyframes left-to-right {
+    0% {transform: translateX(-60px); opacity: 0;}
+    100% {transform: translateX(0); opacity: 1;}
+}
+
+/* 从下往上渐入 */
+@keyframes bottom-to-top {
+    0% {transform: translateY(60px); opacity: 0;}
+    100% {transform: translateY(0); opacity: 1;}
+}
+
+/* 从下往上渐入 */
+@keyframes top-to-bottom {
+    0% {transform: translateY(-60px); opacity: 0;}
+    100% {transform: translateY(0); opacity: 1;}
+}
+
+/* 透明，渐入 */
+@keyframes fade-in {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+/* 透明，渐出 */
+@keyframes fade-out {
+    0% {opacity: 1;}
+    100% {opacity: 0;}
+}
+
+
+// ---------------------- 页面加载时 元素平滑进入的动画 ----------------------
+// 从左往右渐入 
+@for $i from 0 through 10 {
+    .left-to-right-#{$i} {
+        opacity: 0;
+        animation-name: left-to-right;
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+        animation-delay: #{$i}00ms;
+    }
+}
+// 从右往左渐入 
+@for $i from 0 through 10 {
+    .right-to-left-#{$i} {
+        opacity: 0;
+        animation-name: right-to-left;
+        animation-duration: 0.5s;
+        animation-fill-mode: forwards;
+        animation-delay: #{$i}00ms;
+    }
+}
+
+// 渐变进入
+.fade-in-ys {
+    opacity: 0;
+    animation-name: fade-in;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    animation-delay: 0.1s;
+}

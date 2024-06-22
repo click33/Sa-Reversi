@@ -1,0 +1,261 @@
+/** 公共css */
+*{margin: 0px;padding: 0px;}
+html{font-size: 10px; height: 100%;}
+body{font-size: 1.4rem; height: 100%;/* background-color: #eeeeee; */  color: #333;}
+body{font-family: "Helvetica Neue", Helvetica, "PingFang SC", Tahoma, Arial, sans-serif;}
+a{text-decoration: none;}
+a:hover{}
+/* h1,h2,h3,h4,h5,h6{font-weight: 400;} */
+hr{background-color : #ddd; height: 1px; border: none;}
+input,select{outline: 0;}
+
+// 一般宽度 
+.z-width{width: 900px; margin: auto; }
+
+/* 盒子 */
+.vue-box{background-color: #f5f7f8; color: #333;}
+.c-card{margin: 1em; padding: 1em 1.5em 20px; background-color: #fff;}
+
+// card 标题 
+.c-title{font-size: 14px; font-weight: bold; line-height: 2em; margin-bottom: 10px;}
+.c-title span{font-weight: 400; font-size: 0.85em; padding-left: 1em; color: #888;}
+
+// 查询参数的表单 
+.select-form{
+    // 每个 item 最小宽度 
+    .el-form-item{min-width: 290px;}
+    // 按钮排列距离减少
+    .el-button+.el-button{
+        margin-left: 5px;
+    }
+}
+// 单独一个页面提交表单时
+.submit-box--page{
+    max-width: 600px;
+    margin: 20px auto;
+}
+// 大屏状态下，往左偏移一些，使其在视觉上更居中
+@media (min-width: 800px) {
+    .submit-box--page{
+        transform: translate(-2em ,0px);
+        .el-form{padding-right: 2em;}
+    }
+}
+
+// 弹出 dialog 提交表单时
+.submit-box--dialog{
+    background-color: #FFF;
+    .c-card{
+        margin: 0;
+        padding-top: 40px;
+        padding-right: 50px;
+    }
+}
+
+/* 窗口提示 */
+.win-tips{margin-top: 10px; margin-bottom: 10px;}
+
+/* 表格上面的按钮 */
+.fast-btn{padding-top: 8px; padding-bottom: 12px;}
+.fast-btn .el-button,.search-btn{height: 30px; line-height: normal; font-size: 12px;}
+.fast-btn .el-button+.el-button{margin-left: 6px;}
+
+// 表格样式优化 
+.data-table{
+    font-size: 12px;
+    color: #333;
+    .el-link,.el-button--text{font-size: 12px;}
+}
+/* 表格的表头颜色深一点 */
+.vue-box .data-table .el-table__header tr th{background-color: #F5F5F5; color: #333; padding: 9px 0 7px;}
+
+/* 分页盒子调整一下间距 */
+.page-box{padding: 2em 0 15px 0;}
+.page-box .el-pagination__sizes{margin-left: 10px;}
+.page-box *{font-size: 13px;}
+.page-box{
+    .el-pager>li{min-width: 30px !important; height: 30px;}
+    .btn-prev,.btn-next{height: 30px;}
+    .el-pagination__sizes,.el-pagination__jump{
+        --el-pagination-button-height: 30px;
+        .el-select,.el-input__inner{height: 30px !important; line-height: 30px;}
+    }
+} 
+
+
+// 表单项优化 
+.c-item{
+    // label 样式 
+    .el-form-item__label{color: #333; /*font-weight: 700;*/}
+    // 日期输入框 跟随盒子宽度
+    .el-date-editor.el-input, .el-date-editor.el-input__inner{width: 100%;}
+    // 下拉框 跟随盒子宽度
+    .el-select{width: 100%;}
+    // 小图片
+    .nar-img{width: 35px; height: 35px; cursor: pointer; margin-right: 5px; vertical-align: middle;}
+    // 文件连接 
+    .file-link{margin-right: 8px;}
+    // 上传按钮连接
+    .up-btn-link{margin-top: -1px; display: inline-block;}
+    // 图片列表
+    .image-box{max-width: 700px; padding-left: 0px;}
+    .image-box-2{width: 90px; height: 125px; cursor: pointer; float: left;}
+    .image-box-2{display: inline-block; margin-right: 5px; margin-bottom: 5px;}
+    .image-box-2 img{width: 90px; height: 90px; border-radius: 2px;}
+    .image-box-2 p{text-align: center; color: #999; margin-top: -10px;}
+    .up-img-box{text-align: center; background-color: #f8f8f8; height: 90px; border: 1px #eee solid;}
+    .up-img-box img{width: 40px; height: 40px; margin-top: 25px;}
+    .image-box-info .image-box-2{height: 90px;}
+    // video-list 等的 删除图标
+    .del-rr{color: red !important; cursor: pointer; margin-left: 0.5em; vertical-align: middle;}
+    // 普通文字列表
+    .in-text-list-input{width: calc(100% - 0px); margin-bottom: 5px;}
+    .in-text-list-input+.del-rr{position: absolute; width: 55px; }
+    @media (max-width: 800px) {.in-text-list-input{width: calc(100% - 60px);}}
+    // 富文本编辑器
+    /* ==== wang富文本编辑器 ==== */
+    .editor-box{width: 800px; margin-top: 0px; transition: all 0.2s;}
+    .editor-box .w-e-toolbar{padding-top: 5px !important;}
+    /* 富文本内的编辑器尽量小点 */
+    .editor-box img{max-width: 300px !important;}
+    .content-box-info img{max-width: 100% !important;}
+    // 展示界面
+    .content-box-info{border: 1px #ddd solid; padding: 1em; overflow: hidden; box-sizing: border-box;}
+    // 单选按钮, 文字版
+    .s-radio-text{}
+    .el-radio{margin-right: 20px;}
+    .s-radio-text .el-radio__input{display: none;}
+    .s-radio-text .el-radio__input.is-checked+.el-radio__label{font-weight: 700;}
+    .s-radio-text .el-radio__label{padding-left: 0px; }
+    .s-radio-text .el-radio__label:hover{text-decoration:underline;}
+    .s-radio-text .hover-line:hover{text-decoration: underline; cursor: pointer;}
+    .s-radio-text .el-form-item__content{position: relative; top: -2px;}
+    // 单选按钮
+    .el-radio-button__inner{height: 30px; line-height: 1; font-size: 12px;}
+    // 颜色块
+    .show-color-item{display: inline-block; vertical-align: middle; width: 20px; height: 20px; margin-right: 1em; border-radius: 1px;}
+    // 表单提示文字
+    .c-remark{color: #888; font-size: 0.9em;}
+    .c-remark-right{color: #888; font-size: 0.9em; margin-left: 10px;}
+}
+
+// 显示金额样式
+.c-price{color: red;}
+// 数字快
+.tc-num{color: blue;}
+// 日期块 
+/* .tc-date{color: blue;} */
+.td-img{width: 35px; height: 35px; border-radius: 2px; cursor: pointer; vertical-align: middle;}
+/* .c-btn 加强 */
+.vue-box .el-table .c-btn{height: 23px; padding: 1px 6px; margin-right: 3px; line-height: normal; font-size: 12px !important; border-radius: 0 !important;}
+.vue-box .el-table .c-btn+.c-btn{margin-left: 0;}
+
+// tag标签
+.vue-box .c-tag{padding: 0px 15px; height: 22px; line-height: 22px; border-radius: 0px; border: 0px;}
+.c-tag2{border-radius: 0;}
+
+
+
+/* input type=number时不显示按钮 */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0;
+}
+/* 解决文字选中时没有背景颜色的问题 */
+.el-input__inner::selection{
+    background-color: #3390ff;
+    color: #FFF;
+}
+/* 输入框的提示文字太大 */
+.el-input__inner::placeholder{
+    font-size: 12px;
+}
+
+/* ajax2加载时的转圈圈样式 */
+.ajax-layer-load.layui-layer-dialog{min-width: 0px !important; background-color: rgba(0,0,0,0.85);}
+.ajax-layer-load.layui-layer-dialog .layui-layer-content{padding: 10px 20px 10px 40px; color: #FFF; overflow: hidden;}
+.ajax-layer-load.layui-layer-dialog .layui-layer-content .layer-icon{width: 20px; height: 20px; background-size: 20px 20px; top: 12px; background-image: url(./img/ajax-loading.svg) }
+
+/* layer图片预览时, 左右键永远显示 */
+.layui-layer-imgbar, .layui-layer-imguide{display: block !important;}
+.layui-layer-iconext.layui-layer-imgprev{position: fixed; left: 50px;}
+.layui-layer-iconext.layui-layer-imgnext{position: fixed; right: 50px;}
+.show-image-layer .layui-layer-content{ overflow: hidden; }
+
+/* layer弹窗最大宽度 */
+.layui-layer-dialog{max-width: 800px;}
+
+/* 调整圆角大小: 输入框、文本域、按钮、 */
+.vue-box .el-input__wrapper,
+.vue-box .el-input__inner,
+.vue-box .el-textarea__inner,
+.vue-box .el-button{border-radius: 2px !important;}
+.vue-box .el-alert{/*padding: 1em 0.5em; */border-radius: 0px !important;}
+
+/* 单选button,圆角限制2px */
+.vue-box .el-radio-button:first-child .el-radio-button__inner{border-radius: 2px 0 0 2px !important;}
+.vue-box .el-radio-button:last-child .el-radio-button__inner{border-radius: 0 2px 2px 0 !important;}
+
+/* 修复2K显示器下查询按钮文字偏上的问题 */
+//.vue-box .el-button{font-size: 13px;}
+.vue-box .ok-item{min-width: 0;}
+.vue-box .ok-item .el-button, .btn-13{font-size: 13px;}
+
+/* 优化 alert 样式 */
+.vue-box .el-alert--success.is-light{border: 1px #13ce66 solid;}
+.vue-box .el-alert--info.is-light{border: 1px #28a0ff solid; background-color: #e8f4ff; color: #28a0ff; }
+.vue-box .el-alert--error.is-light{border: 1px #f56c6c solid;}
+.vue-box .el-alert.is-light .el-alert__closebtn{color: #666;}
+.vue-box .el-alert.is-light .el-alert__title{display: inline-block; transform: translate(0, 1px);}
+
+/* 使全局 dialog 居中 */
+.os-dialog-fox .el-overlay-dialog{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.os-dialog{margin: auto;}
+/* 消除内边距 */
+.os-dialog .el-dialog__body{padding: 0px;}
+/* 超出视图就出现滚动条 */
+.os-dialog .vue-box{max-height: 70vh; min-height: 150px; overflow: auto;}
+
+/* 底部按钮式风格 */
+.s-body{flex: 1; overflow: auto;}
+.s-foot{height: 59px !important; line-height: 59px; text-align: right; background-color: #fff; border-top: 0px #e5e5e5 solid;}
+.s-foot .el-button{margin-left: -10px !important; margin-right: 15px; padding: 7px 18px; }
+.s-foot .el-button{height: 30px; line-height: normal; font-size: 12px; border-radius: 2px;}
+//.s-body .c-panel{margin-bottom: 10px; padding-top: 14px; padding-bottom: 0px;}
+
+.sbot{padding: 0px; height: auto; background-color: rgba(0,0,0,0); display: flex !important; flex-direction: column;}
+.sbot .s-foot{display: block;}
+
+// 预览图片的下载按钮不显示，因为跨域模式下根本没法下载 
+.PhotoSlider__BannerRight svg:first-child{ display: none; }
+.PhotoSlider__Wrapper{z-index: 999999999 !important;}
+
+// layer 的 prompt 输入框 样式
+.sa-layer-prompt-box{ min-width: 250px; min-height: 20px; padding: 14px; }
+.sa-layer-prompt-box .sa-layer-prompt{ border: 1px #ddd solid; padding: 0 10px; width: 250px; height: 36px; }
+.sa-layer-prompt-box textarea.sa-layer-prompt{ padding: 10px; min-width: 400px; min-height: 200px; outline: 0;}
+
+// layer 弹窗的第一个按钮，背景色改为蓝色
+.layui-layer-btn .layui-layer-btn0{
+    --global-primary-color: #409EFF;
+}
+
+// 无圆角的card 面板
+.zdy-card{ min-height: 300px; border: 1px #e5e5e5 solid !important; border-radius: 0 !important;}
+
+// 提交按钮的样式
+//.c-submit-btn{ border-radius: 1px !important; }
+
+//*{transition: all 0.2s !important;}
+// 
+
+
+
+
+
+
