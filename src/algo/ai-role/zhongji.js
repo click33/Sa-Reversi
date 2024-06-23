@@ -10,6 +10,12 @@ export default {
         canDownArr.sort(() => Math.random() - 0.5);
         // 按照 tranCount 从小到大升序排列  
         canDownArr.sort((a, b) => a.tranCount - b.tranCount);
+
+        console.log('------------- 策略集合 --------------')
+        canDownArr.forEach(item => {
+            console.log(item.tranCount, JSON.stringify(item));
+        });
+        
         // 中级陪练 固定选择最中间一个落子方案，回收一半的棋子 
         const index = parseInt(canDownArr.length / 2);
         return canDownArr[index];

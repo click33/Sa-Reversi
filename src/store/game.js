@@ -55,6 +55,7 @@ export const useGameStore = defineStore({
                 type,  // 棋子类型 
                 tipsType,  // 提示类型
                 tranCount: 0,  // 此处落子可翻转的棋子数量
+                score: 0,  // 此处落子可得评分 
             }
         },
         

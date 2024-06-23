@@ -30,6 +30,7 @@ import {onMounted, reactive} from "vue";
 import GameQiZi from "./game-qi-zi.vue";
 import {useGameStore} from "../../../store/game";
 import {useSelectStore} from "../../../store/select";
+import {calcXyFuWeiName, calcXyScore} from "../../../algo/ai-calc-util";
 const gameStore = useGameStore();
 const selectStore = useSelectStore();
 const { proxy } = getCurrentInstance();
