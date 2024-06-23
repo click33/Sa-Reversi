@@ -7,7 +7,7 @@
     </div>
 </template>
 
-<script setup name="com-ai-info">
+<script setup name="com-message-box">
 import {reactive} from "vue";
 import mitt from "/@/mitt";
 import {useSelectStore} from "../../../store/select";

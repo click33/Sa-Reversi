@@ -25,7 +25,7 @@
     </el-card>
 </template>
 
-<script setup name="com-ai-info">
+<script setup name="com-white-player-info">
 import {useSelectStore} from "../../../store/select";
 import {useDictStore} from "../../../store/dict";
 import {useGameStore} from "../../../store/game";

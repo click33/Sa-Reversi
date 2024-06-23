@@ -57,8 +57,8 @@ onMounted(() => {
 <style scoped lang="scss">
     // 棋子
     .qi-zi{
-        width: 75%;
-        height: 75%;
+        width: 85%;
+        height: 85%;
         margin: auto;
         border-radius: 50%;
         transition: all 0.5s;

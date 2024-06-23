@@ -65,7 +65,7 @@ watch(gameStore.qiPanData, () => {
             .item-box{ flex: 1; text-align: center;}
             
             // 黑子、白子 展示
-            .qi-zi-show{ width: 40px; height: 40px; margin: auto; border-radius: 50%;   }
+            .qi-zi-show{ width: 50px; height: 50px; margin: auto; border-radius: 50%;   }
             .qi-zi-show-black{ background-color: #000; }
             .qi-zi-show-white{ background-color: #FFF; }
 

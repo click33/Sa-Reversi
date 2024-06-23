@@ -121,7 +121,7 @@ onMounted(() => {
         border-collapse: collapse;
     }
     // 棋盘边框线 
-    .qi-pan-table,.qi-pan-table tr, .qi-pan-table td{ border: 2px solid #000; }
+    .qi-pan-table,.qi-pan-table tr, .qi-pan-table td{ border: 2.5px solid #000; }
     .qi-pan-table td:hover{ cursor: pointer; }
     
     // 消息提示栏
