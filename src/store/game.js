@@ -178,7 +178,10 @@ export const useGameStore = defineStore({
             const tranArr = getTranList(downQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
             this.changeQiZiArrType_anim(tranArr, 0, () => {
                 // 切换完了，开始切换活动执子  
-                this.changeActiveRole();
+                // 延迟一小点时间，减少用户视觉上的紧迫感 
+                setTimeout(() => {
+                    this.changeActiveRole();
+                }, 400);
             });
         },
 
@@ -290,7 +293,7 @@ export const useGameStore = defineStore({
             const canDownArr = gameStore.getCanDown();
             
             // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
-            // canDownArr.sort(() => Math.random() - 0.5);
+            canDownArr.sort(() => Math.random() - 0.5);
             
             // 按照 tranCount 从小到大升序排列  
             canDownArr.sort((a, b) => a.tranCount - b.tranCount);

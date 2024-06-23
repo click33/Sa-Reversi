@@ -49,7 +49,7 @@ const gameStore = useGameStore();
 onMounted(() => {
     if(! gameStore.isInit){
         gameStore.init();
-    } 
+    }
 })
 </script>
 
