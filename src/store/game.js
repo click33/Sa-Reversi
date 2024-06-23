@@ -306,11 +306,11 @@ export const useGameStore = defineStore({
             // 获取所有可落子位置
             const canDownArr = gameStore.getCanDown();
             
+            // 这两步应该交给具体的 AI 算法来处理
             // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
-            canDownArr.sort(() => Math.random() - 0.5);
-            
+            // canDownArr.sort(() => Math.random() - 0.5);
             // 按照 tranCount 从小到大升序排列  
-            canDownArr.sort((a, b) => a.tranCount - b.tranCount);
+            // canDownArr.sort((a, b) => a.tranCount - b.tranCount);
             
             // 调用 AI 算法落子
             const aiRole = this.getCurrentAIRole();
