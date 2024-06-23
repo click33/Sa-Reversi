@@ -69,7 +69,7 @@ onMounted(() => {
     .qi-zi-none{ }
 
     // 最新落子的样式 
-    .qi-zi-white.qi-zi-just{ box-shadow: 0 0 15px #333; }
+    .qi-zi-white.qi-zi-just{ box-shadow: 0 0 15px #000; }
     .qi-zi-black.qi-zi-just{ box-shadow: 0 0 15px yellow; }
     
     // 棋子提示 
