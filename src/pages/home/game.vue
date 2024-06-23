@@ -15,11 +15,13 @@
             <!-- 右边 -->
             <div class="con-panel-right">
                 
-                <!-- 对手信息 -->
-                <com-ai-info style="margin-bottom: 14px;"></com-ai-info>
+                <!-- 黑棋信息 -->
+<!--                <com-ai-info style="margin-bottom: 14px;"></com-ai-info>-->
+                <com-black-player-info style="margin-bottom: 14px;"></com-black-player-info>
 
-                <!-- 用户信息 -->
-                <com-user-info style="margin-bottom: 14px;"></com-user-info>
+                <!-- 白棋信息 -->
+                <com-white-player-info style="margin-bottom: 14px;"></com-white-player-info>
+<!--                <com-user-info style="margin-bottom: 14px;"></com-user-info>-->
 
                 <!-- 对战数据 -->
                 <com-battle-data></com-battle-data>
@@ -38,10 +40,10 @@
 import NavTop from '/@/pages-components/nav/nav-top.vue';
 import NavBottom from '/@/pages-components/nav/nav-bottom.vue';
 import GameQiPan from './game/game-qi-pan.vue';
-import ComAiInfo from './game/com-ai-info.vue';
-import ComUserInfo from './game/com-user-info.vue';
 import ComBattleData from './game/com-battle-data.vue';
 import {useGameStore} from "../../store/game";
+import ComBlackPlayerInfo from "./game/com-black-player-info";
+import ComWhitePlayerInfo from "./game/com-white-player-info";
 const gameStore = useGameStore();
 
 onMounted(() => {

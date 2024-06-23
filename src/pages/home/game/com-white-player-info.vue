@@ -1,26 +1,37 @@
-<!-- 用户 信息 -->
+<!-- 白棋玩家信息 -->
 <template>
-    <el-card class="user-info-box zdy-card fade-in-ys" 
-             :class=" gameStore.activeRole === selectStore.role ? 'active-zhi-zi' : '' " shadow="never">
+    <el-card class="user-info-box zdy-card fade-in-ys"
+             :class=" gameStore.activeRole === 'white' ? 'active-zhi-zi' : '' " shadow="never">
         <template #header>
-            <span>我的信息</span>
+            <span>白棋玩家信息</span>
             <b class="user-zhi-zi">（当前执子）</b>
         </template>
         <template #default>
             <div class="qi-zi-show-box">
-                <div class="qi-zi-show" :class=" 'qi-zi-show-' + (selectStore.role === 'black' ? 'black' : 'white') "></div>
+                <div class="qi-zi-show qi-zi-show-white"></div>
             </div>
-            <span class="user-name">{{ selectStore.playerName }}</span>
+            
+            <!-- AI 模式 -->
+            <template v-if="selectStore.whiteAuto">
+                <span class="user-name">{{ dictStore.getLevelName( selectStore.level ) }}</span>
+                <span class="user-sub-info">（AI）</span>
+            </template>
+            <!-- 用户模式 -->
+            <template v-else>
+                <span class="user-name">{{ selectStore.playerName }}</span>
+                <span class="user-sub-info">（玩家）</span>
+            </template>
         </template>
     </el-card>
 </template>
 
-<script setup name="com-user-info">
+<script setup name="com-ai-info">
 import {useSelectStore} from "../../../store/select";
+import {useDictStore} from "../../../store/dict";
 import {useGameStore} from "../../../store/game";
 let selectStore = useSelectStore();
+var dictStore = useDictStore();
 var gameStore = useGameStore();
-
 
 // console.log(selectStore.level)
 
@@ -42,7 +53,7 @@ var gameStore = useGameStore();
     .user-avatar{width: 50px; height: 50px; margin-right: 10px; border-radius: 50%; vertical-align: middle;}
     .user-name{position: relative; top: 1px; font-size: 18px;}
     
-    .user-sub-info{ margin-left: 0; color: #777; }
+    .user-sub-info{ margin-left: 0; color: blue; }
     
     // 当前执子时的样式
     .user-zhi-zi{ display: none; color: green; }

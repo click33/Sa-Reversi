@@ -19,6 +19,8 @@ export const useDictStore = defineStore({
             roleList: [
                 { value: 'black', name: '我要执黑 (先手)' },
                 { value: 'white', name: '我要执白 (后手)' },
+                { value: 'double', name: '我要执双（无AI）' },
+                { value: 'non', name: '我不执（双AI对战）' },
             ],
         }
     },

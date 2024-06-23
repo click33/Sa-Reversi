@@ -1,17 +1,26 @@
-<!-- AI 信息 -->
+<!-- 黑棋玩家信息 -->
 <template>
     <el-card class="user-info-box zdy-card fade-in-ys"
-             :class=" gameStore.activeRole !== selectStore.role ? 'active-zhi-zi' : '' " shadow="never">
+             :class=" gameStore.activeRole === 'black' ? 'active-zhi-zi' : '' " shadow="never">
         <template #header>
-            <span>对手信息</span>
+            <span>黑棋玩家信息</span>
             <b class="user-zhi-zi">（当前执子）</b>
         </template>
         <template #default>
             <div class="qi-zi-show-box">
-                <div class="qi-zi-show" :class=" 'qi-zi-show-' + (selectStore.role === 'black' ? 'white' : 'black') "></div>
+                <div class="qi-zi-show qi-zi-show-black"></div>
             </div>
-            <span class="user-name">{{ dictStore.getLevelName( selectStore.level ) }}</span>
-            <span class="user-sub-info">（LV.{{ selectStore.level }}）</span>
+            
+            <!-- AI 模式 -->
+            <template v-if="selectStore.blackAuto">
+                <span class="user-name">{{ dictStore.getLevelName( selectStore.level ) }}</span>
+                <span class="user-sub-info">（AI）</span>
+            </template>
+            <!-- 用户模式 -->
+            <template v-else>
+                <span class="user-name">{{ selectStore.playerName }}</span>
+                <span class="user-sub-info">（玩家）</span>
+            </template>
         </template>
     </el-card>
 </template>

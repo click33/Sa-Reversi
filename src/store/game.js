@@ -220,16 +220,20 @@ export const useGameStore = defineStore({
                 this.activeRole = 'white';
                 if(!selectStore.whiteAuto) {
                     this.showCanDown();
+                    this.startUserDown();
+                } else {
+                    this.startAIDown();
                 }
             }
             else if(this.activeRole === 'white'){
                 this.activeRole = 'black';
                 if(!selectStore.blackAuto) {
-                    this.showCanDown();
+                    this.showCanDown(); 
+                    this.startUserDown();
+                } else {
+                    this.startAIDown();
                 }
             }
-            console.log(selectStore.whiteAuto)
-            console.log(selectStore.blackAuto)
         },
         // 计算并显示可落子位置 
         showCanDown: function () {
@@ -254,6 +258,15 @@ export const useGameStore = defineStore({
             this.forEachQiPan(qiZi => {
                 qiZi.tipsType = 'none';
             })
+        },
+        
+        // 开始 User 落子
+        startUserDown: function(){
+            // 等待用户落子，程序无需任何动作 
+        },
+        // 开始 AI 落子
+        startAIDown: function() {
+            console.log('AI 落子中... ');
         }
     
     }
