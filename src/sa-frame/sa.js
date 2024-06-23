@@ -451,8 +451,8 @@ window.sa = sa;
     }
     
     // 
-    me.sendMessage = function(type, message, isRenew) {
-        mitt.emit('sendMessage', {type, message, isRenew});
+    me.sendMessage = function(type, message, isLongTime) {
+        mitt.emit('sendMessage', {type, message, isLongTime});
     }
 
 })();

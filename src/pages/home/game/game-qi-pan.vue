@@ -40,7 +40,18 @@ const state = reactive({
 
 // 点击单元格
 const down = (x, y) => {
-    gameStore.downQiZi(x, y, gameStore.activeRole);
+    if(gameStore.status === 'defDown') {
+        return sa.sendMessage('warning', '请等待初始棋子落子完毕');
+    }
+    else if(gameStore.status === 'userDown') {
+        gameStore.downQiZi(x, y, gameStore.activeRole);
+    }
+    else if(gameStore.status === 'end') {
+        return sa.sendMessage('success', '对局已结束！' + gameStore.getEndJsStr(), true);
+    }
+    else if(gameStore.status === 'tran') {
+        return sa.sendMessage('warning', '请等待 AI 运算完毕或棋子翻转完毕');
+    }
     // proxy.$refs[getRefName(x, y)][0].down();
 }
 

@@ -40,13 +40,13 @@ const showMessage = (type, message) => {
 
 // 订阅 sendMessage 事件
 mitt.off('sendMessage');
-mitt.on('sendMessage', ({type, message, isRenew}) => {
+mitt.on('sendMessage', ({type, message, isLongTime}) => {
     showMessage(type, message);
     // 5秒后自动清除消息
     messageIndex++;
     const index = messageIndex;
     setTimeout(() => {
-        if(index === messageIndex && isRenew) {
+        if(index === messageIndex && isLongTime !== true) {
             showMessage('info', '游戏中');
         }
     }, 5000);

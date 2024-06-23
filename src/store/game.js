@@ -12,6 +12,7 @@ export const useGameStore = defineStore({
         return {
             isInit: false,  // 是否初始化
             activeRole: 'black', // 当前活动执子角色
+            status: 'defDown',  // 程序状态：defDown 默认棋子落子中，userDown 用户落子中，end 已结束，tran 翻转棋子或AI运算中 
             // 棋盘状态数据
             qiPanData: null,
             // 落子顺序数据 
@@ -39,6 +40,7 @@ export const useGameStore = defineStore({
             this.downDataToQiPanData2(0, () => {
                 if(!selectStore.blackAuto) {
                     this.showCanDown();
+                    this.status = 'userDown';
                 }
             });
 
@@ -148,12 +150,12 @@ export const useGameStore = defineStore({
         // 指定位置被落子
         downQiZi: function (x, y, downType) {
             // this.qiPanData[x][y].type = type;
-            
+
+            const selectStore = useSelectStore();
             const qiZi = this.getQiZi(x, y);
 
             // 判断该位置是否已经有棋子了
             if(qiZi.type === 'black' || qiZi.type === 'white'){
-                const selectStore = useSelectStore();
                 if (selectStore.allowCoverDown) {
                     this.changeQiZiType(qiZi);
                 } else {
@@ -161,6 +163,18 @@ export const useGameStore = defineStore({
                 }
                 return;
             }
+            
+            // 判断该位置是否是可落子的位置
+            const mockDownQiZi = this.createQiZi(x, y, downType, 'none');
+            const mockTranArr = getTranList(mockDownQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
+            if(mockTranArr.length === 0 && !selectStore.allowForceDown){
+                sa.sendMessage('error', '此处不能落子！落子要求必须至少翻转一个对方棋子。');
+                return;
+            }
+            
+            // 落子运算 
+            this.status = 'tran';
+            
             // 清除落子提示
             this.clearCanDown();
             
@@ -173,7 +187,6 @@ export const useGameStore = defineStore({
             }
             
             // 收集所有应该转换的棋子，开始转换 
-            let selectStore = useSelectStore();
             const downQiZi = this.getQiZi(x, y);
             const tranArr = getTranList(downQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
             this.changeQiZiArrType_anim(tranArr, 0, () => {
@@ -298,7 +311,9 @@ export const useGameStore = defineStore({
         
         // 开始 User 落子
         startUserDown: function(){
+            this.status = 'userDown';
             // 等待用户落子，程序无需任何动作 
+            // ... 
         },
         // 开始 AI 落子
         startAIDown: function() {
@@ -330,6 +345,22 @@ export const useGameStore = defineStore({
             return dictStore.getAIRole(selectStore.aiRole);
         },
     
+        // 在程序已结束时，获取棋盘结算数据 str
+        getEndJsStr: function () {
+            const qiZiCount = this.getQiZiCount();
+            let endData = '';
+            if(qiZiCount.blackCount > qiZiCount.whiteCount){
+                endData = '黑子获胜！';
+            }
+            if(qiZiCount.blackCount < qiZiCount.whiteCount){
+                endData = '白子获胜！';
+            }
+            if(qiZiCount.blackCount === qiZiCount.whiteCount){
+                endData = '平局！';
+            }
+            return endData;
+        },
+        
         // 程序进行下一步动作 
         next: function () {
             const gameNextStatus = this.getGameNextStatus();
@@ -347,18 +378,8 @@ export const useGameStore = defineStore({
                 this.changeActiveRole(false);
             }
             if (gameNextStatus === 'end') {
-                const qiZiCount = this.getQiZiCount();
-                let endData = '';
-                if(qiZiCount.blackCount > qiZiCount.whiteCount){
-                    endData = '黑子获胜！';
-                }
-                if(qiZiCount.blackCount < qiZiCount.whiteCount){
-                    endData = '白子获胜！';
-                }
-                if(qiZiCount.blackCount === qiZiCount.whiteCount){
-                    endData = '平局！';
-                }
-                sa.sendMessage('success', '游戏结束！' + endData);
+                sa.sendMessage('success', '游戏结束！' + this.getEndJsStr(), true);
+                this.status = 'end';
             }
         },
         // 获取程序下一步可进行的状态 
