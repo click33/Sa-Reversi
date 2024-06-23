@@ -157,7 +157,7 @@ export const useGameStore = defineStore({
                 if (selectStore.allowCoverDown) {
                     this.changeQiZiType(qiZi);
                 } else {
-                    sa.msg('这个地方已经有落子了');
+                    sa.sendMessage('error', '这个地方已经有落子了！');
                 }
                 return;
             }
@@ -180,7 +180,7 @@ export const useGameStore = defineStore({
                 // 切换完了，开始切换活动执子  
                 // 延迟一小点时间，减少用户视觉上的紧迫感 
                 setTimeout(() => {
-                    this.changeActiveRole();
+                    this.next();
                 }, 400);
             });
         },
@@ -223,6 +223,8 @@ export const useGameStore = defineStore({
             const selectStore = useSelectStore();
             if(this.activeRole === 'black'){
                 this.activeRole = 'white';
+                
+                // 下一步 
                 if(!selectStore.whiteAuto) {
                     this.showCanDown();
                     this.startUserDown();
@@ -232,6 +234,8 @@ export const useGameStore = defineStore({
             }
             else if(this.activeRole === 'white'){
                 this.activeRole = 'black';
+                
+                // 下一步 
                 if(!selectStore.blackAuto) {
                     this.showCanDown(); 
                     this.startUserDown();
@@ -240,16 +244,11 @@ export const useGameStore = defineStore({
                 }
             }
         },
-        // 计算并显示可落子位置 
-        showCanDown: function () {
-            const qiZiType = this.activeRole;
-            this.getCanDown().forEach(qiZi => qiZi.tipsType = qiZiType);
-        },
         // 计算可落子位置 
-        getCanDown: function () {
+        getCanDown: function (qiZiType) {
+            qiZiType = qiZiType ?? this.activeRole;
             const canDownArr = [];
             let selectStore = useSelectStore();
-            const qiZiType = this.activeRole;
 
             // 遍历所有棋子，计算每个格子是否可以落子
             this.forEachQiPan(qiZi => {
@@ -268,6 +267,21 @@ export const useGameStore = defineStore({
             
             // 
             return canDownArr;
+        },
+        // 计算并显示可落子位置 
+        showCanDown: function () {
+            const qiZiType = this.activeRole;
+            this.getCanDown().forEach(qiZi => qiZi.tipsType = qiZiType);
+        },
+        // 计算并显示可落子位置（智能判断该不该显示） 
+        showCanDownByAuto: function () {
+            const selectStore = useSelectStore();
+            if(this.activeRole === 'black' && !selectStore.blackAuto){
+                this.showCanDown();
+            }
+            if(this.activeRole === 'white' && !selectStore.whiteAuto){
+                this.showCanDown();
+            }
         },
         // 清楚所有可落子提示
         clearCanDown: function () {
@@ -310,5 +324,69 @@ export const useGameStore = defineStore({
             return dictStore.getAIRole(selectStore.aiRole);
         },
     
+        // 程序进行下一步动作 
+        next: function () {
+            const gameNextStatus = this.getGameNextStatus();
+            if (gameNextStatus === 'change') {
+                this.changeActiveRole();
+            }
+            if (gameNextStatus === 'pause') {
+                if(this.activeRole === 'black') {
+                    sa.sendMessage('warning', '白子无处可落，黑子继续行棋！');
+                }
+                if(this.activeRole === 'white') {
+                    sa.sendMessage('warning', '黑子无处可落，白子继续行棋！');
+                }
+                this.showCanDownByAuto();
+            }
+            if (gameNextStatus === 'end') {
+                const qiZiCount = this.getQiZiCount();
+                let endData = '';
+                if(qiZiCount.blackCount > qiZiCount.whiteCount){
+                    endData = '黑子获胜！';
+                }
+                if(qiZiCount.blackCount < qiZiCount.whiteCount){
+                    endData = '白子获胜！';
+                }
+                if(qiZiCount.blackCount === qiZiCount.whiteCount){
+                    endData = '平局！';
+                }
+                sa.sendMessage('success', '游戏结束！' + endData);
+            }
+        },
+        // 获取程序下一步可进行的状态 
+        // end=结束，开始结算，
+        // change=下一步，正常切换，
+        // pause=停顿不切换状态
+        getGameNextStatus: function (){
+            const selectStore = useSelectStore();
+            
+            // 判断是否已经下满棋盘
+            const qiZiCount = this.getQiZiCount();
+            if(qiZiCount >= selectStore.xCount * selectStore.yCount){
+                return 'end';
+            }
+            
+            // 没下满棋盘，判断是否可进行下一步切换 
+            const currentRole = this.activeRole;
+            const nextRole = currentRole === 'black' ? 'white' : 'black';
+            
+            // 获取 nextRole 的所有可落子位置总数
+            //  如果 > 0，代表对方有子可落，可以进行下一步切换
+            const nextCanDownArr = this.getCanDown(nextRole);
+            if(nextCanDownArr.length > 0){
+                return 'change';
+            }
+            //  如果 = 0，代表对方无子可落，不能进行下一步切换
+            //  此时，再判断当前子是否可以继续落子
+            //      如果可以，则让当前子继续落子
+            //      如果也不可以，则此时直接结束游戏
+            const currentCanDownArr = this.getCanDown(currentRole);
+            if(currentCanDownArr.length > 0){
+                return 'pause';
+            }
+            return 'end';
+        }
+        
     }
 })

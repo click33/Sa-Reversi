@@ -449,6 +449,11 @@ window.sa = sa;
     me.f5CurrView = function() {
         mitt.emit('f5CurrView');
     }
+    
+    // 
+    me.sendMessage = function(type, message, isRenew) {
+        mitt.emit('sendMessage', {type, message, isRenew});
+    }
 
 })();
 

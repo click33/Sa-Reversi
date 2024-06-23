@@ -9,19 +9,22 @@
 
             <!-- 左边 -->
             <div class="con-panel-left">
-                <game-qi-pan></game-qi-pan>
+                <div class="game-qp-box">
+                    <game-qi-pan></game-qi-pan>
+                </div>
+                <div class="com-message-box">
+                    <com-message-box></com-message-box>
+                </div>
             </div>
 
             <!-- 右边 -->
             <div class="con-panel-right">
                 
                 <!-- 黑棋信息 -->
-<!--                <com-ai-info style="margin-bottom: 14px;"></com-ai-info>-->
                 <com-black-player-info style="margin-bottom: 14px;"></com-black-player-info>
 
                 <!-- 白棋信息 -->
                 <com-white-player-info style="margin-bottom: 14px;"></com-white-player-info>
-<!--                <com-user-info style="margin-bottom: 14px;"></com-user-info>-->
 
                 <!-- 对战数据 -->
                 <com-battle-data></com-battle-data>
@@ -44,6 +47,7 @@ import ComBattleData from './game/com-battle-data.vue';
 import {useGameStore} from "../../store/game";
 import ComBlackPlayerInfo from "./game/com-black-player-info";
 import ComWhitePlayerInfo from "./game/com-white-player-info";
+import ComMessageBox from "./game/com-message-box";
 const gameStore = useGameStore();
 
 onMounted(() => {
@@ -64,9 +68,16 @@ onMounted(() => {
     .con-panel-left{
         float: left;
         width: 600px;
-        height: 600px;
+        //height: 650px;
         //min-height: calc(100vh - 48px - 150px);
         background-color: #FFF;
+        .game-qp-box{
+            height: 600px;
+        }
+        .com-message-box{
+            height: 50px;
+            line-height: 50px;
+        }
     }
     
     .con-panel-right{

@@ -19,6 +19,7 @@
                 </td>
             </tr>
         </table>
+        
     </div>
 </template>
 
@@ -110,5 +111,13 @@ onMounted(() => {
     // 棋盘边框线 
     .qi-pan-table,.qi-pan-table tr, .qi-pan-table td{ border: 2px solid #000; }
     .qi-pan-table td:hover{ cursor: pointer; }
+    
+    // 消息提示栏
+    .message-box{
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        bottom: 0;
+    }
     
 </style>
