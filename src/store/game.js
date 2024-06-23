@@ -38,9 +38,10 @@ export const useGameStore = defineStore({
             
             // 显示初始落子
             this.downDataToQiPanData2(0, () => {
-                if(!selectStore.blackAuto) {
-                    this.showCanDown();
-                    this.status = 'userDown';
+                if(selectStore.blackAuto) {
+                    this.startAIDown();
+                } else {
+                    this.startUserDown();
                 }
             });
 
@@ -248,7 +249,6 @@ export const useGameStore = defineStore({
             // 下一步 
             if(this.activeRole === 'white'){
                 if(!selectStore.whiteAuto) {
-                    this.showCanDown();
                     this.startUserDown();
                 } else {
                     this.startAIDown();
@@ -256,7 +256,6 @@ export const useGameStore = defineStore({
             }
             else if(this.activeRole === 'black'){
                 if(!selectStore.blackAuto) {
-                    this.showCanDown(); 
                     this.startUserDown();
                 } else {
                     this.startAIDown();
@@ -312,6 +311,7 @@ export const useGameStore = defineStore({
         // 开始 User 落子
         startUserDown: function(){
             this.status = 'userDown';
+            this.showCanDown();
             // 等待用户落子，程序无需任何动作 
             // ... 
         },

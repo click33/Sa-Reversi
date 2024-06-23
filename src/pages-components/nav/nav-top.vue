@@ -9,7 +9,7 @@
 
             <!-- 右边用户信息 -->
             <div class="nav-top-right">
-                黑白棋
+                <router-link to="/select">新对局</router-link>
             </div>
         </div>
     </div>
