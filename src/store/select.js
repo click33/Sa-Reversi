@@ -11,8 +11,8 @@ export const useSelectStore = defineStore({
     state: () => {
         // 玩家选择的参数信息   --- 注意：从这里改动配置后，需要手动刷新页面才会生效
         const defaultSelectStore = {
-            level: 1,  // 等级：1=菜狗，2=初级，3=中级，4=高级，5=棋圣
             role: 'black',  // 玩家执子：black=黑，white=白 
+            aiRole: 'caigou',  // Ai 角色 
             blackAuto: false, // 黑棋是否自动下子
             whiteAuto: false, // 白棋是否自动下子
             playerName: '', // 玩家昵称 
@@ -66,8 +66,8 @@ export const useSelectStore = defineStore({
     actions: {
         // set 配置信息到本地缓存
         setSelectStore: function () {
-            console.log(this.$state)
-            console.log(JSON.stringify(this.$state))
+            // console.log(this.$state)
+            // console.log(JSON.stringify(this.$state))
             localStorage.setItem('user-layout-select-store', JSON.stringify(this.$state));
         },
         

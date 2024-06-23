@@ -13,7 +13,7 @@
             
             <!-- AI 模式 -->
             <template v-if="selectStore.whiteAuto">
-                <span class="user-name">{{ dictStore.getLevelName( selectStore.level ) }}</span>
+                <span class="user-name">{{ dictStore.getAIRole( selectStore.aiRole ).name }}</span>
                 <span class="user-sub-info">（AI）</span>
             </template>
             <!-- 用户模式 -->
@@ -32,8 +32,6 @@ import {useGameStore} from "../../../store/game";
 let selectStore = useSelectStore();
 var dictStore = useDictStore();
 var gameStore = useGameStore();
-
-// console.log(selectStore.level)
 
 </script>
 

@@ -20,9 +20,9 @@
                 </div>
                 <div class="option-item">
                     <h2 class="right-to-left-3">选择 AI 等级</h2>
-                    <el-radio-group class="right-to-left-4" v-model="selectStore.level">
-                        <template v-for="item in dictStore.levelList">
-                            <el-radio-button :label="item.name" :value="item.value" />
+                    <el-radio-group class="right-to-left-4" v-model="selectStore.aiRole">
+                        <template v-for="item in dictStore.aiRoleList">
+                            <el-radio-button :label="item.name" :value="item.id" />
                         </template>
                     </el-radio-group>
                 </div>

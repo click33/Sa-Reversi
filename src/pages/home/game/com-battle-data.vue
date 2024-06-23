@@ -49,8 +49,6 @@ watch(gameStore.qiPanData, () => {
     state.progressValue = blackCount / allCount * 100;
 })
 
-// console.log(selectStore.level)
-
 </script>
 
 <style scoped lang="scss">

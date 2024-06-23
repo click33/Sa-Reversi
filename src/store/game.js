@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import {useSelectStore} from "./select";
 import {getTranList} from "../algo/qi-zi-tran";
+import {useDictStore} from "./dict";
 
 /**
  * 定义游戏进行时参数信息 
@@ -266,8 +267,16 @@ export const useGameStore = defineStore({
         },
         // 开始 AI 落子
         startAIDown: function() {
-            console.log('AI 落子中... ');
-        }
+            console.log('开始AI落子')
+            const aiRole = this.getCurrentAIRole();
+            aiRole.downChess();
+        },
+        // 获取当前 AI 角色 
+        getCurrentAIRole: function () {
+            const dictStore = useDictStore();
+            const selectStore = useSelectStore();
+            return  dictStore.getAIRole(selectStore.aiRole);
+        },
     
     }
 })
