@@ -6,11 +6,10 @@
 
         <div class="con-panel z-width vue-box">
 
-            <div style="text-align: center; margin-top: 15vh;">
-                
+            <div style="text-align: center; margin-top: 10vh;">
+
                 <h1>黑白棋小游戏</h1>
-                <br><br>
-                
+
                 <div class="option-item">
                     <h2 class="right-to-left-1">选择执子</h2>
                     <el-radio-group class="right-to-left-2" v-model="selectStore.role">
@@ -35,9 +34,15 @@
                         </template>
                     </el-input>
                 </div>
+                <div class="option-item right-to-left-7">
+                    <h2>Debug选项</h2>
+                    <p class="option-intro">此为开发调试选项，如无必要请勿勾选，会破坏游戏规则</p>
+                    <el-checkbox v-model="selectStore.allowCoverDown">允许覆盖落子</el-checkbox>
+                    <el-checkbox v-model="selectStore.allowForceDown">允许强制落子</el-checkbox>
+                </div>
                 <div class="option-item">
-<!--                    <h2>开始游戏</h2>-->
-                    <el-button class="play-button right-to-left-7" type="primary" color="#337be2" size="large" @click="play">开始游戏</el-button>
+                    <!-- <h2>开始游戏</h2> -->
+                    <el-button class="play-button right-to-left-9" type="primary" color="#337be2" size="large" @click="play">开始游戏</el-button>
                 </div>
             </div>
 
@@ -71,13 +76,13 @@ const play = () => {
         gameStore.blackAuto = true;
         gameStore.whiteAuto = false;
     }
-    
+
     // 初始化棋盘
     gameStore.init();
-    
+
     // 缓存选择的信息
     selectStore.setSelectStore();
-    
+
     // 跳转到对战页面 
     router.push('/game');
 }
@@ -90,28 +95,32 @@ watch(selectStore, () => {
 </script>
 
 <style scoped lang="scss">
-    // 整体面板
-    .con-panel{
-        //border: 1px solid #000;
-        min-height: 200px;
-        margin: 14px auto;
-    }
-    
-    .option-item{
-        margin-top: 50px;
-        h2{ margin-bottom: 20px; }
-    }
-    
-    .random-player-name{
-        :deep(.el-icon){
-            position: relative;
-            top: 2px;
-        }
-    }
+// 整体面板
+.con-panel{
+    //border: 1px solid #000;
+    min-height: 200px;
+    margin: 14px auto;
+}
 
-    // 开始按钮 
-    .play-button{
-        width: 300px;
+.option-item{
+    margin-top: 50px;
+    h2{ margin-bottom: 20px; }
+    .option-intro{
+        color: #999;
+        margin-bottom: 10px;
     }
+}
+
+.random-player-name{
+    :deep(.el-icon){
+        position: relative;
+        top: 2px;
+    }
+}
+
+// 开始按钮 
+.play-button{
+    width: 300px;
+}
 
 </style>

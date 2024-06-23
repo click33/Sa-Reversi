@@ -124,8 +124,12 @@ export const useGameStore = defineStore({
 
             // 判断该位置是否已经有棋子了
             if(qiZi.type === 'black' || qiZi.type === 'white'){
-                this.changeQiZiType(qiZi);
-                // sa.msg('这个地方已经有落子了');
+                const selectStore = useSelectStore();
+                if (selectStore.allowCoverDown) {
+                    this.changeQiZiType(qiZi);
+                } else {
+                    sa.msg('这个地方已经有落子了');
+                }
                 return;
             }
             // 根据用户选择的执子类型，调用对应的方法

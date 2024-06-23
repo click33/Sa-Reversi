@@ -16,7 +16,8 @@ export const useSelectStore = defineStore({
             playerName: '', // 玩家昵称 
             xCount: 8,  // 棋盘行数
             yCount: 8,  // 棋盘列数
-            
+            allowCoverDown: false,  // 允许覆盖落子 
+            allowForceDown: false,  // 允许强制落子 
         };
         const defaultSelectStoreString = JSON.stringify(defaultSelectStore);
 
