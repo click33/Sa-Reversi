@@ -1,8 +1,7 @@
 <!-- 棋子 -->
 <template>
-    <div class="qi-zi" :class=" 'qi-zi-' + state.type ">
+    <div class="qi-zi" :class=" [('qi-zi-' + state.type), (gameStore.justX === state.x && gameStore.justY === state.y ? 'qi-zi-just' : '')] ">
         <div class="qi-zi-tip" :class=" 'qi-zi-tip-' + state.tipsType "></div>
-<!--        <span style="color: #666; line-height: 50px;">{{x}}, {{y}}</span>-->
     </div>
 </template>
 
@@ -69,6 +68,10 @@ onMounted(() => {
     .qi-zi-white{ background-color: #FFF; }
     .qi-zi-none{ }
 
+    // 最新落子的样式 
+    .qi-zi-white.qi-zi-just{ box-shadow: 0 0 15px #333; }
+    .qi-zi-black.qi-zi-just{ box-shadow: 0 0 15px yellow; }
+    
     // 棋子提示 
     .qi-zi-tip{
         width: 30%;
@@ -86,5 +89,6 @@ onMounted(() => {
     // 把 animation 属性写下面，是为了只在有落子提示时才真正的显示动画，防止浏览器做无用动画，节省性能 
     .qi-zi-tip-black{ animation: big 3s ease-out infinite; background-color: #444; }
     .qi-zi-tip-white{ animation: big 3s ease-out infinite; background-color: #FFF; }
+    
     
 </style>

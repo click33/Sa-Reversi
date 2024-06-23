@@ -21,7 +21,9 @@ export const useGameStore = defineStore({
                 { x: 4, y: 4, type: 'white' },
                 { x: 4, y: 5, type: 'black' },
                 { x: 5, y: 5, type: 'white' },
-            ]
+            ],
+            justX: 0,  // 最新落子x坐标
+            justY: 0,  // 最新落子y坐标
         }
     },
     actions: {
@@ -176,6 +178,10 @@ export const useGameStore = defineStore({
             
             // 落子运算 
             this.status = 'tran';
+            
+            // 记录落子坐标
+            this.justX = x;
+            this.justY = y;
             
             // 清除落子提示
             this.clearCanDown();
