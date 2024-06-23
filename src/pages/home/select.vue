@@ -37,6 +37,7 @@
                 <div class="option-item right-to-left-7">
                     <h2>Debug选项</h2>
                     <p class="option-intro">此为开发调试选项，如无必要请勿勾选，会破坏游戏规则</p>
+                    <el-checkbox v-model="selectStore.tipsDown">提示落子位置</el-checkbox>
                     <el-checkbox v-model="selectStore.allowCoverDown">允许覆盖落子</el-checkbox>
                     <el-checkbox v-model="selectStore.allowForceDown">允许强制落子</el-checkbox>
                 </div>

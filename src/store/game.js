@@ -301,10 +301,10 @@ export const useGameStore = defineStore({
         // 计算并显示可落子位置（智能判断该不该显示） 
         showCanDownByAuto: function () {
             const selectStore = useSelectStore();
-            if(this.activeRole === 'black' && !selectStore.blackAuto){
+            if(this.activeRole === 'black' && !selectStore.blackAuto && selectStore.tipsDown){
                 this.showCanDown();
             }
-            if(this.activeRole === 'white' && !selectStore.whiteAuto){
+            if(this.activeRole === 'white' && !selectStore.whiteAuto && selectStore.tipsDown){
                 this.showCanDown();
             }
         },
@@ -318,7 +318,9 @@ export const useGameStore = defineStore({
         // 开始 User 落子
         startUserDown: function(){
             this.status = 'userDown';
-            this.showCanDown();
+            if(useSelectStore().tipsDown) {
+                this.showCanDown();
+            }
             // 等待用户落子，程序无需任何动作 
             // ... 
         },
@@ -381,7 +383,6 @@ export const useGameStore = defineStore({
                 if(this.activeRole === 'white') {
                     sa.sendMessage('warning', '黑子无处可落，白子继续行棋！');
                 }
-                // this.showCanDownByAuto();
                 this.changeActiveRole(false);
             }
             if (gameNextStatus === 'end') {

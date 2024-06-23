@@ -20,6 +20,7 @@ export const useSelectStore = defineStore({
             yCount: 8,  // 棋盘列数
             allowCoverDown: false,  // 允许覆盖落子 
             allowForceDown: false,  // 允许强制落子 
+            tipsDown: false,  // 提示落子位置 
         };
         const defaultSelectStoreString = JSON.stringify(defaultSelectStore);
 
