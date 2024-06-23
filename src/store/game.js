@@ -10,8 +10,6 @@ export const useGameStore = defineStore({
     state: () => {
         return {
             isInit: false,  // 是否初始化
-            blackAuto: false, // 黑棋是否自动下子
-            whiteAuto: false, // 白棋是否自动下子
             activeRole: 'black', // 当前活动执子角色
             // 棋盘状态数据
             qiPanData: null,
@@ -27,16 +25,32 @@ export const useGameStore = defineStore({
     actions: {
         // 初始化
         init: function () {
+            const selectStore = useSelectStore();
+            
             // 初始化棋盘数据
             const {xCount, yCount} = useSelectStore();
             this.initQiPanData(xCount, yCount);
             
-            // 初始化落子顺序数据 
-            this.downDataToQiPanData2();
-
-
             // 初始化成功 
             this.isInit = true;
+            
+            // 显示初始落子
+            this.downDataToQiPanData2(0, () => {
+                if(!selectStore.blackAuto) {
+                    this.showCanDown();
+                }
+            });
+
+        },
+        
+        // 创建一个棋子数据
+        createQiZi: function (x, y, type, tipsType) {
+            return {
+                x,   // x轴坐标 
+                y,  // y轴坐标 
+                type,  // 棋子类型 
+                tipsType  // 提示类型
+            }
         },
         
         // 初始化棋盘 
@@ -45,11 +59,7 @@ export const useGameStore = defineStore({
             for (let i = 1; i <= xCount; i++) {
                 const yArr = [{ type: 'fill' }];
                 for (let j = 1; j <= yCount; j++) {
-                    const item = {
-                        x: j, 
-                        y: i, 
-                        type: 'none'
-                    }
+                    const item = this.createQiZi(j, i, 'none', 'none');
                     yArr.push(item)
                 }
                 xArr.push(yArr);
@@ -57,6 +67,21 @@ export const useGameStore = defineStore({
             this.qiPanData = xArr;
         },
        
+        // 遍历棋盘所有格子
+        forEachQiPan: function(callback){
+            this.qiPanData.forEach(tr => {
+                if(tr.type === 'fill') {
+                    return;
+                }
+                tr.forEach(td => {
+                    if(td.type === 'fill') {
+                        return;
+                    }
+                    callback(td);
+                })
+            });
+        },
+        
         // 按照落子顺序数据，更新棋盘数据 (无动画)
         downDataToQiPanData: function () {
             this.downData.forEach(item => {
@@ -65,15 +90,17 @@ export const useGameStore = defineStore({
         },
         
         // 按照落子顺序数据，更新棋盘数据 (快速动画)
-        downDataToQiPanData2: function (i = 0) {
-            if(i >= this.downData.length) {
-                return;
-            }
+        downDataToQiPanData2: function (i, callback) {
             setTimeout(() => {
+                if(i >= this.downData.length) {
+                    callback();
+                    return;
+                }
+                
                 const item = this.downData[i];
                 this.getQiZi(item.x, item.y).type = item.type;
                 i++;
-                this.downDataToQiPanData2(i);
+                this.downDataToQiPanData2(i, callback);
             }, 500)
         },
         
@@ -117,7 +144,7 @@ export const useGameStore = defineStore({
         },
         
         // 指定位置被落子
-        downQiZi: function (x, y) {
+        downQiZi: function (x, y, downType) {
             // this.qiPanData[x][y].type = type;
             
             const qiZi = this.getQiZi(x, y);
@@ -132,23 +159,25 @@ export const useGameStore = defineStore({
                 }
                 return;
             }
+            // 清除落子提示
+            this.clearCanDown();
+            
             // 根据用户选择的执子类型，调用对应的方法
-            let downType = '';
-            if(this.activeRole === 'black'){
+            if(downType === 'black'){
                 this.setQiZiBlack(qiZi);
-                downType = 'black';
-                this.activeRole = 'white';
             }
-            else if(this.activeRole === 'white'){
+            if(downType === 'white'){
                 this.setQiZiWhite(qiZi);
-                downType = 'white';
-                this.activeRole = 'black';
             }
             
             // 收集所有应该转换的棋子，开始转换 
             let selectStore = useSelectStore();
-            const tranArr = getTranList(x, y, downType, this.qiPanData, selectStore.xCount, selectStore.yCount);
-            this.changeQiZiArrType_anim(tranArr);
+            const downQiZi = this.getQiZi(x, y);
+            const tranArr = getTranList(downQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
+            this.changeQiZiArrType_anim(tranArr, 0, () => {
+                // 切换完了，开始切换活动执子  
+                this.changeActiveRole();
+            });
         },
 
         // 切换一组棋子类型
@@ -158,14 +187,14 @@ export const useGameStore = defineStore({
             })
         },
         // 切换一组棋子类型（带延迟动画）
-        changeQiZiArrType_anim: function (tranArr, i = 0) {
+        changeQiZiArrType_anim: function (tranArr, i = 0, callback) {
             if(i >= tranArr.length) {
-                return;
+                return callback();
             }
             setTimeout(() => {
                 this.changeQiZiType(tranArr[i]);
                 i++;
-                this.changeQiZiArrType_anim(tranArr, i);
+                this.changeQiZiArrType_anim(tranArr, i, callback);
             }, 200)
         },
         // 切换一个棋子类型
@@ -184,7 +213,48 @@ export const useGameStore = defineStore({
             qiZi.type = 'white';
         },
         
-        
+        // 切换活动执子
+        changeActiveRole: function () {
+            const selectStore = useSelectStore();
+            if(this.activeRole === 'black'){
+                this.activeRole = 'white';
+                if(!selectStore.whiteAuto) {
+                    this.showCanDown();
+                }
+            }
+            else if(this.activeRole === 'white'){
+                this.activeRole = 'black';
+                if(!selectStore.blackAuto) {
+                    this.showCanDown();
+                }
+            }
+            console.log(selectStore.whiteAuto)
+            console.log(selectStore.blackAuto)
+        },
+        // 计算并显示可落子位置 
+        showCanDown: function () {
+            let selectStore = useSelectStore();
+            const qiZiType = this.activeRole;
+            
+            // 遍历所有棋子，计算每个格子是否可以落子
+            this.forEachQiPan(qiZi => {
+                if(qiZi.type !== 'none'){
+                    return;
+                }
+                // 假设在此处落子，有超过1个棋子是可以转换的，则代表此处可以落子
+                const mockDownQiZi = this.createQiZi(qiZi.x, qiZi.y, qiZiType, 'none');
+                const mockTranArr = getTranList(mockDownQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
+                if(mockTranArr.length > 0){
+                    qiZi.tipsType = qiZiType;
+                }
+            }) 
+        },
+        // 清楚所有可落子提示
+        clearCanDown: function () {
+            this.forEachQiPan(qiZi => {
+                qiZi.tipsType = 'none';
+            })
+        }
     
     }
 })

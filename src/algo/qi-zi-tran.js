@@ -4,14 +4,17 @@ import {useGameStore} from "../store/game";
 
 // 指定坐标落子后，计算需要翻转的棋子坐标列表 
 
-export const getTranList = (downX, downY, downType, qiPanData, xCount, yCount) => {
+export const getTranList = (downQiZi, qiPanData, xCount, yCount) => {
     // console.log(downX, downY, downType, qiPanData, xCount, yCount)
 
     let gameStore = useGameStore();
+    const downX = downQiZi.x;
+    const downY = downQiZi.y;
+    // const downType = downQiZi.type;
     
     // 上 
-    let topArr = [];
-    for (let y = downY; y >= 1; y--) {
+    let topArr = [downQiZi];
+    for (let y = downY - 1; y >= 1; y--) {
         const item = gameStore.getQiPanQiZi(qiPanData, downX, y);
         if(isDownQiZi(item))
             topArr.push(item)
@@ -19,8 +22,8 @@ export const getTranList = (downX, downY, downType, qiPanData, xCount, yCount) =
             break;
     }
     // 下
-    let bottomArr = [];
-    for (let y = downY; y <= yCount; y++) {
+    let bottomArr = [downQiZi];
+    for (let y = downY + 1; y <= yCount; y++) {
         const item = gameStore.getQiPanQiZi(qiPanData, downX, y);
         if(isDownQiZi(item))
             bottomArr.push(item)
@@ -28,8 +31,8 @@ export const getTranList = (downX, downY, downType, qiPanData, xCount, yCount) =
             break;
     }
     // 左 
-    let leftArr = [];
-    for (let x = downX; x >= 1; x--) {
+    let leftArr = [downQiZi];
+    for (let x = downX - 1; x >= 1; x--) {
         const item = gameStore.getQiPanQiZi(qiPanData, x, downY);
         if(isDownQiZi(item))
             leftArr.push(item)
@@ -37,8 +40,8 @@ export const getTranList = (downX, downY, downType, qiPanData, xCount, yCount) =
             break;
     }
     // 右
-    let rightArr = [];
-    for (let x = downX; x <= xCount; x++) {
+    let rightArr = [downQiZi];
+    for (let x = downX + 1; x <= xCount; x++) {
         const item = gameStore.getQiPanQiZi(qiPanData, x, downY);
         if(isDownQiZi(item))
             rightArr.push(item)
@@ -46,8 +49,8 @@ export const getTranList = (downX, downY, downType, qiPanData, xCount, yCount) =
             break;
     }
     // 左上
-    let topLeftArr = [];
-    for (let x = downX, y = downY; x >= 1 && y >= 1; x--, y--) {
+    let topLeftArr = [downQiZi];
+    for (let x = downX - 1, y = downY - 1; x >= 1 && y >= 1; x--, y--) {
         const item = gameStore.getQiPanQiZi(qiPanData, x, y);
         if(isDownQiZi(item))
             topLeftArr.push(item)
@@ -55,8 +58,8 @@ export const getTranList = (downX, downY, downType, qiPanData, xCount, yCount) =
             break;
     }
     // 右上 
-    let topRightArr = [];
-    for (let x = downX, y = downY; x <= xCount && y >= 1; x++, y--) {
+    let topRightArr = [downQiZi];
+    for (let x = downX + 1, y = downY - 1; x <= xCount && y >= 1; x++, y--) {
         const item = gameStore.getQiPanQiZi(qiPanData, x, y);
         if(isDownQiZi(item))
             topRightArr.push(item)
@@ -64,8 +67,8 @@ export const getTranList = (downX, downY, downType, qiPanData, xCount, yCount) =
             break;
     }
     // 左下
-    let bottomLeftArr = [];
-    for (let x = downX, y = downY; x >= 1 && y <= yCount; x--, y++) {
+    let bottomLeftArr = [downQiZi];
+    for (let x = downX - 1, y = downY + 1; x >= 1 && y <= yCount; x--, y++) {
         const item = gameStore.getQiPanQiZi(qiPanData, x, y);
         if(isDownQiZi(item))
             bottomLeftArr.push(item)
@@ -73,8 +76,8 @@ export const getTranList = (downX, downY, downType, qiPanData, xCount, yCount) =
             break;
     }
     // 右下
-    let bottomRightArr = [];
-    for (let x = downX, y = downY; x <= xCount && y <= yCount; x++, y++) {
+    let bottomRightArr = [downQiZi];
+    for (let x = downX + 1, y = downY + 1; x <= xCount && y <= yCount; x++, y++) {
         const item = gameStore.getQiPanQiZi(qiPanData, x, y);
         if(isDownQiZi(item))
             bottomRightArr.push(item)

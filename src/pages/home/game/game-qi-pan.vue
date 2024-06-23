@@ -39,7 +39,7 @@ const state = reactive({
 
 // 点击单元格
 const down = (x, y) => {
-    gameStore.downQiZi(x, y);
+    gameStore.downQiZi(x, y, gameStore.activeRole);
     // proxy.$refs[getRefName(x, y)][0].down();
 }
 

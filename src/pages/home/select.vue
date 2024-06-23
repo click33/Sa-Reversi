@@ -70,11 +70,11 @@ let dictStore = useDictStore();
 const play = () => {
     // 根据用户的选择，初始化 gameStore 一些参数
     if(selectStore.role === 'black') {
-        gameStore.blackAuto = false;
-        gameStore.whiteAuto = true;
+        selectStore.blackAuto = false;
+        selectStore.whiteAuto = true;
     } else {
-        gameStore.blackAuto = true;
-        gameStore.whiteAuto = false;
+        selectStore.blackAuto = true;
+        selectStore.whiteAuto = false;
     }
 
     // 初始化棋盘

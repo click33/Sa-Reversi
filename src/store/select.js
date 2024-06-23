@@ -13,6 +13,8 @@ export const useSelectStore = defineStore({
         const defaultSelectStore = {
             level: 1,  // 等级：1=菜狗，2=初级，3=中级，4=高级，5=棋圣
             role: 'black',  // 玩家执子：black=黑，white=白 
+            blackAuto: false, // 黑棋是否自动下子
+            whiteAuto: false, // 白棋是否自动下子
             playerName: '', // 玩家昵称 
             xCount: 8,  // 棋盘行数
             yCount: 8,  // 棋盘列数

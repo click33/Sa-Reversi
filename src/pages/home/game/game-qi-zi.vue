@@ -1,6 +1,7 @@
 <!-- 棋子 -->
 <template>
     <div class="qi-zi" :class=" 'qi-zi-' + state.type ">
+        <div class="qi-zi-tip" :class=" 'qi-zi-tip-' + state.tipsType "></div>
 <!--        <span style="color: #666; line-height: 50px;">{{x}}, {{y}}</span>-->
     </div>
 </template>
@@ -18,15 +19,18 @@ const prop = defineProps({
 })
 
 // ------------------ 数据 ------------------
+let qiZi = gameStore.getQiZi(prop.x, prop.y);
 const state = reactive({
-    type: gameStore.getQiZi(prop.x, prop.y).type,  // 棋子类型：black=黑，white=白，none=空 
+    type: qiZi.type,  // 棋子类型：black=黑，white=白，none=空 
+    tipsType: qiZi.tipsType,  // 棋子提示类型：black=
     x: prop.x,  // 棋子所属横坐标
     y: prop.y,  // 棋子所属纵坐标
 })
 
-// 监听棋盘数据变化，更新棋子 UI 展现
-watch(gameStore.getQiZi(prop.x, prop.y), (item) => {
+// 监听棋子数据变化，更新棋子 UI 展现
+watch(qiZi, (item) => {
     state.type = item.type;
+    state.tipsType = item.tipsType;
 })
 
 
@@ -50,20 +54,35 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+    // 棋子
     .qi-zi{
         width: 75%;
         height: 75%;
         margin: auto;
         border-radius: 50%;
         transition: all 0.5s;
+        position: relative;
     }
-    .qi-zi-black{
-        background-color: #000;
-    }
-    .qi-zi-white{
-        background-color: #FFF;
-    }
-    .qi-zi-none{
+    .qi-zi-black{ background-color: #000; }
+    .qi-zi-white{ background-color: #FFF; }
+    .qi-zi-none{ }
 
+    // 棋子提示 
+    .qi-zi-tip{
+        width: 30%;
+        height: 30%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
     }
+    @keyframes big {
+        0%{ width: 10%; height: 10%; opacity: 0.8;}
+        100%{ width: 70%; height: 70%; opacity: 0.2;}
+    }
+    // 把 animation 属性写下面，是为了只在有落子提示时才真正的显示动画，防止浏览器做无用动画，节省性能 
+    .qi-zi-tip-black{ animation: big 3s ease-out infinite; background-color: #444; }
+    .qi-zi-tip-white{ animation: big 3s ease-out infinite; background-color: #FFF; }
+    
 </style>
