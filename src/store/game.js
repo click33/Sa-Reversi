@@ -50,7 +50,8 @@ export const useGameStore = defineStore({
                 x,   // x轴坐标 
                 y,  // y轴坐标 
                 type,  // 棋子类型 
-                tipsType  // 提示类型
+                tipsType,  // 提示类型
+                tranCount: 0,  // 此处落子可翻转的棋子数量
             }
         },
         
@@ -189,10 +190,10 @@ export const useGameStore = defineStore({
         },
         // 切换一组棋子类型（带延迟动画）
         changeQiZiArrType_anim: function (tranArr, i = 0, callback) {
-            if(i >= tranArr.length) {
-                return callback();
-            }
             setTimeout(() => {
+                if(i >= tranArr.length) {
+                    return callback();
+                }
                 this.changeQiZiType(tranArr[i]);
                 i++;
                 this.changeQiZiArrType_anim(tranArr, i, callback);
@@ -238,9 +239,15 @@ export const useGameStore = defineStore({
         },
         // 计算并显示可落子位置 
         showCanDown: function () {
+            const qiZiType = this.activeRole;
+            this.getCanDown().forEach(qiZi => qiZi.tipsType = qiZiType);
+        },
+        // 计算可落子位置 
+        getCanDown: function () {
+            const canDownArr = [];
             let selectStore = useSelectStore();
             const qiZiType = this.activeRole;
-            
+
             // 遍历所有棋子，计算每个格子是否可以落子
             this.forEachQiPan(qiZi => {
                 if(qiZi.type !== 'none'){
@@ -250,9 +257,14 @@ export const useGameStore = defineStore({
                 const mockDownQiZi = this.createQiZi(qiZi.x, qiZi.y, qiZiType, 'none');
                 const mockTranArr = getTranList(mockDownQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
                 if(mockTranArr.length > 0){
-                    qiZi.tipsType = qiZiType;
+                    // qiZi.tipsType = qiZiType;
+                    qiZi.tranCount = mockTranArr.length;
+                    canDownArr.push(qiZi);
                 }
-            }) 
+            })
+            
+            // 
+            return canDownArr;
         },
         // 清楚所有可落子提示
         clearCanDown: function () {
@@ -267,15 +279,32 @@ export const useGameStore = defineStore({
         },
         // 开始 AI 落子
         startAIDown: function() {
-            console.log('开始AI落子')
+            // console.log('开始AI落子');
+
+            const gameStore = useGameStore();
+
+            // 当前活动角色 
+            const activeRole = gameStore.activeRole;
+
+            // 获取所有可落子位置
+            const canDownArr = gameStore.getCanDown();
+            
+            // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
+            // canDownArr.sort(() => Math.random() - 0.5);
+            
+            // 按照 tranCount 从小到大升序排列  
+            canDownArr.sort((a, b) => a.tranCount - b.tranCount);
+            
+            // 调用 AI 算法落子
             const aiRole = this.getCurrentAIRole();
-            aiRole.downChess();
+            const informDown = aiRole.downChess(activeRole, canDownArr);
+            this.downQiZi(informDown.x, informDown.y, activeRole);
         },
         // 获取当前 AI 角色 
         getCurrentAIRole: function () {
             const dictStore = useDictStore();
             const selectStore = useSelectStore();
-            return  dictStore.getAIRole(selectStore.aiRole);
+            return dictStore.getAIRole(selectStore.aiRole);
         },
     
     }

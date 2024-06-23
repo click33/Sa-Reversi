@@ -23,6 +23,7 @@ let qiZi = gameStore.getQiZi(prop.x, prop.y);
 const state = reactive({
     type: qiZi.type,  // 棋子类型：black=黑，white=白，none=空 
     tipsType: qiZi.tipsType,  // 棋子提示类型：black=
+    tranCount: 0,  // 如果在此处落子，可翻转棋子数量 
     x: prop.x,  // 棋子所属横坐标
     y: prop.y,  // 棋子所属纵坐标
 })
@@ -31,6 +32,7 @@ const state = reactive({
 watch(qiZi, (item) => {
     state.type = item.type;
     state.tipsType = item.tipsType;
+    state.tranCount = item.tranCount;
 })
 
 
