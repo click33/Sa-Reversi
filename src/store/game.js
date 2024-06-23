@@ -219,12 +219,21 @@ export const useGameStore = defineStore({
         },
         
         // 切换活动执子
-        changeActiveRole: function () {
+        changeActiveRole: function (isChange = true) {
             const selectStore = useSelectStore();
-            if(this.activeRole === 'black'){
-                this.activeRole = 'white';
-                
-                // 下一步 
+            
+            // 切换活动执子
+            if(isChange){
+                if(this.activeRole === 'black'){
+                    this.activeRole = 'white';
+                }
+                else if(this.activeRole === 'white'){
+                    this.activeRole = 'black';
+                }
+            }
+
+            // 下一步 
+            if(this.activeRole === 'white'){
                 if(!selectStore.whiteAuto) {
                     this.showCanDown();
                     this.startUserDown();
@@ -232,10 +241,7 @@ export const useGameStore = defineStore({
                     this.startAIDown();
                 }
             }
-            else if(this.activeRole === 'white'){
-                this.activeRole = 'black';
-                
-                // 下一步 
+            else if(this.activeRole === 'black'){
                 if(!selectStore.blackAuto) {
                     this.showCanDown(); 
                     this.startUserDown();
@@ -328,7 +334,7 @@ export const useGameStore = defineStore({
         next: function () {
             const gameNextStatus = this.getGameNextStatus();
             if (gameNextStatus === 'change') {
-                this.changeActiveRole();
+                this.changeActiveRole(true);
             }
             if (gameNextStatus === 'pause') {
                 if(this.activeRole === 'black') {
@@ -337,7 +343,8 @@ export const useGameStore = defineStore({
                 if(this.activeRole === 'white') {
                     sa.sendMessage('warning', '黑子无处可落，白子继续行棋！');
                 }
-                this.showCanDownByAuto();
+                // this.showCanDownByAuto();
+                this.changeActiveRole(false);
             }
             if (gameNextStatus === 'end') {
                 const qiZiCount = this.getQiZiCount();
