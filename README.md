@@ -16,7 +16,7 @@ Sa-Reversi 是一个黑白棋小游戏，所有行棋算法均在前端实现，
 - 动画效果：配有流畅的落子动画效果，提升视觉交互体验。
 
 
-### Sa-Reversi 介绍
+### 演示地址
 
 在线演示：[http://sr.yanzhi21.com/](http://sr.yanzhi21.com/)
 
