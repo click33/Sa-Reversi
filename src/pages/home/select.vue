@@ -6,45 +6,83 @@
 
         <div class="con-panel z-width vue-box">
 
-            <div style="text-align: center; margin-top: 10vh;">
+            <div style="margin-top: 10vh;">
 
                 <h1>黑白棋小游戏</h1>
+                <br><br><br>
 
-                <div class="option-item">
-                    <h2 class="right-to-left-1">选择执子</h2>
-                    <el-radio-group class="right-to-left-2" v-model="selectStore.role">
-                        <template v-for="item in dictStore.roleList">
-                            <el-radio-button :label="item.name" :value="item.value" />
-                        </template>
-                    </el-radio-group>
-                </div>
-                <div class="option-item">
-                    <h2 class="right-to-left-3">选择 AI 等级</h2>
-                    <el-radio-group class="right-to-left-4" v-model="selectStore.aiRole">
-                        <template v-for="item in dictStore.aiRoleList">
-                            <el-radio-button :label="item.name" :value="item.id" />
-                        </template>
-                    </el-radio-group>
-                </div>
-                <div class="option-item">
-                    <h2 class="right-to-left-5">我的名字</h2>
+                <el-form-item label="黑子角色：" class="option-item right-to-left-1">
+                    <div class="right-to-left-2">
+                        <el-radio-group v-model="selectStore.blackRole">
+                            <template v-for="item in dictStore.aiRoleList">
+                                <el-radio-button :label="item.name" :value="item.id" />
+                            </template>
+                        </el-radio-group>
+                        <p class="option-intro"> 
+                            <span v-if="selectStore.blackRole === 'user'">玩家手动执黑子</span>
+                            <span v-else>由 AI ({{ dictStore.getAIRole( selectStore.blackRole ).name }}) 执黑子</span>
+                        </p>
+                    </div>
+                </el-form-item>
+                
+                <el-form-item label="白子角色：" class="option-item right-to-left-2">
+                    <div class="right-to-left-3">
+                        <el-radio-group v-model="selectStore.whiteRole">
+                            <template v-for="item in dictStore.aiRoleList">
+                                <el-radio-button :label="item.name" :value="item.id" />
+                            </template>
+                        </el-radio-group>
+                        <p class="option-intro">
+                            <span v-if="selectStore.whiteRole === 'user'">玩家手动执白子</span>
+                            <span v-else>由 AI ({{ dictStore.getAIRole( selectStore.whiteRole ).name }}) 执白子</span>
+                        </p>
+                    </div>
+                </el-form-item>
+                
+                <el-form-item label="辅助选项：" class="option-item right-to-left-2">
+                    <div>
+                        <el-checkbox v-model="selectStore.tipsDown">提示落子位置</el-checkbox>
+                        <el-checkbox v-model="selectStore.tipsDownTranCount">提示落子可回收棋子数量</el-checkbox>
+                        <el-checkbox v-model="selectStore.tipsDownScore">提示落子得分</el-checkbox>
+                        <p class="option-intro">新手按需勾选，老手不建议勾选，会降低自身棋力水平</p>
+                    </div>
+                </el-form-item>
+
+                <el-form-item label="调试选项：" class="option-item right-to-left-2">
+                    <div>
+                        <el-checkbox v-model="selectStore.allowCoverDown">允许覆盖落子</el-checkbox>
+                        <el-checkbox v-model="selectStore.allowForceDown">允许强制落子</el-checkbox>
+                        <p class="option-intro">此为开发调试选项，如无必要请勿勾选，会破坏游戏规则</p>
+                    </div>
+                </el-form-item>
+
+                <el-form-item label="棋盘大小：" class="option-item right-to-left-2" style="margin-bottom: 50px;">
+                        <div class="xy-count-input-box">
+                            <el-input class="xy-count-input" v-model="selectStore.xCount" 
+                                      type="number" @blur="checkXCountYCount"></el-input>
+                            <span class="xy-count-x"> x </span>
+                            <el-input class="xy-count-input" v-model="selectStore.yCount"
+                                      type="number" @blur="checkXCountYCount"></el-input>
+                        </div>
+                        <el-slider class="xy-count-slider" v-model="selectStore.xyCount" 
+                                   :min="dictStore.boardMinLength" :max="dictStore.boardMaxLength"
+                                   show-tooltip :step="2" 
+                                   :format-tooltip="value => value + ' x ' + value"
+                                   :marks="dictStore.boardLengthMarks" />
+                </el-form-item>
+
+                <el-form-item label="我的名字：" class="option-item right-to-left-2">
                     <el-input class="right-to-left-6" v-model="selectStore.playerName" style="width: 300px;">
                         <template #append>
                             <el-button icon="el-icon-Refresh" class="random-player-name" @click="selectStore.playerName = randomPlayerName()" > 随机一个 </el-button>
                         </template>
                     </el-input>
-                </div>
-                <div class="option-item right-to-left-7">
-                    <h2>Debug选项</h2>
-                    <p class="option-intro">此为开发调试选项，如无必要请勿勾选，会破坏游戏规则</p>
-                    <el-checkbox v-model="selectStore.tipsDown">提示落子位置</el-checkbox>
-                    <el-checkbox v-model="selectStore.allowCoverDown">允许覆盖落子</el-checkbox>
-                    <el-checkbox v-model="selectStore.allowForceDown">允许强制落子</el-checkbox>
-                </div>
-                <div class="option-item">
-                    <!-- <h2>开始游戏</h2> -->
+                </el-form-item>
+                
+                <el-form-item class="option-item right-to-left-2" style="margin-top: 40px;">
                     <el-button class="play-button right-to-left-9" type="primary" color="#337be2" size="large" @click="play">开始游戏</el-button>
-                </div>
+                </el-form-item>
+
             </div>
 
         </div>
@@ -84,6 +122,8 @@ const play = () => {
         selectStore.whiteAuto = true;
     }
 
+    console.log(selectStore.xCount, selectStore.yCount);
+    
     // 初始化棋盘
     gameStore.init();
 
@@ -92,12 +132,36 @@ const play = () => {
 
     // 跳转到对战页面 
     router.push('/game');
+    
 }
 
 // 监听 gameStore，用户改动时，缓存下来
 watch(selectStore, () => {
     selectStore.setSelectStore();
 })
+watch(() => selectStore.xyCount, () => {
+    selectStore.xCount = selectStore.xyCount;
+    selectStore.yCount = selectStore.xyCount;
+})
+
+// xCount、yCount 必须为合法值 
+const checkXCountYCount = () => {
+    if (selectStore.xCount < dictStore.boardMinLength) {
+        selectStore.xCount = dictStore.boardMinLength;
+    }
+    if (selectStore.xCount > dictStore.boardMaxLength) {
+        selectStore.xCount = dictStore.boardMaxLength;
+    }
+    if (selectStore.yCount < dictStore.boardMinLength) {
+        selectStore.yCount = dictStore.boardMinLength;
+    }
+    if (selectStore.yCount > dictStore.boardMaxLength) {
+        selectStore.yCount = dictStore.boardMaxLength;
+    }
+    if (selectStore.xCount === selectStore.yCount) {
+        selectStore.xyCount = parseInt(selectStore.xCount);
+    }
+}
 
 </script>
 
@@ -110,12 +174,25 @@ watch(selectStore, () => {
 }
 
 .option-item{
-    margin-top: 50px;
-    h2{ margin-bottom: 20px; }
+    h2{ margin-bottom: 20px; color: #000; }
+    
+    :deep(.el-form-item__label){
+        color: #333;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
     .option-intro{
         color: #999;
         margin-bottom: 10px;
     }
+    
+    // 棋盘大小控制
+    .xy-count-input-box{ width: 120px; }
+    .xy-count-input{ width: 45px; }
+    .xy-count-x{ display: inline-block; margin: 0 10px; }
+    .xy-count-slider{width: calc( 100% - 140px ); margin-left: 20px;}
+    
 }
 
 .random-player-name{

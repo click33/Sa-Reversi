@@ -13,14 +13,19 @@ export const useSelectStore = defineStore({
         const defaultSelectStore = {
             role: 'black',  // 玩家执子：black=黑，white=白 
             aiRole: 'caigou',  // Ai 角色 
+            blackRole: 'user',  // 黑子角色 
+            whiteRole: 'caigou',  // 白子角色 
             blackAuto: false, // 黑棋是否自动下子
             whiteAuto: false, // 白棋是否自动下子
             playerName: '', // 玩家昵称 
             xCount: 8,  // 棋盘行数
             yCount: 8,  // 棋盘列数
+            xyCount: 8,  // 棋盘大小，快速设置 xCount、yCount 两个属性
             allowCoverDown: false,  // 允许覆盖落子 
             allowForceDown: false,  // 允许强制落子 
             tipsDown: false,  // 提示落子位置 
+            tipsDownTranCount: false,  // 提示落子可回收棋子数量 
+            tipsDownScore: false,  // 提示落子得分 
         };
         const defaultSelectStoreString = JSON.stringify(defaultSelectStore);
 

@@ -17,6 +17,16 @@ export const useDictStore = defineStore({
                 { value: 'double', name: '我要执双（无AI）' },
                 { value: 'non', name: '我不执（双AI对战）' },
             ],
+            boardMinLength: 4,  // 棋盘最小数
+            boardMaxLength: 32,  // 棋盘最大数
+            boardLengthMarks: {  // 棋盘长度备注 
+                4: '简单', 
+                8: '标准',
+                12: '复杂',
+                16: '骨灰',
+                24: '下到明天',
+                32: '下个三天三夜',
+            },  
         }
     },
     actions: {

@@ -12,9 +12,10 @@
                 <div class="game-qp-box">
                     <game-qi-pan></game-qi-pan>
                 </div>
-                <div class="com-message-box">
-                    <com-message-box></com-message-box>
-                </div>
+                
+                <!-- 对战数据 -->
+                <com-battle-data style="margin-top: 10px;"></com-battle-data>
+                
             </div>
 
             <!-- 右边 -->
@@ -26,8 +27,9 @@
                 <!-- 白棋信息 -->
                 <com-white-player-info style="margin-bottom: 14px;"></com-white-player-info>
 
-                <!-- 对战数据 -->
-                <com-battle-data></com-battle-data>
+                <div class="com-message-box">
+                    <com-message-box></com-message-box>
+                </div>
                 
             </div>
 
@@ -70,9 +72,10 @@ onMounted(() => {
         width: 600px;
         //height: 650px;
         //min-height: calc(100vh - 48px - 150px);
-        background-color: #FFF;
+        //background-color: #FFF;
         .game-qp-box{
             height: 600px;
+            background-color: #FFF;
         }
         .com-message-box{
             height: 50px;

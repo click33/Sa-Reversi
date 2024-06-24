@@ -30,6 +30,7 @@ export const useGameStore = defineStore({
     actions: {
         // 初始化
         init: function () {
+            
             const selectStore = useSelectStore();
             
             // 初始化棋盘数据
@@ -41,6 +42,7 @@ export const useGameStore = defineStore({
             
             // 显示初始落子
             this.downDataToQiPanData2(0, () => {
+                this.activeRole = 'black';
                 if(selectStore.blackAuto) {
                     this.startAIDown();
                 } else {
