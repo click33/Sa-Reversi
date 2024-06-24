@@ -24,7 +24,7 @@ Sa-Reversi 是一个黑白棋小游戏，所有行棋算法均在前端实现，
 
 两个地址都不行的话，就把项目拉取到本地运行吧，也不麻烦。
 
-```
+``` bash
 # 拉取到本地 
 git clone https://gitee.com/click33/Sa-Reversi.git
 
