@@ -28,6 +28,9 @@ Sa-Reversi 是一个黑白棋小游戏，所有行棋算法均在前端实现，
 # 拉取到本地 
 git clone https://gitee.com/click33/Sa-Reversi.git
 
+# 切换为 main 分支 （默认 dev 是正在开发分支，功能不保证随时可运行）
+git checkout main
+
 # 安装依赖
 npm i
 
