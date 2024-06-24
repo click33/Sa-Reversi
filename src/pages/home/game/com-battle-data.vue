@@ -1,30 +1,42 @@
 <!-- 对战数据 -->
 <template>
-    <el-card class="card-box zdy-card fade-in-ys"  shadow="never" header="对战数据">
+    <el-card class="card-box zdy-card fade-in-ys"  shadow="never" header="">
         <div class="con-box">
-            <div class="item-box">
-                <div class="qi-zi-show qi-zi-show-black"></div>
-                <span class="qi-zi-count"> {{ state.qiZiCount.blackCount }} </span>
+            <div class="qi-zi-box">
+                <div class="item-box item-box-black">
+                    <div class="role-name">
+                        <span v-if="selectStore.blackRole === 'user'">【玩家】{{ selectStore.playerName }}</span>
+                        <span v-else>【AI】{{ dictStore.getAIRole( selectStore.blackRole ).name }}</span>
+                    </div>
+                    <div class="qi-zi-show qi-zi-show-black"></div>
+                    <span class="qi-zi-count"> {{ state.qiZiCount.blackCount }} </span>
+                </div>
+                <div class="item-box item-box-vs">
+                    <b class="vs-text">VS</b>
+                </div>
+                <div class="item-box item-box-white">
+                    <div class="role-name">
+                        <span v-if="selectStore.whiteRole === 'user'">【玩家】{{ selectStore.playerName }}</span>
+                        <span v-else>【AI】{{ dictStore.getAIRole( selectStore.whiteRole ).name }}</span>
+                    </div>
+                    <span class="qi-zi-count"> {{ state.qiZiCount.whiteCount }} </span>
+                    <div class="qi-zi-show qi-zi-show-white"></div>
+                </div>
             </div>
-            <div class="item-box">
-                <b class="vs-text">VS</b>
+            <div class="progress-box">
+                <el-progress :percentage="state.progressValue" :show-text="false" color="#000" />
             </div>
-            <div class="item-box">
-                <div class="qi-zi-show qi-zi-show-white"></div>
-                <span class="qi-zi-count"> {{ state.qiZiCount.whiteCount }} </span>
-            </div>
-        </div>
-        <div class="progress-box">
-            <el-progress :percentage="state.progressValue" :show-text="false" color="#000" />
         </div>
     </el-card>
 </template>
 
 <script setup name="com-battle-data">
 import {useSelectStore} from "../../../store/select";
-import {useGameStore} from "../../../store/game"; 
+import {useGameStore} from "../../../store/game";
+import {useDictStore} from "../../../store/dict"; 
 let selectStore = useSelectStore();
 var gameStore = useGameStore();
+var dictStore = useDictStore();
 
 const state = reactive({
     progressValue: 0,
@@ -59,26 +71,40 @@ watch(gameStore.qiPanData, () => {
         
         // 标题改为白色
         :deep(.el-card__header){ color: #FFF; }
-        
+
         .con-box{
+            padding: 10px 20px;
+        }
+
+        .qi-zi-box{
             display: flex;
-            .item-box{ flex: 1; text-align: center;}
+            .item-box{ flex: 3; }
+            .item-box-vs{text-align: center; flex: 1;}
+            .item-box-white{ text-align: right; color: #FFF;}
+            
+            // 角色名称
+            .role-name{ font-size: 16px; margin-bottom: 20px; font-weight: 700; }
+            // 让黑子角色名称在视觉上更靠左对齐 
+            .item-box-black .role-name{position: relative; left: -8px;}
             
             // 黑子、白子 展示
-            .qi-zi-show{ width: 50px; height: 50px; margin: auto; border-radius: 50%;   }
-            .qi-zi-show-black{ background-color: #000; }
-            .qi-zi-show-white{ background-color: #FFF; }
+            .qi-zi-show{ width: 50px; height: 50px; margin: auto; border-radius: 50%; display: inline-block;}
+            .qi-zi-show{  }
+            .item-box-black .qi-zi-show{ background-color: #000; margin-right: 16px;}
+            .item-box-white .qi-zi-show{ background-color: #FFF; margin-left: 16px;}
 
-            .qi-zi-count{ display: inline-block; margin-top: 10px; font-size: 28px; }
-            .qi-zi-show-white + .qi-zi-count{ color: #FFF; }
+            .qi-zi-count{ display: inline-block; font-size: 36px; }
+            .item-box-white .qi-zi-count{  }
+
+            // vs 文字
+            .vs-text{ display: inline-block; font-size: 36px; margin-top: 56px; color: #FAC03D; text-shadow: 0 0 3px #ED723F }
         }
+
+        // 进度条相关
+        .progress-box{ border: 0px #000 solid; padding: 20px 0px 10px; }
+        .progress-box :deep(.el-progress-bar__outer){ background-color: #FFF; }
+
     }
     
-    // vs 文字
-    .vs-text{ display: inline-block; font-size: 36px; margin-top: 16px; color: #FAC03D; text-shadow: 0 0 3px #ED723F }
 
-    // 进度条相关
-    .progress-box{ border: 0px #000 solid; padding: 20px 20px 10px; }
-    .progress-box :deep(.el-progress-bar__outer){ background-color: #FFF; }
-    
 </style>
