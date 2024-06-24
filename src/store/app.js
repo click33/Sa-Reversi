@@ -24,16 +24,16 @@ export const useAppStore = defineStore({
         init: function() {
 
             // 写入配置信息
-            const appStore = useAppStore();
-            // appStore.setAppInfo(appCfg);
-
-            // 打印版本信息 
-            const settingStore = useSettingStore();
-            var str = `${settingStore.title} ${settingStore.version} (${settingStore.updateTime})`;
-            console.log('%c%s', 'color: green; font-size: 13px; font-weight: 700; margin-top: 2px; margin-bottom: 2px;', str);
-
-            // 初始化完成标记 
-            appStore.isLogin = true;
+            // const appStore = useAppStore();
+            // // appStore.setAppInfo(appCfg);
+            //
+            // // 打印版本信息 
+            // const settingStore = useSettingStore();
+            // var str = `${settingStore.title} ${settingStore.version} (${settingStore.updateTime})`;
+            // console.log('%c%s', 'color: green; font-size: 13px; font-weight: 700; margin-top: 2px; margin-bottom: 2px;', str);
+            //
+            // // 初始化完成标记 
+            // appStore.isLogin = true;
         },
         
         // ------------------- 其它操作 --------------------

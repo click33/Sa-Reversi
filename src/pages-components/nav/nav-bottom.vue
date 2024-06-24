@@ -5,12 +5,19 @@
     <div class="nav-bottom-zhan-wei"></div>
     <div class="nav-bottom">
         <div class="z-width">
-            Copyright ©2024 xxx-xxx 平台中心 | xx 市 xx 网络科技有限公司 - 提供技术支持 | 备案号：xxxxx
+            Copyright ©2024 {{ settingStore.title }} (在线演示站) | 开源仓库：
+            <a class="a-link" href="https://gitee.com/click33/Sa-Reversi" target="_blank">Gitee</a>
+            <a class="a-link" href="https://github.com/click33/Sa-Reversi" target="_blank">GitHub</a>
+            <a class="a-link" href="https://gitcode.com/click33/Sa-Reversi" target="_blank">GitCode</a>
+             | 备案号：
+            <a class="a-link" href="https://beian.miit.gov.cn/" target="_blank">鲁ICP备18046274号-1</a>
         </div>
     </div>
 </template>
 
 <script setup name="nav-bottom">
+import { useSettingStore } from "../../store/setting";
+const settingStore = useSettingStore();
 
 </script>
 
@@ -33,5 +40,13 @@
         background-color: #EEE;
         border-top: 1px solid #ddd;
         color: #888;
+    }
+    .a-link{
+        margin-right: 8px;
+        color: #888;
+        &:hover{
+            color: #44f;
+            text-decoration: underline;
+        }
     }
 </style>

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import {useSelectStore} from "./select";
 import {getTranList} from "../algo/qi-zi-tran";
 import {useDictStore} from "./dict";
+import {useSettingStore} from "./setting";
 
 /**
  * 定义游戏进行时参数信息 
@@ -47,6 +48,10 @@ export const useGameStore = defineStore({
                 }
             });
 
+            // // 打印版本信息 
+            const settingStore = useSettingStore();
+            var str = `${settingStore.title} ${settingStore.version} (${settingStore.updateTime})`;
+            console.log('%c%s', 'color: green; font-size: 13px; font-weight: 700; margin-top: 2px; margin-bottom: 2px;', str);
         },
         
         // 创建一个棋子数据
