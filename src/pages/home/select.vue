@@ -122,13 +122,16 @@ const play = () => {
         selectStore.whiteAuto = true;
     }
 
-    // 初始化棋盘
-    // gameStore.init();
-    gameStore.isInit = false
+    selectStore.xCount = parseInt(selectStore.xCount);
+    selectStore.yCount = parseInt(selectStore.yCount);
 
     // 缓存选择的信息
     selectStore.setSelectStore();
 
+    // 初始化棋盘
+    // gameStore.init();
+    gameStore.isInit = false;
+    
     // 跳转到对战页面 
     router.push('/game');
     

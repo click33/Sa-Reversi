@@ -96,10 +96,10 @@ export const useGameStore = defineStore({
         // 初始化棋盘 
         initQiPanData: function (xCount, yCount) {
             const xArr = [{ type: 'fill' }];
-            for (let i = 1; i <= xCount; i++) {
+            for (let j = 1; j <= yCount; j++) {
                 const yArr = [{ type: 'fill' }];
-                for (let j = 1; j <= yCount; j++) {
-                    const item = this.createQiZi(j, i, 'none', 'none');
+                for (let i = 1; i <= xCount; i++) {
+                    const item = this.createQiZi(i, j, 'none', 'none');
                     yArr.push(item)
                 }
                 xArr.push(yArr);

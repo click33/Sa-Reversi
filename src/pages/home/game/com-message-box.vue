@@ -147,7 +147,7 @@ const getWrap = function () {
     background-color: #fff;
     border: 1px solid #ccc;
 }
-.message-box{padding: 14px 0px; height: 200px; }
+.message-box{padding: 14px 0px; height: 200px; cursor: text;}
 .message-box-2{ padding: 0px 12px 10px 12px; }
 
 // 一条消息 
