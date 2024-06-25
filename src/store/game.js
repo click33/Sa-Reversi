@@ -3,6 +3,7 @@ import {useSelectStore} from "./select";
 import {getTranList} from "../algo/qi-zi-tran";
 import {useDictStore} from "./dict";
 import {useSettingStore} from "./setting";
+import {useMessageStore} from "./message";
 
 /**
  * 定义游戏进行时参数信息 
@@ -17,12 +18,9 @@ export const useGameStore = defineStore({
             prevIsPause: false,  // 上一个棋子状态是否为无字可落的跳过 
             // 棋盘状态数据
             qiPanData: null,
-            // 落子顺序数据 
+            // 默认落子数据
             downData: [
-                { x: 5, y: 4, type: 'black' },
-                { x: 4, y: 4, type: 'white' },
-                { x: 4, y: 5, type: 'black' },
-                { x: 5, y: 5, type: 'white' },
+                
             ],
             justX: 0,  // 最新落子x坐标
             justY: 0,  // 最新落子y坐标
@@ -31,26 +29,35 @@ export const useGameStore = defineStore({
     actions: {
         // 初始化
         init: function () {
-            
-            const selectStore = useSelectStore();
-            
-            // 初始化棋盘数据
-            const {xCount, yCount} = useSelectStore();
-            this.initQiPanData(xCount, yCount);
-            
-            // 初始化成功 
-            this.isInit = true;
-            
-            // 显示初始落子
-            this.downDataToQiPanData2(0, () => {
-                this.activeRole = 'black';
-                this.startAIDown();
-            });
 
-            // // 打印版本信息 
+            // 打印版本信息 
             const settingStore = useSettingStore();
             var str = `${settingStore.title} ${settingStore.version} (${settingStore.updateTime})`;
             console.log('%c%s', 'color: green; font-size: 13px; font-weight: 700; margin-top: 2px; margin-bottom: 2px;', str);
+
+            // 初始化棋盘数据
+            const {xCount, yCount} = useSelectStore();
+            this.initQiPanData(xCount, yCount);
+
+            // 初始化成功 
+            this.isInit = true;
+
+            nextTick(() => {
+
+                // 投递个消息，开始初始化了 
+                useMessageStore().index = 0;
+                sa.sendMessage('系统', 'success', '游戏开始...');
+
+                // 显示初始落子
+                sa.sendMessage('系统', 'info', '正在进行初始落子...');
+                this.initDefaultDown();
+                this.downDataToQiPanData2(0, () => {
+                    sa.sendMessage('系统', 'info', '初始落子完毕...');
+                    this.activeRole = 'black';
+                    this.startAIDown();
+                });
+
+            });
         },
 
         // 获取当前活动角色 
@@ -114,7 +121,28 @@ export const useGameStore = defineStore({
                 })
             });
         },
-        
+
+        // 初始化默认落子数据
+        initDefaultDown: function () {
+            // 8 x 8 的棋盘，默认落子数据应该长这样 
+            // { x: 5, y: 4, type: 'black' },
+            // { x: 4, y: 4, type: 'white' },
+            // { x: 4, y: 5, type: 'black' },
+            // { x: 5, y: 5, type: 'white' },
+
+            const selectStore = useSelectStore();
+            const x = selectStore.xCount / 2;
+            const y = selectStore.yCount / 2;
+
+            this.downData = [
+                { x: x + 1, y: y, type: 'black' },
+                { x: x, y: y, type: 'white' },
+                { x: x, y: y + 1, type: 'black' },
+                { x: x + 1, y: y + 1, type: 'white' },
+            ]
+            
+        },
+
         // 按照落子顺序数据，更新棋盘数据 (无动画)
         downDataToQiPanData: function () {
             this.downData.forEach(item => {
