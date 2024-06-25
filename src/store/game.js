@@ -217,9 +217,9 @@ export const useGameStore = defineStore({
                 if (selectStore.allowCoverDown) {
                     // 给个消息提示 
                     if(qiZi.type === downType) {
-                        sa.sendMessage(roleName, 'warning', `覆盖落子 (${x}, ${y})，放弃棋子1枚。`);
+                        sa.sendMessage(roleName, 'warning', `覆盖落子 ${this.getXyStr(x, y)}，放弃棋子1枚。`);
                     } else {
-                        sa.sendMessage(roleName, 'warning', `覆盖落子 (${x}, ${y})，回收棋子1枚。`);
+                        sa.sendMessage(roleName, 'warning', `覆盖落子 ${this.getXyStr(x, y)}，回收棋子1枚。`);
                     }
                     
                     // 覆盖原子 
@@ -265,7 +265,7 @@ export const useGameStore = defineStore({
             const tranArr = getTranList(downQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
             
             // 给个提示，回收了多少枚棋子 
-            sa.sendMessage(roleName, 'info', `落子 (${x}, ${y})，回收棋子 ${tranArr.length} 枚。`);
+            sa.sendMessage(roleName, 'info', `落子 ${this.getXyStr(x, y)}，回收棋子 ${tranArr.length} 枚。`);
             
             this.changeQiZiArrType_anim(tranArr, 0, () => {
                 this.prevIsPause = false; // 打个标记 
@@ -387,7 +387,7 @@ export const useGameStore = defineStore({
                     sa.sendMessage(activeRoleName, 'warning', `${activeRoleName}也无处可落，游戏结束！`);
                     return this.endGame();
                 } else {
-                    sa.sendMessage(activeRoleName, 'warning', `${activeRoleName}无处可落，${nextRoleName}继续行棋！`);
+                    sa.sendMessage(activeRoleName, 'warning', `${activeRoleName}无处可落，${nextRoleName}继续落子！`);
                 }
 
                 // 打个标记 
@@ -457,7 +457,8 @@ export const useGameStore = defineStore({
 
         // 获取坐标的字符串描写形式 
         getXyStr: function (x, y) {
-            return x + ',' + y;
+            const dictStore = useDictStore();
+            return '(' + dictStore.xName[x] + ',' + y + ')';
         },
         
         
