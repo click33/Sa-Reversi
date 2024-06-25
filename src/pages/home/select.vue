@@ -66,7 +66,7 @@
                         </div>
                         <el-slider class="xy-count-slider right-to-left-7" v-model="selectStore.xyCount" 
                                    :min="dictStore.boardMinLength" :max="dictStore.boardMaxLength"
-                                   show-tooltip :step="2" 
+                                   show-tooltip :step="1" 
                                    :format-tooltip="value => value + ' x ' + value"
                                    :marks="dictStore.boardLengthMarks" />
                 </el-form-item>

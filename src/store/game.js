@@ -131,8 +131,8 @@ export const useGameStore = defineStore({
             // { x: 5, y: 5, type: 'white' },
 
             const selectStore = useSelectStore();
-            const x = selectStore.xCount / 2;
-            const y = selectStore.yCount / 2;
+            const x = parseInt(selectStore.xCount / 2);
+            const y = parseInt(selectStore.yCount / 2);
 
             this.downData = [
                 { x: x + 1, y: y, type: 'black' },
