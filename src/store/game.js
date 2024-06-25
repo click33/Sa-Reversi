@@ -14,6 +14,7 @@ export const useGameStore = defineStore({
             isInit: false,  // 是否初始化
             activeRole: 'black', // 当前活动执子角色
             status: 'defDown',  // 程序状态：defDown 默认棋子落子中，userDown 用户落子中，end 已结束，tran 翻转棋子或AI运算中 
+            prevIsPause: false,  // 上一个棋子状态是否为无字可落的跳过 
             // 棋盘状态数据
             qiPanData: null,
             // 落子顺序数据 
@@ -43,17 +44,34 @@ export const useGameStore = defineStore({
             // 显示初始落子
             this.downDataToQiPanData2(0, () => {
                 this.activeRole = 'black';
-                if(selectStore.blackAuto) {
-                    this.startAIDown();
-                } else {
-                    this.startUserDown();
-                }
+                this.startAIDown();
             });
 
             // // 打印版本信息 
             const settingStore = useSettingStore();
             var str = `${settingStore.title} ${settingStore.version} (${settingStore.updateTime})`;
             console.log('%c%s', 'color: green; font-size: 13px; font-weight: 700; margin-top: 2px; margin-bottom: 2px;', str);
+        },
+
+        // 获取当前活动角色 
+        getActiveRole: function () {
+            return this.activeRole;
+        },
+        // 获取当前活动角色对应的棋子名称
+        getActiveRoleName: function () {
+            return this.activeRole === 'black' ? '黑子' : '白子';
+        },
+        // 获取下一个角色
+        getNextRole: function () {
+            return this.activeRole === 'black' ? 'white' : 'black';
+        },
+        // 获取下一个角色对应的棋子名称
+        getNextRoleName: function () {
+            return this.activeRole === 'black' ? '白子' : '黑子';
+        },
+        // 获取指定角色对应的棋子名称
+        getRoleName: function (role) {
+            return role === 'black' ? '黑子' : '白子';
         },
         
         // 创建一个棋子数据
@@ -159,28 +177,41 @@ export const useGameStore = defineStore({
         },
         
         // 指定位置被落子
-        downQiZi: function (x, y, downType) {
+        downQiZi: function (x, y, downType, callback) {
             // this.qiPanData[x][y].type = type;
 
             const selectStore = useSelectStore();
             const qiZi = this.getQiZi(x, y);
+            const roleName = this.getRoleName( downType );
 
             // 判断该位置是否已经有棋子了
             if(qiZi.type === 'black' || qiZi.type === 'white'){
                 if (selectStore.allowCoverDown) {
+                    // 给个消息提示 
+                    if(qiZi.type === downType) {
+                        sa.sendMessage(roleName, 'warning', `覆盖落子 (${x}, ${y})，放弃棋子1枚。`);
+                    } else {
+                        sa.sendMessage(roleName, 'warning', `覆盖落子 (${x}, ${y})，回收棋子1枚。`);
+                    }
+                    
+                    // 覆盖原子 
                     this.changeQiZiType(qiZi);
+                    this.clearCanDown();
+                    nextTick(() => {
+                        this.showCanDownByAuto();
+                    });
                 } else {
-                    sa.sendMessage('error', '这个地方已经有落子了！');
+                    sa.sendMessage(roleName, 'error', '这个地方已经有落子了，请更换落子位置！');
                 }
-                return;
+                return callback(false);
             }
             
             // 判断该位置是否是可落子的位置
             const mockDownQiZi = this.createQiZi(x, y, downType, 'none');
             const mockTranArr = getTranList(mockDownQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
             if(mockTranArr.length === 0 && !selectStore.allowForceDown){
-                sa.sendMessage('error', '此处不能落子！落子要求必须至少翻转一个对方棋子。');
-                return;
+                sa.sendMessage(roleName, 'error', '此处不能落子！落子要求必须至少翻转一个对方棋子。');
+                return callback(false);
             }
             
             // 落子运算 
@@ -204,12 +235,13 @@ export const useGameStore = defineStore({
             // 收集所有应该转换的棋子，开始转换 
             const downQiZi = this.getQiZi(x, y);
             const tranArr = getTranList(downQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
+            
+            // 给个提示，回收了多少枚棋子 
+            sa.sendMessage(roleName, 'info', `落子 (${x}, ${y})，回收棋子 ${tranArr.length} 枚。`);
+            
             this.changeQiZiArrType_anim(tranArr, 0, () => {
-                // 切换完了，开始切换活动执子  
-                // 延迟一小点时间，减少用户视觉上的紧迫感 
-                setTimeout(() => {
-                    this.next();
-                }, 400);
+                this.prevIsPause = false; // 打个标记 
+                callback(true);
             });
         },
 
@@ -247,33 +279,13 @@ export const useGameStore = defineStore({
         },
         
         // 切换活动执子
-        changeActiveRole: function (isChange = true) {
-            const selectStore = useSelectStore();
-            
+        changeActiveRole: function () {
             // 切换活动执子
-            if(isChange){
-                if(this.activeRole === 'black'){
-                    this.activeRole = 'white';
-                }
-                else if(this.activeRole === 'white'){
-                    this.activeRole = 'black';
-                }
+            if(this.activeRole === 'black'){
+                this.activeRole = 'white';
             }
-
-            // 下一步 
-            if(this.activeRole === 'white'){
-                if(!selectStore.whiteAuto) {
-                    this.startUserDown();
-                } else {
-                    this.startAIDown();
-                }
-            }
-            else if(this.activeRole === 'black'){
-                if(!selectStore.blackAuto) {
-                    this.startUserDown();
-                } else {
-                    this.startAIDown();
-                }
+            else if(this.activeRole === 'white'){
+                this.activeRole = 'black';
             }
         },
         // 计算可落子位置 
@@ -308,10 +320,7 @@ export const useGameStore = defineStore({
         // 计算并显示可落子位置（智能判断该不该显示） 
         showCanDownByAuto: function () {
             const selectStore = useSelectStore();
-            if(this.activeRole === 'black' && !selectStore.blackAuto && selectStore.tipsDown){
-                this.showCanDown();
-            }
-            if(this.activeRole === 'white' && !selectStore.whiteAuto && selectStore.tipsDown){
+            if(selectStore.tipsDown) {
                 this.showCanDown();
             }
         },
@@ -321,46 +330,87 @@ export const useGameStore = defineStore({
                 qiZi.tipsType = 'none';
             })
         },
-        
-        // 开始 User 落子
-        startUserDown: function(){
-            this.status = 'userDown';
-            if(useSelectStore().tipsDown) {
-                this.showCanDown();
-            }
-            // 等待用户落子，程序无需任何动作 
-            // ... 
+
+        // 用户手动落子了 
+        userDown: function(x, y) {
+            this.downQiZi(x, y, this.activeRole, ( isDownSuccess ) => {
+                if(isDownSuccess) {
+                    this.next();
+                }
+            });
         },
-        // 开始 AI 落子
+        
+        // 开始自动落子
         startAIDown: function() {
             // console.log('开始AI落子');
 
-            const gameStore = useGameStore();
-
             // 当前活动角色 
-            const activeRole = gameStore.activeRole;
+            const activeRole = this.activeRole;
 
             // 获取所有可落子位置
-            const canDownArr = gameStore.getCanDown();
+            const canDownArr = this.getCanDown();
+            if(canDownArr.length === 0){
+                // 无法落子，切换活动角色 
+                const activeRoleName = this.getActiveRoleName();
+                const nextRoleName = this.getNextRoleName();
+                
+                // 如果是连着两方都是无子可落，则游戏结束 
+                if(this.prevIsPause) {
+                    sa.sendMessage(activeRoleName, 'warning', `${activeRoleName}也无处可落，游戏结束！`);
+                    return this.endGame();
+                } else {
+                    sa.sendMessage(activeRoleName, 'warning', `${activeRoleName}无处可落，${nextRoleName}继续行棋！`);
+                }
+
+                // 打个标记 
+                this.prevIsPause = true; 
+                this.next();
+                return;
+            }
             
-            // 这两步应该交给具体的 AI 算法来处理
-            // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
-            // canDownArr.sort(() => Math.random() - 0.5);
-            // 按照 tranCount 从小到大升序排列  
-            // canDownArr.sort((a, b) => a.tranCount - b.tranCount);
+            // AI 落子回调函数 
+            const downChessFunction = informDown => {
+                this.downQiZi(informDown.x, informDown.y, activeRole, ( isDownSuccess ) => {
+                    if(isDownSuccess) {
+                        this.next();
+                    }
+                });
+            }
             
-            // 调用 AI 算法落子
+            // 调用 AI 算法落子 
+            // 参数：落子回调，当前活动角色，可落子位置数组 
+            // const aiRole = '';
+            
             const aiRole = this.getCurrentAIRole();
-            const informDown = aiRole.downChess(activeRole, canDownArr);
-            this.downQiZi(informDown.x, informDown.y, activeRole);
+            aiRole.downChess(downChessFunction, activeRole, canDownArr);
         },
         // 获取当前 AI 角色 
         getCurrentAIRole: function () {
             const dictStore = useDictStore();
             const selectStore = useSelectStore();
-            return dictStore.getAIRole(selectStore.aiRole);
+            if(this.activeRole === 'black') {
+                return dictStore.getAIRole(selectStore.blackRole);
+            } else {
+                return dictStore.getAIRole(selectStore.whiteRole);
+            }
         },
     
+        // 程序进行下一步动作 
+        next: function () {
+            // 停顿 400ms 再下一步，让用户视觉上更容易看到落子过程  
+            setTimeout(() => {
+                // 切换活动角色 
+                this.changeActiveRole();
+
+                // 下一步
+                this.startAIDown();
+            }, 400);
+        },
+        // 结束游戏，输出结算信息 
+        endGame: function () {
+            sa.sendMessage('系统', 'success', '游戏结束！' + this.getEndJsStr(), true);
+            this.status = 'end';
+        },
         // 在程序已结束时，获取棋盘结算数据 str
         getEndJsStr: function () {
             const qiZiCount = this.getQiZiCount();
@@ -376,60 +426,12 @@ export const useGameStore = defineStore({
             }
             return endData;
         },
-        
-        // 程序进行下一步动作 
-        next: function () {
-            const gameNextStatus = this.getGameNextStatus();
-            if (gameNextStatus === 'change') {
-                this.changeActiveRole(true);
-            }
-            if (gameNextStatus === 'pause') {
-                if(this.activeRole === 'black') {
-                    sa.sendMessage('warning', '白子无处可落，黑子继续行棋！');
-                }
-                if(this.activeRole === 'white') {
-                    sa.sendMessage('warning', '黑子无处可落，白子继续行棋！');
-                }
-                this.changeActiveRole(false);
-            }
-            if (gameNextStatus === 'end') {
-                sa.sendMessage('success', '游戏结束！' + this.getEndJsStr(), true);
-                this.status = 'end';
-            }
+
+        // 获取坐标的字符串描写形式 
+        getXyStr: function (x, y) {
+            return x + ',' + y;
         },
-        // 获取程序下一步可进行的状态 
-        // end=结束，开始结算，
-        // change=下一步，正常切换，
-        // pause=停顿不切换状态
-        getGameNextStatus: function (){
-            const selectStore = useSelectStore();
-            
-            // 判断是否已经下满棋盘
-            const qiZiCount = this.getQiZiCount();
-            if(qiZiCount >= selectStore.xCount * selectStore.yCount){
-                return 'end';
-            }
-            
-            // 没下满棋盘，判断是否可进行下一步切换 
-            const currentRole = this.activeRole;
-            const nextRole = currentRole === 'black' ? 'white' : 'black';
-            
-            // 获取 nextRole 的所有可落子位置总数
-            //  如果 > 0，代表对方有子可落，可以进行下一步切换
-            const nextCanDownArr = this.getCanDown(nextRole);
-            if(nextCanDownArr.length > 0){
-                return 'change';
-            }
-            //  如果 = 0，代表对方无子可落，不能进行下一步切换
-            //  此时，再判断当前子是否可以继续落子
-            //      如果可以，则让当前子继续落子
-            //      如果也不可以，则此时直接结束游戏
-            const currentCanDownArr = this.getCanDown(currentRole);
-            if(currentCanDownArr.length > 0){
-                return 'pause';
-            }
-            return 'end';
-        }
+        
         
     }
 })

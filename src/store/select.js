@@ -11,12 +11,12 @@ export const useSelectStore = defineStore({
     state: () => {
         // 玩家选择的参数信息   --- 注意：从这里改动配置后，需要手动刷新页面才会生效
         const defaultSelectStore = {
-            role: 'black',  // 玩家执子：black=黑，white=白 
-            aiRole: 'caigou',  // Ai 角色 
+            // role: 'black',  // 玩家执子：black=黑，white=白 
+            // aiRole: 'caigou',  // Ai 角色 
             blackRole: 'user',  // 黑子角色 
             whiteRole: 'caigou',  // 白子角色 
-            blackAuto: false, // 黑棋是否自动下子
-            whiteAuto: false, // 白棋是否自动下子
+            // blackAuto: false, // 黑棋是否自动下子
+            // whiteAuto: false, // 白棋是否自动下子
             playerName: '', // 玩家昵称 
             xCount: 8,  // 棋盘行数
             yCount: 8,  // 棋盘列数

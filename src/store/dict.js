@@ -26,7 +26,14 @@ export const useDictStore = defineStore({
                 16: '骨灰',
                 24: '下到明天',
                 32: '下个三天三夜',
-            },  
+            },
+            // 棋盘x坐标轴对应字母
+            xName: [
+                '', 
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+                'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM'
+            ],  
+
         }
     },
     actions: {

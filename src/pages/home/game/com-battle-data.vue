@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="progress-box">
-                <el-progress :percentage="state.progressValue" :show-text="false" color="#000" />
+                <el-progress :percentage="state.progressValue" :show-text="false" :stroke-width="8" color="#000" />
             </div>
         </div>
     </el-card>
@@ -83,7 +83,7 @@ watch(gameStore.qiPanData, () => {
             .item-box-white{ text-align: right; color: #FFF;}
             
             // 角色名称
-            .role-name{ font-size: 16px; margin-bottom: 20px; font-weight: 700; }
+            .role-name{ color: #faee0d; font-size: 18px; white-space: nowrap; margin-bottom: 20px; font-weight: 700; }
             // 让黑子角色名称在视觉上更靠左对齐 
             .item-box-black .role-name{position: relative; left: -8px;}
             

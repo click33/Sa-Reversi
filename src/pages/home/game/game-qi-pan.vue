@@ -3,7 +3,7 @@
     <div class="qi-pan-box fade-in-ys">
         <!-- 横向坐标轴 -->
         <div class="axis-x">
-            <div v-for="x in selectStore.xCount" :key="x">{{ state.xName[x] }}</div>
+            <div v-for="x in selectStore.xCount" :key="x">{{ dictStore.xName[x] }}</div>
         </div>
         <!-- 纵向坐标轴 -->
         <div class="axis-y">
@@ -26,41 +26,32 @@
 <script setup name="game-qi-pan">
 
 // ------------------ 数据 ------------------
-import {onMounted, reactive} from "vue";
+import {onMounted} from "vue";
 import GameQiZi from "./game-qi-zi.vue";
 import {useGameStore} from "../../../store/game";
 import {useSelectStore} from "../../../store/select";
-import {calcXyFuWeiName, calcXyScore} from "../../../algo/ai-calc-util";
+import {useDictStore} from "../../../store/dict";
 const gameStore = useGameStore();
 const selectStore = useSelectStore();
 const { proxy } = getCurrentInstance();
+const dictStore = useDictStore();
 
-const state = reactive({
-    xName: ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],  // x坐标轴字母 
-})
 
 // 点击单元格
 const down = (x, y) => {
     if(gameStore.status === 'defDown') {
-        return sa.sendMessage('warning', '请等待初始棋子落子完毕');
+        return sa.sendMessage('系统', 'warning', '请等待初始棋子落子完毕。');
     }
     else if(gameStore.status === 'userDown') {
-        gameStore.downQiZi(x, y, gameStore.activeRole);
+        gameStore.userDown(x, y);
     }
     else if(gameStore.status === 'end') {
-        return sa.sendMessage('success', '对局已结束！' + gameStore.getEndJsStr(), true);
+        return sa.sendMessage('系统', 'success', '对局已结束！' + gameStore.getEndJsStr(), true);
     }
     else if(gameStore.status === 'tran') {
-        return sa.sendMessage('warning', '请等待 AI 运算完毕或棋子翻转完毕');
+        return sa.sendMessage('系统', 'warning', '请等待 AI 运算完毕或棋子翻转完毕。');
     }
-    // proxy.$refs[getRefName(x, y)][0].down();
 }
-
-// 获取 ref 名称 
-const getRefName = (x, y) => {
-    return `qi-zi-${x}-${y}`;
-}
-
 
 // 组件加载时触发
 onMounted(() => {

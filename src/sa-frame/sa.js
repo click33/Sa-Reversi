@@ -1,10 +1,10 @@
 /* eslint-disable */
 import router from '/@/router'
 import {layer} from "@layui/layer-vue";
-// import * as XLSX from 'xlsx';
 import {useAppStore} from "../store/app";
 import {nextTick} from "vue";
 import mitt from "@/mitt";
+import { useMessageStore } from "../store/message";
 
 // =========================== sa对象封装一系列工具方法 ===========================
 var sa = {
@@ -451,8 +451,8 @@ window.sa = sa;
     }
     
     // 
-    me.sendMessage = function(type, message, isLongTime) {
-        mitt.emit('sendMessage', {type, message, isLongTime});
+    me.sendMessage = function(role, type, text) {
+        useMessageStore().sendMessage(role, type, text);
     }
 
 })();

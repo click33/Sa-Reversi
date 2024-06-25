@@ -8,7 +8,7 @@ export default {
     id: 'caigou',
     name: '菜狗',
     // 落子
-    downChess: function (activeRole, canDownArr) {
+    downChess: function (downChessFunction, activeRole, canDownArr) {
         // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
         canDownArr.sort(() => Math.random() - 0.5);
 
@@ -25,6 +25,6 @@ export default {
         });
 
         // 菜狗 固定选择第一个落子方案，得分最低 
-        return canDownArr[0];
+        downChessFunction(canDownArr[0]);
     }
 }
