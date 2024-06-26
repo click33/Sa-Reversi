@@ -2,25 +2,25 @@
 <template>
     <el-card class="card-box zdy-card fade-in-ys"  shadow="never" header="">
         <div class="con-box">
-            <div class="qi-zi-box">
+            <div class="chess-box">
                 <div class="item-box item-box-black">
                     <div class="role-name">
-                        <span v-if="selectStore.blackRole === 'user'">【玩家】{{ selectStore.playerName }}</span>
-                        <span v-else>【AI】{{ dictStore.getAIRole( selectStore.blackRole ).name }}</span>
+                        <span v-if="selectStore.blackRole === 'user'">【玩家】{{ selectStore.username }}</span>
+                        <span v-else>【AI】{{ dictStore.getRole( selectStore.blackRole ).name }}</span>
                     </div>
-                    <div class="qi-zi-show qi-zi-show-black"></div>
-                    <span class="qi-zi-count"> {{ state.qiZiCount.blackCount }} </span>
+                    <div class="chess-show chess-show-black"></div>
+                    <span class="chess-count"> {{ state.chessCount.blackCount }} </span>
                 </div>
                 <div class="item-box item-box-vs">
                     <b class="vs-text">VS</b>
                 </div>
                 <div class="item-box item-box-white">
                     <div class="role-name">
-                        <span v-if="selectStore.whiteRole === 'user'">【玩家】{{ selectStore.playerName }}</span>
-                        <span v-else>【AI】{{ dictStore.getAIRole( selectStore.whiteRole ).name }}</span>
+                        <span v-if="selectStore.whiteRole === 'user'">【玩家】{{ selectStore.username }}</span>
+                        <span v-else>【AI】{{ dictStore.getRole( selectStore.whiteRole ).name }}</span>
                     </div>
-                    <span class="qi-zi-count"> {{ state.qiZiCount.whiteCount }} </span>
-                    <div class="qi-zi-show qi-zi-show-white"></div>
+                    <span class="chess-count"> {{ state.chessCount.whiteCount }} </span>
+                    <div class="chess-show chess-show-white"></div>
                 </div>
             </div>
             <div class="progress-box">
@@ -41,7 +41,7 @@ var dictStore = useDictStore();
 const state = reactive({
     progressValue: 0,
     // 棋子数量
-    qiZiCount: {
+    chessCount: {
         blackCount: 0,
         whiteCount: 0,
         noneCount: 0,
@@ -49,12 +49,12 @@ const state = reactive({
 })
 
 // 监听棋盘棋子变动时，更改这边的显示 
-watch(gameStore.qiPanData, () => {
+watch(gameStore.boardData, () => {
     // 各棋子数量
-    state.qiZiCount = gameStore.getQiZiCount();
+    state.chessCount = gameStore.getChessCount();
     // 计算进度条 
-    const blackCount = state.qiZiCount.blackCount;
-    const allCount = state.qiZiCount.blackCount + state.qiZiCount.whiteCount;
+    const blackCount = state.chessCount.blackCount;
+    const allCount = state.chessCount.blackCount + state.chessCount.whiteCount;
     if(allCount === 0) {
         return state.progressValue = 0;
     }
@@ -76,7 +76,7 @@ watch(gameStore.qiPanData, () => {
             padding: 10px 20px;
         }
 
-        .qi-zi-box{
+        .chess-box{
             display: flex;
             .item-box{ flex: 3; }
             .item-box-vs{text-align: center; flex: 1;}
@@ -88,13 +88,13 @@ watch(gameStore.qiPanData, () => {
             .item-box-black .role-name{position: relative; left: -8px;}
             
             // 黑子、白子 展示
-            .qi-zi-show{ width: 50px; height: 50px; margin: auto; border-radius: 50%; display: inline-block;}
-            .qi-zi-show{  }
-            .item-box-black .qi-zi-show{ background-color: #000; margin-right: 16px;}
-            .item-box-white .qi-zi-show{ background-color: #FFF; margin-left: 16px;}
+            .chess-show{ width: 50px; height: 50px; margin: auto; border-radius: 50%; display: inline-block;}
+            .chess-show{  }
+            .item-box-black .chess-show{ background-color: #000; margin-right: 16px;}
+            .item-box-white .chess-show{ background-color: #FFF; margin-left: 16px;}
 
-            .qi-zi-count{ display: inline-block; font-size: 36px; }
-            .item-box-white .qi-zi-count{  }
+            .chess-count{ display: inline-block; font-size: 36px; }
+            .item-box-white .chess-count{  }
 
             // vs 文字
             .vs-text{ display: inline-block; font-size: 36px; margin-top: 56px; color: #FAC03D; text-shadow: 0 0 3px #ED723F }

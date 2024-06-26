@@ -11,9 +11,9 @@ export const useMessageStore = defineStore({
             index: 0,
             messageList: [
                 // {
-                //     index: 0,   // 消息索引
+                //     index: 1,   // 消息索引
                 //     role: '黑子',   // 发送人
-                //     type: 'info', // 消息类型
+                //     type: 'info', // 消息类型：info、warning、error、success
                 //     text: `落子(A, 1)，回收棋子3枚`, // 消息正文 
                 // }
             ],

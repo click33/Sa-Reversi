@@ -10,7 +10,7 @@
             <!-- 左边 -->
             <div class="con-panel-left">
                 <div class="game-qp-box">
-                    <game-qi-pan></game-qi-pan>
+                    <game-board></game-board>
                 </div>
                 
                 <!-- 对战数据 -->
@@ -44,7 +44,7 @@
 <script setup name="game">
 import NavTop from '/@/pages-components/nav/nav-top.vue';
 import NavBottom from '/@/pages-components/nav/nav-bottom.vue';
-import GameQiPan from './game/game-qi-pan.vue';
+import GameBoard from './game/game-board.vue';
 import ComBattleData from './game/com-battle-data.vue';
 import {useGameStore} from "../../store/game";
 import ComBlackPlayerInfo from "./game/com-black-player-info";

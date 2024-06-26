@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import {useSelectStore} from "./select";
-import {getTranList} from "../algo/qi-zi-tran";
+import {getTranList} from "../algo/chess-tran";
 import {useDictStore} from "./dict";
 import {useSettingStore} from "./setting";
 import {useMessageStore} from "./message";
@@ -15,11 +15,9 @@ export const useGameStore = defineStore({
             isInit: false,  // 是否初始化
             currentPlayerType: 'black', // 当前执子玩家类型：black、white
             status: 'defDown',  // 程序状态：defDown 默认棋子落子中，userDown 用户落子中，end 已结束，tran 翻转棋子或AI运算中 
-            prevIsPause: false,  // 上一个玩家状态是否为无字可落的跳过 
-            // 棋盘状态数据
-            qiPanData: null,
-            // 初始落子数据
-            initialChessList: [],
+            prevIsPause: false,  // 上一个玩家状态是否为无子可落的跳过 
+            boardData: null,    // 棋盘数据
+            initialChessList: [],   // 初始落子数据
             justX: 0,  // 最新落子x坐标
             justY: 0,  // 最新落子y坐标
         }
@@ -38,7 +36,7 @@ export const useGameStore = defineStore({
 
             // 初始化棋盘数据
             const {xCount, yCount} = useSelectStore();
-            this.initQiPanData(xCount, yCount);
+            this.initBoardData(xCount, yCount);
 
             // 初始化成功 
             this.isInit = true;
@@ -52,10 +50,10 @@ export const useGameStore = defineStore({
                 // 显示初始落子
                 sa.sendMessage('系统', 'info', '正在进行初始落子...');
                 this.initInitialChessList();
-                this.initialChessListToQiPanData2(0, () => {
+                this.initialChessListToBoardData_withAnim(0, () => {
                     sa.sendMessage('系统', 'info', '初始落子完毕，对战开始...');
-                    this.currentPlayerType = 'black';
-                    this.startAIDown();
+                    this.setCurrentPlayerType('black');
+                    this.stepForward();
                 });
 
             });
@@ -67,17 +65,17 @@ export const useGameStore = defineStore({
         },
 
         // 初始化棋盘 
-        initQiPanData: function (xCount, yCount) {
+        initBoardData: function (xCount, yCount) {
             const xArr = [{ type: 'fill' }];
             for (let j = 1; j <= yCount; j++) {
                 const yArr = [{ type: 'fill' }];
                 for (let i = 1; i <= xCount; i++) {
-                    const item = this.createQiZi(i, j, 'none', 'none');
+                    const item = this.createChess(i, j, 'none', 'none');
                     yArr.push(item)
                 }
                 xArr.push(yArr);
             }
-            this.qiPanData = xArr;
+            this.boardData = xArr;
         },
 
         // 计算初始落子数据
@@ -102,14 +100,14 @@ export const useGameStore = defineStore({
         },
 
         // 将初始落子，更新棋盘数据 (无动画)
-        initialChessListToQiPanData: function () {
+        initialChessListToBoardData: function () {
             this.initialChessList.forEach(item => {
-                this.getQiZi(item.x, item.y).type = item.type;
+                this.getChess(item.x, item.y).type = item.type;
             })
         },
 
         // 将初始落子，更新棋盘数据 (带动画，视觉上更流畅)
-        initialChessListToQiPanData2: function (i, callback) {
+        initialChessListToBoardData_withAnim: function (i, callback) {
             setTimeout(() => {
                 if(i >= this.initialChessList.length) {
                     callback();
@@ -117,14 +115,14 @@ export const useGameStore = defineStore({
                 }
 
                 const item = this.initialChessList[i];
-                this.getQiZi(item.x, item.y).type = item.type;
+                this.getChess(item.x, item.y).type = item.type;
                 i++;
-                this.initialChessListToQiPanData2(i, callback);
+                this.initialChessListToBoardData_withAnim(i, callback);
             }, 500)
         },
 
         // 创建一个棋子数据
-        createQiZi: function (x, y, type, tipsType) {
+        createChess: function (x, y, type, tipsType) {
             return {
                 x,   // x轴坐标 
                 y,  // y轴坐标 
@@ -137,11 +135,22 @@ export const useGameStore = defineStore({
 
         // ------------------------------ 一些基础信息获取 ------------------------------ 
         
-        // 获取当前执子玩家类型
-        getCurrentPlayerType: function () {
-            return this.currentPlayerType;
+        // 设置当前执子玩家类型
+        setCurrentPlayerType: function (playerType) {
+            this.currentPlayerType = playerType;
         },
-        
+
+        // 切换当前执子玩家 
+        changeCurrentPlayerType: function () {
+            // 切换活动执子
+            if(this.currentPlayerType === 'black'){
+                this.setCurrentPlayerType('white');
+            }
+            else if(this.currentPlayerType === 'white'){
+                this.setCurrentPlayerType('black');
+            }
+        },
+
         // 获取当前执子玩家类型 - 对应的棋子名称
         getCurrentPlayerTypeName: function () {
             return this.currentPlayerType === 'black' ? '黑子' : '白子';
@@ -162,39 +171,28 @@ export const useGameStore = defineStore({
             return playerType === 'black' ? '黑子' : '白子';
         },
 
-        // 切换当前执子玩家 
-        changeCurrentPlayerType: function () {
-            // 切换活动执子
-            if(this.currentPlayerType === 'black'){
-                this.currentPlayerType = 'white';
-            }
-            else if(this.currentPlayerType === 'white'){
-                this.currentPlayerType = 'black';
-            }
-        },
-
         // 获取当前执子的所属角色 
-        getCurrentAIRole: function () {
+        getCurrentRole: function () {
             const dictStore = useDictStore();
             const selectStore = useSelectStore();
             if(this.currentPlayerType === 'black') {
-                return dictStore.getAIRole(selectStore.blackRole);
+                return dictStore.getRole(selectStore.blackRole);
             } else {
-                return dictStore.getAIRole(selectStore.whiteRole);
+                return dictStore.getRole(selectStore.whiteRole);
             }
         },
 
         // 获取坐标的字符串描写形式 
         getXyStr: function (x, y) {
             const dictStore = useDictStore();
-            return '(' + dictStore.xName[x] + ',' + y + ')';
+            return '(' + dictStore.xName[x] + ', ' + y + ')';
         },
 
         // ------------------------------ 棋盘操作 ------------------------------ 
 
-        // 遍历棋盘所有格子
-        forEachQiPan: function(callback){
-            this.qiPanData.forEach(tr => {
+        // 遍历棋盘所有格子 (只遍历棋盘数据，不包括填充格)
+        forEachBoardData: function(callback){
+            this.boardData.forEach(tr => {
                 if(tr.type === 'fill') {
                     return;
                 }
@@ -208,21 +206,21 @@ export const useGameStore = defineStore({
         },
 
         // 获取指定坐标的棋子
-        getQiZi: function (x, y) {
-            return this.qiPanData[y][x];
+        getChess: function (x, y) {
+            return this.boardData[y][x];
         },
 
         // 获取指定棋盘，指定坐标的棋子 
-        getQiPanQiZi: function (qiPan, x, y) {
-            return qiPan[y][x];
+        getBoardChess: function (boardData, x, y) {
+            return boardData[y][x];
         },
     
         // 获取每种棋子的数量
-        getQiZiCount: function () {
+        getChessCount: function () {
             let blackCount = 0;  // 黑棋数量
             let whiteCount = 0;  // 白棋数量
             let noneCount = 0;  // 空格数量 
-            this.qiPanData.forEach(x => {
+            this.boardData.forEach(x => {
                 if(x.type === 'fill') {
                     return;
                 }
@@ -249,28 +247,27 @@ export const useGameStore = defineStore({
         },
         
         // 在棋盘的指定位置落子，并在翻转所有棋子后回调一个函数 
-        downQiZi: function (x, y, downType, callback) {
-            // this.qiPanData[x][y].type = type;
+        downChess: function (x, y, downType, callback) {
 
             const selectStore = useSelectStore();
-            const qiZi = this.getQiZi(x, y);
+            const chess = this.getChess(x, y);
             const playerTypeName = this.getPlayerTypeName( downType );
 
             // 判断该位置是否已经有棋子了
-            if(qiZi.type === 'black' || qiZi.type === 'white'){
+            if(chess.type === 'black' || chess.type === 'white'){
                 if (selectStore.allowCoverDown) {
                     // 给个消息提示 
-                    if(qiZi.type === downType) {
+                    if(chess.type === downType) {
                         sa.sendMessage(playerTypeName, 'warning', `覆盖落子 ${this.getXyStr(x, y)}，放弃棋子1枚。`);
                     } else {
                         sa.sendMessage(playerTypeName, 'warning', `覆盖落子 ${this.getXyStr(x, y)}，回收棋子1枚。`);
                     }
                     
                     // 覆盖原子 
-                    this.changeQiZiType(qiZi);
+                    this.changeChessType(chess);
                     this.clearCanDown();
                     nextTick(() => {
-                        this.showCanDownByAuto();
+                        this.showCanDownByConfig();
                     });
                 } else {
                     sa.sendMessage(playerTypeName, 'error', '这个地方已经有落子了，请更换落子位置！');
@@ -279,8 +276,8 @@ export const useGameStore = defineStore({
             }
             
             // 判断该位置是否是可落子的位置
-            const mockDownQiZi = this.createQiZi(x, y, downType, 'none');
-            const mockTranArr = getTranList(mockDownQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
+            const mockDownChess = this.createChess(x, y, downType, 'none');
+            const mockTranArr = getTranList(mockDownChess, this.boardData, selectStore.xCount, selectStore.yCount);
             if(mockTranArr.length === 0 && !selectStore.allowForceDown){
                 sa.sendMessage(playerTypeName, 'error', '此处不能落子！落子要求必须至少翻转一个对方棋子。');
                 return callback(false);
@@ -298,41 +295,41 @@ export const useGameStore = defineStore({
             
             // 根据用户选择的执子类型，调用对应的方法
             if(downType === 'black'){
-                this.setQiZiBlack(qiZi);
+                this.setChessBlack(chess);
             }
             if(downType === 'white'){
-                this.setQiZiWhite(qiZi);
+                this.setChessWhite(chess);
             }
             
             // 收集所有应该转换的棋子，开始转换 
-            const downQiZi = this.getQiZi(x, y);
-            const tranArr = getTranList(downQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
+            const downChess = this.getChess(x, y);
+            const tranArr = getTranList(downChess, this.boardData, selectStore.xCount, selectStore.yCount);
             
             // 给个提示，回收了多少枚棋子 
             sa.sendMessage(playerTypeName, 'info', `落子 ${this.getXyStr(x, y)}，回收棋子 ${tranArr.length} 枚。`);
             
-            this.changeQiZiArrType_anim(tranArr, 0, () => {
+            this.changeChessArrType_withAnim(tranArr, 0, () => {
                 this.prevIsPause = false; // 打个标记 
                 callback(true);
             });
         },
         
         // 切换一组棋子类型（不带延迟动画）
-        changeQiZiArrType: function (tranArr) {
+        changeChessArrType: function (tranArr) {
             tranArr.forEach(item => {
-                this.changeQiZiType(item);
+                this.changeChessType(item);
             })
         },
         
         // 切换一组棋子类型（带延迟动画）
-        changeQiZiArrType_anim: function (tranArr, i = 0, callback) {
+        changeChessArrType_withAnim: function (tranArr, i = 0, callback) {
             setTimeout(() => {
                 if(i >= tranArr.length) {
                     return callback();
                 }
-                this.changeQiZiType(tranArr[i]);
+                this.changeChessType(tranArr[i]);
                 i++;
-                this.changeQiZiArrType_anim(tranArr, i, callback);
+                this.changeChessArrType_withAnim(tranArr, i, callback);
             }, 200)
         },
 
@@ -343,17 +340,16 @@ export const useGameStore = defineStore({
             let selectStore = useSelectStore();
 
             // 遍历所有棋子，计算每个格子是否可以落子
-            this.forEachQiPan(qiZi => {
-                if(qiZi.type !== 'none'){
+            this.forEachBoardData(chess => {
+                if(chess.type !== 'none'){
                     return;
                 }
                 // 假设在此处落子，有超过1个棋子是可以转换的，则代表此处可以落子
-                const mockDownQiZi = this.createQiZi(qiZi.x, qiZi.y, playerType, 'none');
-                const mockTranArr = getTranList(mockDownQiZi, this.qiPanData, selectStore.xCount, selectStore.yCount);
+                const mockDownChess = this.createChess(chess.x, chess.y, playerType, 'none');
+                const mockTranArr = getTranList(mockDownChess, this.boardData, selectStore.xCount, selectStore.yCount);
                 if(mockTranArr.length > 0){
-                    // qiZi.tipsType = qiZiType;
-                    qiZi.tranCount = mockTranArr.length;
-                    canDownArr.push(qiZi);
+                    chess.tranCount = mockTranArr.length;
+                    canDownArr.push(chess);
                 }
             })
 
@@ -363,12 +359,12 @@ export const useGameStore = defineStore({
 
         // 计算并显示当前玩家的可落子位置 
         showCanDown: function () {
-            const qiZiType = this.currentPlayerType;
-            this.getCanDown().forEach(qiZi => qiZi.tipsType = qiZiType);
+            const chessType = this.currentPlayerType;
+            this.getCanDown().forEach(chess => chess.tipsType = chessType);
         },
 
         // 计算并显示当前玩家的可落子位置（根据 selectStore 里的配置，智能判断该不该显示） 
-        showCanDownByAuto: function () {
+        showCanDownByConfig: function () {
             const selectStore = useSelectStore();
             if(selectStore.tipsDown) {
                 this.showCanDown();
@@ -377,8 +373,8 @@ export const useGameStore = defineStore({
 
         // 清楚所有可落子提示
         clearCanDown: function () {
-            this.forEachQiPan(qiZi => {
-                qiZi.tipsType = 'none';
+            this.forEachBoardData(chess => {
+                chess.tipsType = 'none';
             })
         },
 
@@ -386,31 +382,31 @@ export const useGameStore = defineStore({
         // ------------------------------ 棋子操作 ------------------------------ 
 
         // 切换一个棋子类型
-        changeQiZiType: function (qiZi) {
-            if(qiZi.type === 'black'){
-                this.setQiZiWhite(qiZi);
+        changeChessType: function (chess) {
+            if(chess.type === 'black'){
+                this.setChessWhite(chess);
             }
-            else if(qiZi.type === 'white'){
-                this.setQiZiBlack(qiZi);
+            else if(chess.type === 'white'){
+                this.setChessBlack(chess);
             }
         },
         
         // 设定一个棋子类型为黑子
-        setQiZiBlack: function (qiZi) {
-            qiZi.type = 'black';
+        setChessBlack: function (chess) {
+            chess.type = 'black';
         },
         
         // 设定一个棋子类型为白子
-        setQiZiWhite: function (qiZi) {
-            qiZi.type = 'white';
+        setChessWhite: function (chess) {
+            chess.type = 'white';
         },
 
         
         // ------------------------------ 程序运转 ------------------------------ 
 
         // 用户手动落子调用的方法 
-        userDown: function(x, y) {
-            this.downQiZi(x, y, this.currentPlayerType, ( isDownSuccess ) => {
+        userDownChess: function(x, y) {
+            this.downChess(x, y, this.currentPlayerType, ( isDownSuccess ) => {
                 if(isDownSuccess) {
                     this.next();
                 }
@@ -418,7 +414,7 @@ export const useGameStore = defineStore({
         },
         
         // 程序走一个落子步骤  
-        startAIDown: function() {
+        stepForward: function() {
             // console.log('开始AI落子');
 
             // 当前执子玩家 
@@ -433,12 +429,12 @@ export const useGameStore = defineStore({
                 
                 // 如果是连着两方都是无子可落，则游戏结束 
                 if(this.prevIsPause) {
-                    sa.sendMessage(currentPlayerTypeName, 'warning', `${currentPlayerTypeName}也无处可落，游戏结束！`);
+                    sa.sendMessage(currentPlayerTypeName, 'warning', `${currentPlayerTypeName}无处可落，双方均无子可落！`);
                     return this.endGame();
                 } 
                 
                 // 发个通知，让用户知道发生了什么 
-                sa.sendMessage(nextPlayerTypeName, 'warning', `${nextPlayerTypeName}无处可落，${currentPlayerTypeName}继续落子！`);
+                sa.sendMessage(currentPlayerTypeName, 'warning', `${currentPlayerTypeName}无处可落，${nextPlayerTypeName}继续落子！`);
 
                 // 打个标记 
                 this.prevIsPause = true; 
@@ -448,7 +444,7 @@ export const useGameStore = defineStore({
             
             // AI 落子回调函数 
             const downChessFunction = informDown => {
-                this.downQiZi(informDown.x, informDown.y, currentPlayerType, ( isDownSuccess ) => {
+                this.downChess(informDown.x, informDown.y, currentPlayerType, ( isDownSuccess ) => {
                     if(isDownSuccess) {
                         this.next();
                     }
@@ -459,7 +455,7 @@ export const useGameStore = defineStore({
             // 参数：落子回调，当前活动角色，可落子位置数组 
             // const aiRole = '';
             
-            const aiRole = this.getCurrentAIRole();
+            const aiRole = this.getCurrentRole();
             aiRole.downChess(downChessFunction, currentPlayerType, canDownArr);
         },
        
@@ -476,7 +472,7 @@ export const useGameStore = defineStore({
                 this.changeCurrentPlayerType();
 
                 // 下一步
-                this.startAIDown();
+                this.stepForward();
             }, 500);
         },
 
@@ -490,15 +486,15 @@ export const useGameStore = defineStore({
         
         // 在程序已结束时，获取棋盘结算数据 str
         getEndJsStr: function () {
-            const qiZiCount = this.getQiZiCount();
+            const chessCount = this.getChessCount();
             let endData = '';
-            if(qiZiCount.blackCount > qiZiCount.whiteCount){
+            if(chessCount.blackCount > chessCount.whiteCount){
                 endData = '黑子获胜！';
             }
-            if(qiZiCount.blackCount < qiZiCount.whiteCount){
+            if(chessCount.blackCount < chessCount.whiteCount){
                 endData = '白子获胜！';
             }
-            if(qiZiCount.blackCount === qiZiCount.whiteCount){
+            if(chessCount.blackCount === chessCount.whiteCount){
                 endData = '平局！';
             }
             return endData;

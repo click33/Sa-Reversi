@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import {nextTick} from "vue";
 import {ElMessage} from "element-plus";
-import {randomPlayerName} from "../algo/random-player-name";
+import {randomUsername} from "../algo/random-username";
 
 /**
  * 玩家选择的参数信息  
@@ -13,7 +13,7 @@ export const useSelectStore = defineStore({
         const defaultSelectStore = {
             blackRole: 'user',  // 黑子角色 
             whiteRole: 'caigou',  // 白子角色 
-            playerName: '', // 玩家昵称 
+            username: '', // 玩家昵称 
             xCount: 8,  // 棋盘行数
             yCount: 8,  // 棋盘列数
             xyCount: 8,  // 棋盘大小，快速设置 xCount、yCount 两个属性
@@ -58,8 +58,8 @@ export const useSelectStore = defineStore({
             // selectStore.weakModeChange(defaultSelectStore.weakMode);
         })
         
-        if(!defaultSelectStore.playerName) {
-            defaultSelectStore.playerName = randomPlayerName();
+        if(!defaultSelectStore.username) {
+            defaultSelectStore.username = randomUsername();
         }
 
         // 返回

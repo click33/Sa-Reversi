@@ -1,6 +1,6 @@
 <!-- 棋盘 -->
 <template>
-    <div class="qi-pan-box fade-in-ys">
+    <div class="board-box fade-in-ys">
         <!-- 横向坐标轴 -->
         <div class="axis-x">
             <div v-for="x in selectStore.xCount" :key="x">{{ dictStore.xName[x] }}</div>
@@ -12,10 +12,10 @@
             </div>
         </div>
         <!-- 棋盘本身 -->
-        <table class="qi-pan-table">
+        <table class="board-table">
             <tr v-for="y in selectStore.yCount" :key="y">
                 <td v-for="x in selectStore.xCount" :key="x" @click="down(x, y)">
-                    <game-qi-zi :x="x" :y="y"></game-qi-zi>
+                    <game-chess :x="x" :y="y"></game-chess>
                 </td>
             </tr>
         </table>
@@ -23,11 +23,11 @@
     </div>
 </template>
 
-<script setup name="game-qi-pan">
+<script setup name="game-board">
 
 // ------------------ 数据 ------------------
 import {onMounted} from "vue";
-import GameQiZi from "./game-qi-zi.vue";
+import GameChess from "./game-chess.vue";
 import {useGameStore} from "../../../store/game";
 import {useSelectStore} from "../../../store/select";
 import {useDictStore} from "../../../store/dict";
@@ -43,7 +43,7 @@ const down = (x, y) => {
         return sa.sendMessage('系统', 'warning', '请等待初始棋子落子完毕。');
     }
     else if(gameStore.status === 'userDown') {
-        gameStore.userDown(x, y);
+        gameStore.userDownChess(x, y);
     }
     else if(gameStore.status === 'end') {
         return sa.sendMessage('系统', 'success', '对局已结束！' + gameStore.getEndJsStr(), true);
@@ -61,7 +61,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-    .qi-pan-box{
+    .board-box{
         height: 100%;
         position: relative;
     }
@@ -100,7 +100,7 @@ onMounted(() => {
     }
     
     // 棋盘本身
-    .qi-pan-table{
+    .board-table{
         width: 90%;
         height: 90%;
         background-color: #13ce66;
@@ -112,8 +112,8 @@ onMounted(() => {
         border-collapse: collapse;
     }
     // 棋盘边框线 
-    .qi-pan-table,.qi-pan-table tr, .qi-pan-table td{ border: 2.5px solid #000; }
-    .qi-pan-table td:hover{ cursor: pointer; }
+    .board-table,.board-table tr, .board-table td{ border: 2.5px solid #000; }
+    .board-table td:hover{ cursor: pointer; }
     
     // 消息提示栏
     .message-box{

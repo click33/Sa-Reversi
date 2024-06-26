@@ -14,13 +14,13 @@
                 <el-form-item label="黑子角色：" class="option-item right-to-left-1">
                     <div class="right-to-left-3">
                         <el-radio-group v-model="selectStore.blackRole">
-                            <template v-for="item in dictStore.aiRoleList">
+                            <template v-for="item in dictStore.roleList">
                                 <el-radio-button :label="item.name" :value="item.id" />
                             </template>
                         </el-radio-group>
                         <p class="option-intro"> 
                             <span v-if="selectStore.blackRole === 'user'">玩家手动执黑子</span>
-                            <span v-else>由 AI ({{ dictStore.getAIRole( selectStore.blackRole ).name }}) 执黑子</span>
+                            <span v-else>由 AI ({{ dictStore.getRole( selectStore.blackRole ).name }}) 执黑子</span>
                         </p>
                     </div>
                 </el-form-item>
@@ -28,13 +28,13 @@
                 <el-form-item label="白子角色：" class="option-item right-to-left-2">
                     <div class="right-to-left-4">
                         <el-radio-group v-model="selectStore.whiteRole">
-                            <template v-for="item in dictStore.aiRoleList">
+                            <template v-for="item in dictStore.roleList">
                                 <el-radio-button :label="item.name" :value="item.id" />
                             </template>
                         </el-radio-group>
                         <p class="option-intro">
                             <span v-if="selectStore.whiteRole === 'user'">玩家手动执白子</span>
-                            <span v-else>由 AI ({{ dictStore.getAIRole( selectStore.whiteRole ).name }}) 执白子</span>
+                            <span v-else>由 AI ({{ dictStore.getRole( selectStore.whiteRole ).name }}) 执白子</span>
                         </p>
                     </div>
                 </el-form-item>
@@ -72,9 +72,9 @@
                 </el-form-item>
 
                 <el-form-item label="我的名字：" class="option-item right-to-left-6">
-                    <el-input class="right-to-left-8" v-model="selectStore.playerName" style="width: 300px;">
+                    <el-input class="right-to-left-8" v-model="selectStore.username" style="width: 300px;">
                         <template #append>
-                            <el-button icon="el-icon-Refresh" class="random-player-name" @click="selectStore.playerName = randomPlayerName()" > 随机一个 </el-button>
+                            <el-button icon="el-icon-Refresh" class="random-player-name" @click="selectStore.username = randomUsername()" > 随机一个 </el-button>
                         </template>
                     </el-input>
                 </el-form-item>
@@ -96,7 +96,7 @@
 <script setup name="home-select">
 import NavTop from '/@/pages-components/nav/nav-top.vue';
 import NavBottom from '/@/pages-components/nav/nav-bottom.vue';
-import { randomPlayerName } from "../../algo/random-player-name";
+import { randomUsername } from "../../algo/random-username";
 import router from "../../router";
 import {useGameStore} from "../../store/game";
 import {useSelectStore} from "../../store/select";

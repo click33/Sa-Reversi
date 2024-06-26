@@ -7,18 +7,18 @@
             <b class="user-zhi-zi">（当前执子）</b>
         </template>
         <template #default>
-            <div class="qi-zi-show-box">
-                <div class="qi-zi-show qi-zi-show-white"></div>
+            <div class="chess-show-box">
+                <div class="chess-show chess-show-white"></div>
             </div>
             
             <!-- user 模式 -->
             <template v-if="selectStore.whiteRole === 'user' ">
-                <span class="user-name">{{ selectStore.playerName }}</span>
+                <span class="user-name">{{ selectStore.username }}</span>
                 <span class="user-sub-info">（玩家）</span>
             </template>
             <!-- AI 模式 -->
             <template v-else>
-                <span class="user-name">{{ dictStore.getAIRole( selectStore.whiteRole ).name }}</span>
+                <span class="user-name">{{ dictStore.getRole( selectStore.whiteRole ).name }}</span>
                 <span class="user-sub-info">（AI）</span>
             </template>
         </template>
@@ -42,11 +42,11 @@ var gameStore = useGameStore();
         background-color: #fff;
     }
     
-    .qi-zi-show-box{ width: 60px; height: 60px; display: inline-block; margin-right: 14px; border-radius: 3px;
+    .chess-show-box{ width: 60px; height: 60px; display: inline-block; margin-right: 14px; border-radius: 3px;
         vertical-align: middle; text-align: center; background-color: #13ce66;  }
-    .qi-zi-show{ width: 40px; height: 40px; border-radius: 50%; margin: 10px;  }
-    .qi-zi-show-black{ background-color: #000; }
-    .qi-zi-show-white{ background-color: #FFF; }
+    .chess-show{ width: 40px; height: 40px; border-radius: 50%; margin: 10px;  }
+    .chess-show-black{ background-color: #000; }
+    .chess-show-white{ background-color: #FFF; }
     
     .user-avatar{width: 50px; height: 50px; margin-right: 10px; border-radius: 50%; vertical-align: middle;}
     .user-name{position: relative; top: 1px; font-size: 18px;}

@@ -84,7 +84,7 @@ const str2List = [
  * 随机生成一个玩家名字
  * @returns {string} 玩家名字 
  */
-export const randomPlayerName = function () {
+export const randomUsername = function () {
     let str1 = str1List[Math.floor(Math.random() * str1List.length)];
     let str2 = str2List[Math.floor(Math.random() * str2List.length)];
     return str1 + str2;

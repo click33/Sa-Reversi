@@ -17,7 +17,7 @@ export default {
         gameStore.status = 'userDown';
         
         // 提示落子位置 
-        gameStore.showCanDownByAuto();
+        gameStore.showCanDownByConfig();
         
     }
 }

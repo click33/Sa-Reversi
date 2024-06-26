@@ -4,82 +4,81 @@ import {useGameStore} from "../store/game";
 
 // 指定坐标落子后，计算需要翻转的棋子坐标列表 
 
-export const getTranList = (downQiZi, qiPanData, xCount, yCount) => {
-    // console.log(downX, downY, downType, qiPanData, xCount, yCount)
+export const getTranList = (downChess, boardData, xCount, yCount) => {
 
     let gameStore = useGameStore();
-    const downX = downQiZi.x;
-    const downY = downQiZi.y;
-    // const downType = downQiZi.type;
+    const downX = downChess.x;
+    const downY = downChess.y;
+    // const chessType = downChess.type;
     
     // 上 
-    let topArr = [downQiZi];
+    let topArr = [downChess];
     for (let y = downY - 1; y >= 1; y--) {
-        const item = gameStore.getQiPanQiZi(qiPanData, downX, y);
-        if(isDownQiZi(item))
+        const item = gameStore.getBoardChess(boardData, downX, y);
+        if(isDownChess(item))
             topArr.push(item)
         else
             break;
     }
     // 下
-    let bottomArr = [downQiZi];
+    let bottomArr = [downChess];
     for (let y = downY + 1; y <= yCount; y++) {
-        const item = gameStore.getQiPanQiZi(qiPanData, downX, y);
-        if(isDownQiZi(item))
+        const item = gameStore.getBoardChess(boardData, downX, y);
+        if(isDownChess(item))
             bottomArr.push(item)
         else
             break;
     }
     // 左 
-    let leftArr = [downQiZi];
+    let leftArr = [downChess];
     for (let x = downX - 1; x >= 1; x--) {
-        const item = gameStore.getQiPanQiZi(qiPanData, x, downY);
-        if(isDownQiZi(item))
+        const item = gameStore.getBoardChess(boardData, x, downY);
+        if(isDownChess(item))
             leftArr.push(item)
         else
             break;
     }
     // 右
-    let rightArr = [downQiZi];
+    let rightArr = [downChess];
     for (let x = downX + 1; x <= xCount; x++) {
-        const item = gameStore.getQiPanQiZi(qiPanData, x, downY);
-        if(isDownQiZi(item))
+        const item = gameStore.getBoardChess(boardData, x, downY);
+        if(isDownChess(item))
             rightArr.push(item)
         else
             break;
     }
     // 左上
-    let topLeftArr = [downQiZi];
+    let topLeftArr = [downChess];
     for (let x = downX - 1, y = downY - 1; x >= 1 && y >= 1; x--, y--) {
-        const item = gameStore.getQiPanQiZi(qiPanData, x, y);
-        if(isDownQiZi(item))
+        const item = gameStore.getBoardChess(boardData, x, y);
+        if(isDownChess(item))
             topLeftArr.push(item)
         else
             break;
     }
     // 右上 
-    let topRightArr = [downQiZi];
+    let topRightArr = [downChess];
     for (let x = downX + 1, y = downY - 1; x <= xCount && y >= 1; x++, y--) {
-        const item = gameStore.getQiPanQiZi(qiPanData, x, y);
-        if(isDownQiZi(item))
+        const item = gameStore.getBoardChess(boardData, x, y);
+        if(isDownChess(item))
             topRightArr.push(item)
         else
             break;
     }
     // 左下
-    let bottomLeftArr = [downQiZi];
+    let bottomLeftArr = [downChess];
     for (let x = downX - 1, y = downY + 1; x >= 1 && y <= yCount; x--, y++) {
-        const item = gameStore.getQiPanQiZi(qiPanData, x, y);
-        if(isDownQiZi(item))
+        const item = gameStore.getBoardChess(boardData, x, y);
+        if(isDownChess(item))
             bottomLeftArr.push(item)
         else
             break;
     }
     // 右下
-    let bottomRightArr = [downQiZi];
+    let bottomRightArr = [downChess];
     for (let x = downX + 1, y = downY + 1; x <= xCount && y <= yCount; x++, y++) {
-        const item = gameStore.getQiPanQiZi(qiPanData, x, y);
-        if(isDownQiZi(item))
+        const item = gameStore.getBoardChess(boardData, x, y);
+        if(isDownChess(item))
             bottomRightArr.push(item)
         else
             break;
@@ -101,8 +100,8 @@ export const getTranList = (downQiZi, qiPanData, xCount, yCount) => {
 /**
  * 判断一个格子是否已经落子
  */
-export const isDownQiZi = qiZi => {
-    if ( qiZi &&  (qiZi.type === 'black' || qiZi.type === 'white') ) {
+export const isDownChess = chess => {
+    if ( chess &&  (chess.type === 'black' || chess.type === 'white') ) {
         return true;
     }
     return false;
