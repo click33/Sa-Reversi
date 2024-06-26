@@ -38,9 +38,32 @@
                         </p>
                     </div>
                 </el-form-item>
-                
-                <el-form-item label="辅助选项：" class="option-item right-to-left-3">
-                    <div class="right-to-left-5">
+
+                <el-form-item label="棋盘大小：" class="option-item right-to-left-3" style="margin-bottom: 50px;">
+                    <div class="xy-count-input-box right-to-left-5">
+                        <el-input class="xy-count-input" v-model="selectStore.xCount"
+                                  type="number" @blur="checkXCountYCount"></el-input>
+                        <span class="xy-count-x"> x </span>
+                        <el-input class="xy-count-input" v-model="selectStore.yCount"
+                                  type="number" @blur="checkXCountYCount"></el-input>
+                    </div>
+                    <el-slider class="xy-count-slider right-to-left-6" v-model="selectStore.xyCount"
+                               :min="dictStore.boardMinLength" :max="dictStore.boardMaxLength"
+                               show-tooltip :step="1"
+                               :format-tooltip="value => value + ' x ' + value"
+                               :marks="dictStore.boardLengthMarks" />
+                </el-form-item>
+
+                <el-form-item label="我的名字：" class="option-item option-item-username right-to-left-4">
+                    <el-input class="right-to-left-6" v-model="selectStore.username" style="width: 300px;">
+                        <template #append>
+                            <el-button icon="el-icon-Refresh" class="random-player-name" @click="selectStore.username = randomUsername()" > 随机一个 </el-button>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="辅助选项：" class="option-item right-to-left-5">
+                    <div class="right-to-left-7">
                         <el-checkbox v-model="selectStore.tipsDown">提示落子位置</el-checkbox>
                         <el-checkbox v-model="selectStore.tipsDownTranCount">提示落子可回收棋子数量</el-checkbox>
                         <el-checkbox v-model="selectStore.tipsDownScore">提示落子得分</el-checkbox>
@@ -48,37 +71,14 @@
                     </div>
                 </el-form-item>
 
-                <el-form-item label="调试选项：" class="option-item right-to-left-4">
-                    <div class="right-to-left-6">
+                <el-form-item label="调试选项：" class="option-item right-to-left-6">
+                    <div class="right-to-left-8">
                         <el-checkbox v-model="selectStore.allowCoverDown">允许覆盖落子</el-checkbox>
                         <el-checkbox v-model="selectStore.allowForceDown">允许强制落子</el-checkbox>
                         <p class="option-intro">此为开发调试选项，如无必要请勿勾选，会破坏游戏规则</p>
                     </div>
                 </el-form-item>
 
-                <el-form-item label="棋盘大小：" class="option-item right-to-left-5" style="margin-bottom: 50px;">
-                        <div class="xy-count-input-box right-to-left-5">
-                            <el-input class="xy-count-input" v-model="selectStore.xCount" 
-                                      type="number" @blur="checkXCountYCount"></el-input>
-                            <span class="xy-count-x"> x </span>
-                            <el-input class="xy-count-input" v-model="selectStore.yCount"
-                                      type="number" @blur="checkXCountYCount"></el-input>
-                        </div>
-                        <el-slider class="xy-count-slider right-to-left-7" v-model="selectStore.xyCount" 
-                                   :min="dictStore.boardMinLength" :max="dictStore.boardMaxLength"
-                                   show-tooltip :step="1" 
-                                   :format-tooltip="value => value + ' x ' + value"
-                                   :marks="dictStore.boardLengthMarks" />
-                </el-form-item>
-
-                <el-form-item label="我的名字：" class="option-item right-to-left-6">
-                    <el-input class="right-to-left-8" v-model="selectStore.username" style="width: 300px;">
-                        <template #append>
-                            <el-button icon="el-icon-Refresh" class="random-player-name" @click="selectStore.username = randomUsername()" > 随机一个 </el-button>
-                        </template>
-                    </el-input>
-                </el-form-item>
-                
                 <el-form-item class="option-item right-to-left-7" style="margin-top: 40px;">
                     <el-button class="play-button right-to-left-9" type="primary" color="#337be2" size="large" @click="play">开始游戏</el-button>
                 </el-form-item>
@@ -189,6 +189,7 @@ const checkXCountYCount = () => {
     .xy-count-slider{width: calc( 100% - 140px ); margin-left: 20px;}
     
 }
+.option-item-username{ margin-bottom: 40px; }
 
 .random-player-name{
     :deep(.el-icon){
