@@ -108,19 +108,6 @@ let dictStore = useDictStore();
 // 点击开始游戏，跳转到对战页面
 const play = () => {
     // 根据用户的选择，初始化一些参数
-    if(selectStore.role === 'black') {
-        selectStore.blackAuto = false;
-        selectStore.whiteAuto = true;
-    } else if (selectStore.role === 'white') {
-        selectStore.blackAuto = true;
-        selectStore.whiteAuto = false;
-    } else if (selectStore.role === 'double') {
-        selectStore.blackAuto = false;
-        selectStore.whiteAuto = false;
-    } else if (selectStore.role === 'non') {
-        selectStore.blackAuto = true;
-        selectStore.whiteAuto = true;
-    }
 
     selectStore.xCount = parseInt(selectStore.xCount);
     selectStore.yCount = parseInt(selectStore.yCount);

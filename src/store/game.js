@@ -15,7 +15,7 @@ export const useGameStore = defineStore({
             isInit: false,  // 是否初始化
             activeRole: 'black', // 当前活动执子角色
             status: 'defDown',  // 程序状态：defDown 默认棋子落子中，userDown 用户落子中，end 已结束，tran 翻转棋子或AI运算中 
-            prevIsPause: false,  // 上一个棋子状态是否为无字可落的跳过 
+            prevIsPause: false,  // 上一个玩家状态是否为无字可落的跳过 
             // 棋盘状态数据
             qiPanData: null,
             // 默认落子数据

@@ -23,7 +23,7 @@ export const useSelectStore = defineStore({
             xyCount: 8,  // 棋盘大小，快速设置 xCount、yCount 两个属性
             allowCoverDown: false,  // 允许覆盖落子 
             allowForceDown: false,  // 允许强制落子 
-            tipsDown: false,  // 提示落子位置 
+            tipsDown: true,  // 提示落子位置 
             tipsDownTranCount: false,  // 提示落子可回收棋子数量 
             tipsDownScore: false,  // 提示落子得分 
         };

@@ -11,15 +11,15 @@
                 <div class="qi-zi-show qi-zi-show-black"></div>
             </div>
             
-            <!-- AI 模式 -->
-            <template v-if="selectStore.blackAuto">
-                <span class="user-name">{{ dictStore.getAIRole( selectStore.aiRole ).name }}</span>
-                <span class="user-sub-info">（AI）</span>
-            </template>
-            <!-- 用户模式 -->
-            <template v-else>
+            <!-- user 模式 -->
+            <template v-if="selectStore.blackRole === 'user' ">
                 <span class="user-name">{{ selectStore.playerName }}</span>
                 <span class="user-sub-info">（玩家）</span>
+            </template>
+            <!-- AI 模式 -->
+            <template v-else>
+                <span class="user-name">{{ dictStore.getAIRole( selectStore.blackRole ).name }}</span>
+                <span class="user-sub-info">（AI）</span>
             </template>
         </template>
     </el-card>
