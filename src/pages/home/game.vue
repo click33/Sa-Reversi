@@ -57,6 +57,12 @@ onMounted(() => {
         gameStore.init();
     }
 })
+
+onUnmounted(() => {
+    console.log('组件销毁了')
+    gameStore.destroy();
+})
+
 </script>
 
 <style scoped lang="scss">

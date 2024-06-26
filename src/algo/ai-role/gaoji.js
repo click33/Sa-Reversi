@@ -5,7 +5,7 @@ export default {
     id: 'gaoji',
     name: '高级陪练',
     // 落子函数
-    downChess: function (downChessFunction, activeRole, canDownArr) {
+    downChess: function (downChessFunction, currentPlayerType, canDownArr) {
         // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
         canDownArr.sort(() => Math.random() - 0.5);
         // 按照 tranCount 从小到大升序排列  

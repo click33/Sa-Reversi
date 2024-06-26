@@ -1,7 +1,7 @@
 <!-- 黑棋玩家信息 -->
 <template>
     <el-card class="user-info-box zdy-card fade-in-ys"
-             :class=" gameStore.activeRole === 'black' ? 'active-zhi-zi' : '' " shadow="never">
+             :class=" gameStore.currentPlayerType === 'black' ? 'active-zhi-zi' : '' " shadow="never">
         <template #header>
             <span>黑棋玩家信息</span>
             <b class="user-zhi-zi">（当前执子）</b>

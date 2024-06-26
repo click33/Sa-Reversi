@@ -113,7 +113,7 @@ const play = () => {
     selectStore.yCount = parseInt(selectStore.yCount);
 
     // 缓存选择的信息
-    selectStore.setSelectStore();
+    selectStore.setSelectStoreToLocal();
 
     // 初始化棋盘
     // gameStore.init();
@@ -126,7 +126,7 @@ const play = () => {
 
 // 监听 gameStore，用户改动时，缓存下来
 watch(selectStore, () => {
-    selectStore.setSelectStore();
+    selectStore.setSelectStoreToLocal();
 })
 watch(() => selectStore.xyCount, () => {
     selectStore.xCount = selectStore.xyCount;

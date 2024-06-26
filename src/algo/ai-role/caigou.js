@@ -8,7 +8,7 @@ export default {
     id: 'caigou',
     name: '菜狗',
     // 落子
-    downChess: function (downChessFunction, activeRole, canDownArr) {
+    downChess: function (downChessFunction, currentPlayerType, canDownArr) {
         // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
         canDownArr.sort(() => Math.random() - 0.5);
 

@@ -7,7 +7,7 @@ export default {
     id: 'user',
     name: '玩家',
     // 落子
-    downChess: function (downChessFunction, activeRole, canDownArr) {
+    downChess: function (downChessFunction, currentPlayerType, canDownArr) {
         // 玩家选择落子方案
         console.log('等待玩家落子...');
 
