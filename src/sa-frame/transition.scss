@@ -59,7 +59,7 @@
     100% {transform: translateY(0); opacity: 1;}
 }
 
-/* 从下往上渐入 */
+/* 从上往下渐入 */
 @keyframes top-to-bottom {
     0% {transform: translateY(-60px); opacity: 0;}
     100% {transform: translateY(0); opacity: 1;}
@@ -104,6 +104,13 @@
 .fade-in-ys {
     opacity: 0;
     animation-name: fade-in;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    animation-delay: 0.1s;
+}
+.bottom-to-top-ys {
+    opacity: 0;
+    animation-name: bottom-to-top;
     animation-duration: 0.5s;
     animation-fill-mode: forwards;
     animation-delay: 0.1s;

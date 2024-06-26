@@ -12,6 +12,11 @@ import OsLoading from './pages-components/com/os-loading.vue';
 
 </script>
 
-<style>
+<style lang="scss">
+
+body{
+    background-image: url('assets/page-bg.jpg');
+    //background-size: 100% 100%;
+}
 
 </style>

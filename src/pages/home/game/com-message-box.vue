@@ -1,6 +1,6 @@
 <!-- 全局消息框 -->
 <template>
-    <div class="con-box">
+    <el-card class="con-box zdy-card" header="日志信息">
         <el-scrollbar class="message-box" ref="message-scrollbar" always>
             <div class="message-box-2" ref="message-box-2">
                <div v-for="item in state.messageList" 
@@ -14,7 +14,7 @@
                </div>
             </div>
         </el-scrollbar>
-    </div>
+    </el-card>
 </template>
 
 <script setup name="com-message-box">
@@ -146,9 +146,15 @@ const getWrap = function () {
     width: 100%;
     background-color: #fff;
     border: 1px solid #ccc;
+    box-shadow: 0px 0px 5px #ddd;
+    //background-color: #fff;
+    
+    :deep(.el-card__header) {padding-left: 14px;}
+    :deep(.el-card__body) {padding: 0;}
 }
 .message-box{padding: 14px 0px; height: 200px; cursor: text;}
 .message-box-2{ padding: 0px 12px 10px 12px; }
+
 
 // 一条消息 
 .message-item{ overflow: hidden; margin-bottom: 6px; line-height: 20px; font-size: 12px;}

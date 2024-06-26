@@ -6,7 +6,7 @@
 
         <div class="con-panel z-width vue-box">
 
-            <div style="margin-top: 10vh;">
+            <div class="con-panel-2 bottom-to-top-ys">
 
                 <h1>黑白棋小游戏</h1>
                 <br><br><br>
@@ -158,10 +158,16 @@ const checkXCountYCount = () => {
 // 整体面板
 .con-panel{
     //border: 1px solid #000;
-    min-height: 200px;
-    margin: 14px auto;
+    margin: 5vh auto 0;
+    background-color: transparent;
+    //*{color: #333;}
+}
+.con-panel-2{
+    padding: 50px 100px;
+    background-color: rgba(255, 255,255, 0.5);
 }
 
+// 配置项 
 .option-item{
     h2{ margin-bottom: 20px; color: #000; }
     
@@ -172,7 +178,7 @@ const checkXCountYCount = () => {
     }
     
     .option-intro{
-        color: #999;
+        color: #666;
         margin-bottom: 10px;
     }
     

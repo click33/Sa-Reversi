@@ -4,13 +4,13 @@
         <!-- 顶层导航栏 -->
         <nav-top></nav-top>
 
-        <div class="con-panel z-width">
+        <div class="con-panel z-width vue-box">
 
-            <div style="text-align: center; margin-top: 30vh;">
+            <div class="con-panel-2">
                 <h1>黑白棋小游戏</h1>
                 <br><br>
                 <router-link to="/select">
-                    <el-button type="primary"  color="#337be2" size="large">开始游戏</el-button>
+                    <el-button type="primary" color="#337be2" size="large" class="play-btn">开始游戏</el-button>
                 </router-link>
             </div>
 
@@ -36,11 +36,18 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-    // 整体面板
-    .con-panel{
-        //border: 1px solid #000;
-        min-height: 200px;
-        margin: 14px auto;
-    }
+// 整体面板
+.con-panel{
+    //border: 1px solid #000;
+    min-height: 200px;
+    margin: 14px auto;
+    padding-top: 20vh;
+    background-color: transparent;
+}
+.con-panel-2{
+    text-align: center; 
+    h1{ font-size: 36px; }
+}
+.play-btn{ width: 150px; margin-top: 10px; }
     
 </style>

@@ -59,41 +59,41 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    console.log('组件销毁了')
     gameStore.destroy();
 })
 
 </script>
 
 <style scoped lang="scss">
-    // 整体面板
-    .con-panel{
-        //border: 1px solid #000;
-        min-height: 200px;
-        margin: 14px auto;
+
+// 整体面板
+.con-panel{
+    //border: 1px solid #000;
+    min-height: 200px;
+    margin: 14px auto;
+}
+
+.con-panel-left{
+    float: left;
+    width: 600px;
+    //height: 650px;
+    //min-height: calc(100vh - 48px - 150px);
+    //background-color: #FFF;
+    .game-qp-box{
+        height: 600px;
+        background-color: #FFF;
     }
-    
-    .con-panel-left{
-        float: left;
-        width: 600px;
-        //height: 650px;
-        //min-height: calc(100vh - 48px - 150px);
-        //background-color: #FFF;
-        .game-qp-box{
-            height: 600px;
-            background-color: #FFF;
-        }
-        .com-message-box{
-            height: 50px;
-            line-height: 50px;
-        }
+    .com-message-box{
+        height: 50px;
+        line-height: 50px;
     }
-    
-    .con-panel-right{
-        float: right;
-        width: 280px;
-        min-height: 200px;
-        //border: 1px #000 solid;
-        //background-color: #FFF;
-    }
+}
+
+.con-panel-right{
+    float: right;
+    width: 280px;
+    min-height: 200px;
+    //border: 1px #000 solid;
+    //background-color: #FFF;
+}
 </style>
