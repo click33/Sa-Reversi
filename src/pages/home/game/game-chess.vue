@@ -1,6 +1,8 @@
 <!-- 棋子 -->
 <template>
-    <div class="chess" :class=" [('chess-' + state.type), (gameStore.justX === state.x && gameStore.justY === state.y ? 'chess-just' : '')] ">
+    <div ref="chessRef" 
+         class="chess" :class=" [('chess-' + state.type), (gameStore.justX === state.x && gameStore.justY === state.y ? 'chess-just' : ''), (state.animClass)] "
+        >
         <div class="chess-tip" :class=" 'chess-tip-' + state.tipsType "></div>
     </div>
 </template>
@@ -9,6 +11,7 @@
 import {onMounted, reactive, defineExpose} from "vue";
 import {useGameStore} from "../../../store/game";
 let gameStore = useGameStore();
+const { proxy } = getCurrentInstance();
 
 
 // 组件形参 
@@ -25,22 +28,29 @@ const state = reactive({
     tranCount: 0,  // 如果在此处落子，可翻转棋子数量 
     x: prop.x,  // 棋子所属横坐标
     y: prop.y,  // 棋子所属纵坐标
+    animClass: '', // 动画类名  
 })
 
 // 监听棋子数据变化，更新棋子 UI 展现
 watch(chess, (item) => {
+    if(state.type === 'none' && item.type === 'black') {
+        state.animClass = 'none-to-black';
+    }
+    if(state.type === 'none' && item.type === 'white') {
+        state.animClass = 'none-to-white';
+    }
+    if(state.type === 'black' && item.type === 'white') {
+        state.animClass = 'black-to-white';
+    }
+    if(state.type === 'white' && item.type === 'black') {
+        state.animClass = 'white-to-black';
+    }
     state.type = item.type;
     state.tipsType = item.tipsType;
     state.tranCount = item.tranCount;
 })
 
-
-
 // ------------------ 方法 ------------------
-
-
-
-
 
 
 defineExpose({
@@ -53,7 +63,6 @@ onMounted(() => {
 })
 
 </script>
-
 <style scoped lang="scss">
     // 棋子
     .chess{
@@ -61,12 +70,42 @@ onMounted(() => {
         height: 85%;
         margin: auto;
         border-radius: 50%;
-        transition: all 0.5s;
+        //transition: all 0.5s;
         position: relative;
     }
     .chess-black{ background-color: #000; }
-    .chess-white{ background-color: #FFF; }
+    .chess-white{ background-color: #FFF; /*animation: small-to-big--white 3s ease-out 1;*/}
     .chess-none{ }
+
+    // 无子变黑子 动画 
+    .none-to-black{ animation: none-to-black 0.3s ease-out 1; }
+    @keyframes none-to-black {
+        0%{ width: 0; height: 0; }
+        100%{ width: 85%; height: 85%; background-color: #000;}
+    }
+    // 无子变白子 动画 
+    .none-to-white{ animation: none-to-white 0.3s ease-out 1; }
+    @keyframes none-to-white {
+        0%{ width: 0; height: 0; }
+        100%{ width: 85%; height: 85%; background-color: #FFF;}
+    }
+    // 黑子变白子 动画 
+    .black-to-white{ animation: black-to-white 0.3s ease-out 1; }
+    @keyframes black-to-white {
+        0%{ width: 85%; height: 85%; background-color: #000;}
+        49%{ width: 15%; height: 85%; background-color: #000;}
+        51%{ width: 15%; height: 85%; background-color: #FFF;}
+        100%{ width: 85%; height: 85%;}
+    }
+    // 白子变黑子 动画 
+    .white-to-black{ animation: white-to-black 0.3s ease-out 1; }
+    @keyframes white-to-black {
+        0%{ width: 85%; height: 85%; background-color: #FFF;}
+        49%{ width: 15%; height: 85%; background-color: #FFF;}
+        51%{ width: 15%; height: 85%; background-color: #000;}
+        100%{ width: 85%; height: 85%;}
+    }
+    
 
     // 最新落子的样式 
     .chess-white.chess-just{ box-shadow: 0 0 20px #000; }
