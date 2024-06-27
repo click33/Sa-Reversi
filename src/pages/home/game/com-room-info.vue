@@ -1,6 +1,6 @@
 <!-- 房间信息展示 -->
 <template>
-    <el-card class="con-box zdy-card" header="对局信息">
+    <el-card class="con-box zdy-card fade-in-ys" header="对局信息">
         <div class="info-box">
             <!-- 一项信息 -->
             <div class="info-item">

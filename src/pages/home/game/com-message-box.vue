@@ -1,6 +1,6 @@
 <!-- 全局消息框 -->
 <template>
-    <el-card class="con-box zdy-card" header="消息打印机">
+    <el-card class="con-box zdy-card fade-in-ys" header="消息打印机">
         <el-scrollbar class="message-box" ref="message-scrollbar" always>
             <div class="message-box-2" ref="message-box-2">
                <div v-for="item in state.messageList" 

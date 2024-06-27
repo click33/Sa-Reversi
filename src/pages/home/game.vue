@@ -36,6 +36,9 @@
                     <com-message-box></com-message-box>
                 </div>
                 
+                <!-- ad -->
+<!--                <com-ad-box style="margin-top: 10px;"></com-ad-box>-->
+                
             </div>
 
             <!-- 我方手指 -->
@@ -63,6 +66,7 @@ import ComMessageBox from "./game/com-message-box";
 import FingerChess from "./finger/finger-chess.vue";
 import {useComStore} from "../../store/com";
 import ComRoomInfo from "./game/com-room-info";
+import ComAdBox from "./game/com-ad-box";
 const gameStore = useGameStore();
 const { proxy } = getCurrentInstance();
 const comStore = useComStore();
