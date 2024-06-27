@@ -4,6 +4,7 @@ import {getTranList} from "../algo/chess-tran";
 import {useDictStore} from "./dict";
 import {useSettingStore} from "./setting";
 import {useMessageStore} from "./message";
+import {useComStore} from "./com";
 
 /**
  * 定义游戏进行时参数信息 
@@ -245,9 +246,49 @@ export const useGameStore = defineStore({
                 noneCount
             }
         },
+
+        // 在棋盘的指定位置落子，并在翻转所有棋子后回调一个函数 
+        downChess: function (x, y, downType, callback){
+            const comStore = useComStore();
+            const selectStore = useSelectStore();
+            
+            // 判断此次应该用哪个手指进行落子 
+            
+            // 双 user，不使用手指 
+            if(selectStore.blackRole === 'user' && selectStore.whiteRole === 'user'){
+                return this.downChess_Method(x, y, downType, callback);
+            }
+            
+            // 双 AI，必使用手指：黑子用 weFinger，白子用 enemyFinger
+            if(selectStore.blackRole !== 'user' && selectStore.whiteRole !== 'user'){
+                if(downType === 'black'){
+                    return comStore.weFinger.down(x, y, () => this.downChess_Method(x, y, downType, callback));
+                } else {
+                    return comStore.enemyFinger.down(x, y, () => this.downChess_Method(x, y, downType, callback));
+                }
+            }
+            
+            // 黑子 AI，白子 user，黑手落子时使用 enemyFinger 手指 
+            if(selectStore.blackRole !== 'user' && selectStore.whiteRole === 'user'){
+                if(downType === 'black'){
+                    return comStore.enemyFinger.down(x, y, () => this.downChess_Method(x, y, downType, callback));
+                } else {
+                    return this.downChess_Method(x, y, downType, callback);
+                }
+            }
+            
+            // 黑子 user，白子 AI，白手落子时使用 enemyFinger 手指 
+            if(selectStore.blackRole === 'user' && selectStore.whiteRole !== 'user'){
+                if(downType === 'white'){
+                    return comStore.enemyFinger.down(x, y, () => this.downChess_Method(x, y, downType, callback));
+                } else {
+                    return this.downChess_Method(x, y, downType, callback);
+                }
+            }
+        },
         
         // 在棋盘的指定位置落子，并在翻转所有棋子后回调一个函数 
-        downChess: function (x, y, downType, callback) {
+        downChess_Method: function (x, y, downType, callback) {
 
             const selectStore = useSelectStore();
             const chess = this.getChess(x, y);
@@ -415,6 +456,11 @@ export const useGameStore = defineStore({
         
         // 程序走一个落子步骤  
         stepForward: function() {
+            this.stepForwardMethod();
+        },
+
+        // 程序走一个落子步骤  
+        stepForwardMethod: function() {
             // console.log('开始AI落子');
 
             // 当前执子玩家 
@@ -426,22 +472,22 @@ export const useGameStore = defineStore({
                 // 无法落子，切换活动角色 
                 const currentPlayerTypeName = this.getCurrentPlayerTypeName();
                 const nextPlayerTypeName = this.getNextPlayerTypeName();
-                
+
                 // 如果是连着两方都是无子可落，则游戏结束 
                 if(this.prevIsPause) {
                     sa.sendMessage(currentPlayerTypeName, 'warning', `${currentPlayerTypeName}无处可落，双方均无子可落！`);
                     return this.endGame();
-                } 
-                
+                }
+
                 // 发个通知，让用户知道发生了什么 
                 sa.sendMessage(currentPlayerTypeName, 'warning', `${currentPlayerTypeName}无处可落，${nextPlayerTypeName}继续落子！`);
 
                 // 打个标记 
-                this.prevIsPause = true; 
+                this.prevIsPause = true;
                 this.next();
                 return;
             }
-            
+
             // AI 落子回调函数 
             const downChessFunction = informDown => {
                 this.downChess(informDown.x, informDown.y, currentPlayerType, ( isDownSuccess ) => {
@@ -450,24 +496,24 @@ export const useGameStore = defineStore({
                     }
                 });
             }
-            
+
             // 调用 AI 算法落子 
             // 参数：落子回调，当前活动角色，可落子位置数组 
             // const aiRole = '';
-            
+
             const aiRole = this.getCurrentRole();
             aiRole.downChess(downChessFunction, currentPlayerType, canDownArr);
         },
-       
+        
         // 程序进行下一步动作 
         next: function () {
-            // 如果尚未初始化，则不进行下一步了 
-            if(this.isInit === false) {
-                return;
-            }
-            
             // 停顿 500ms 再下一步，让用户视觉上更容易看到落子过程  
             setTimeout(() => {
+                // 如果尚未初始化，则不进行下一步了 
+                if(this.isInit === false) {
+                    return;
+                }
+
                 // 切换执子玩家 
                 this.changeCurrentPlayerType();
 

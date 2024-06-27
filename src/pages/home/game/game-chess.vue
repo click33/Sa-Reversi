@@ -69,8 +69,8 @@ onMounted(() => {
     .chess-none{ }
 
     // 最新落子的样式 
-    .chess-white.chess-just{ box-shadow: 0 0 15px #000; }
-    .chess-black.chess-just{ box-shadow: 0 0 15px yellow; }
+    .chess-white.chess-just{ box-shadow: 0 0 20px #000; }
+    .chess-black.chess-just{ box-shadow: 0 0 25px yellow; }
     
     // 棋子提示 
     .chess-tip{

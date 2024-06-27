@@ -15,7 +15,7 @@
         <table class="board-table">
             <tr v-for="y in selectStore.yCount" :key="y">
                 <td v-for="x in selectStore.xCount" :key="x" @click="down(x, y)">
-                    <game-chess :x="x" :y="y"></game-chess>
+                    <game-chess :class=" `chess-${x}-${y}` " :x="x" :y="y"></game-chess>
                 </td>
             </tr>
         </table>

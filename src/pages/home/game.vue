@@ -33,10 +33,16 @@
                 
             </div>
 
+            <!-- 我方手指 -->
+            <finger-chess ref="weFinger" camp="we" ></finger-chess>
+            <!-- 敌方手指 -->
+            <finger-chess ref="enemyFinger" camp="enemy" ></finger-chess>
+            
         </div>
 
         <!-- 底部版权栏 -->
         <nav-bottom></nav-bottom>
+        
 
     </div>
 </template>
@@ -50,12 +56,23 @@ import {useGameStore} from "../../store/game";
 import ComBlackPlayerInfo from "./game/com-black-player-info";
 import ComWhitePlayerInfo from "./game/com-white-player-info";
 import ComMessageBox from "./game/com-message-box";
+import FingerChess from "./finger/finger-chess.vue";
+import {useComStore} from "../../store/com";
 const gameStore = useGameStore();
+const { proxy } = getCurrentInstance();
+const comStore = useComStore();
 
 onMounted(() => {
     if(! gameStore.isInit){
         gameStore.init();
     }
+    
+    // 保存全局组件句柄 
+    nextTick(() => {
+        comStore.weFinger = proxy.$refs['weFinger'];
+        comStore.enemyFinger = proxy.$refs['enemyFinger'];
+    })
+    
 })
 
 onUnmounted(() => {
