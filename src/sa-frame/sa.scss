@@ -256,6 +256,11 @@ input::-webkit-inner-spin-button {
 
 
 
-
+body {
+    //.el-radio-button__original-radio:checked+.el-radio-button__inner{background-color: #00CF70; border-color: #00CF70; box-shadow: -1px 0 0 0 #00CF70;}
+    //.el-radio-button__inner:hover{color: #00CF70;}
+    //.el-checkbox__input.is-checked+.el-checkbox__label{color: #00CF70;}
+    //.el-checkbox__input.is-checked .el-checkbox__inner{background-color: #00CF70; border-color: #00CF70;}
+}
 
 

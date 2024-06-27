@@ -65,7 +65,7 @@ onMounted(() => {
         height: 100%;
         position: relative;
         background-image: url("../../../assets/board-bg.png");
-        background-size: 33% 33%;
+        background-size: 34% 34%;
     }
     // 横向坐标轴
     .axis-x{

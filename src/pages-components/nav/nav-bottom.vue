@@ -36,16 +36,16 @@ const settingStore = useSettingStore();
         height: 60px;
         line-height: 60px;
         text-align: center;
-        //background-color: #1672d2
-        background-color: #EEE;
+        background-color: #222;
+        //background-color: #EEE;
         border-top: 1px solid #ddd;
-        color: #888;
+        color: #aaa;
     }
     .a-link{
         margin-right: 8px;
-        color: #888;
+        color: #aaa;
         &:hover{
-            color: #44f;
+            color: green;
             text-decoration: underline;
         }
     }

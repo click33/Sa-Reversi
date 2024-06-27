@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import logoPath from '../assets/logo.png';
+import logoPath from '../assets/logo6.png';
 
 
 /**

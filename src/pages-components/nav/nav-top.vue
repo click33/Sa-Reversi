@@ -34,11 +34,15 @@ import NavTopLogo from './nav-top-logo.vue';
         height: 60px;
         line-height: 60px;
         //background-color: #1672d2
-        background-color: #FFF;
-        border-bottom: 1px solid #e6e6e6;
-        box-shadow: 0px 0px 5px #e6e6e6;
+        //background-color: #FFF;
+        background-color: #00CF70;
+        color: #faee0d;
+        border-bottom: 1px solid #00AF50;
+        box-shadow: 0 0 5px #00CF70;
     }
     .nav-top-right{
         float: right;
+        font-weight: 700;
+        a { color: #faee0d; }
     }
 </style>

@@ -23,7 +23,7 @@ const prop = defineProps({
 // ------------------ 数据 ------------------
 const state = reactive({
     type: 'black',  // 棋子类型，black / white 
-    animType: 'direct', // 小手动画类型（direct=一步到位，yx=先y轴后x轴，mix=混合）
+    animType: 'direct', // 小手动画类型 direct=正常，一步到位，yx=先y轴后x轴，mix=混合，think=思考，fast=快速
     isHold: false,  // 此时此刻是否正在手持棋子 
     // 总盒子样式
     boxStyle: {
@@ -89,7 +89,7 @@ const down = (x, y, moveSuccessCallback) => {
         }
         
         // 开始移动 
-        moveFingerToTd(moveTop, moveLeft, function (){
+        moveFingerToTd(prop.camp, moveTop, moveLeft, function (){
             // 棋子放置成功，调用回调函数 
             if(moveSuccessCallback) {
                 moveSuccessCallback();
@@ -112,17 +112,21 @@ const down = (x, y, moveSuccessCallback) => {
 }
 
 // 移动小手到棋盘格子上 
-const moveFingerToTd = (top, left, callback) => {
-    // 动画类型 direct=一步到位，yx=先y轴后x轴，mix=混合 
-    state.animType = 'yx';
+const moveFingerToTd = (camp, top, left, callback) => {
+    // 动画类型 direct=正常，一步到位，yx=先y轴后x轴，mix=混合，think=思考，fast=快速
+    const animArray = ['direct', 'yx', 'mix', 'think', 'fast'];
+    state.animType = animArray[Math.floor(Math.random() * animArray.length)];
+    // state.animType = 'fast';
     
+    // 正常，一步到位
     if(state.animType === 'direct') {
-        state.boxStyle.transitionDuration = '500ms';
+        state.boxStyle.transitionDuration = '600ms';
         state.boxStyle.top = `${top}px`;
         state.boxStyle.left = `${left}px`;
-        setTimeout(callback, 500);
+        setTimeout(callback, 600);
     }
     
+    // 先y轴后x轴
     if(state.animType === 'yx') {
         state.boxStyle.transitionDuration = '400ms';
         state.boxStyle.top = `${top}px`;
@@ -132,16 +136,43 @@ const moveFingerToTd = (top, left, callback) => {
         }, 400);
     }
 
+    // 混合
     if(state.animType === 'mix') {
-        state.boxStyle.transitionDuration = '500ms';
+        state.boxStyle.transitionDuration = '600ms';
         state.boxStyle.top = `${top}px`;
         setTimeout(() => {
-            state.boxStyle.transitionDuration = '250ms';
+            state.boxStyle.transitionDuration = '300ms';
             state.boxStyle.left = `${left}px`;
-            setTimeout(callback, 250);
-        }, 250);
+            setTimeout(callback, 300);
+        }, 300);
     }
 
+    // 思考 
+    if(state.animType === 'think') {
+        state.boxStyle.transitionDuration = '400ms';
+        if(camp === 'we') {
+            state.boxStyle.top = `${sa.randomNum(90, 70)}vh`;
+        }
+        if(camp === 'enemy') {
+            state.boxStyle.top = `${sa.randomNum(10, 30)}vh`;
+        }
+        setTimeout(() => {
+            state.boxStyle.transitionDuration = '400ms';
+            state.boxStyle.top = `${top}px`;
+            state.boxStyle.left = `${left}px`;
+            setTimeout(callback, 400);
+        }, 800);
+    }
+    
+    // 快速
+    if(state.animType === 'fast') {
+        state.boxStyle.transitionDuration = '200ms';
+        state.boxStyle.top = `${top}px`;
+        state.boxStyle.left = `${left}px`;
+        setTimeout(callback, 200);
+    }
+    
+    
 }
 
 

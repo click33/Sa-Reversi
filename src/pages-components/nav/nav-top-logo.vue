@@ -27,11 +27,12 @@ const settingStore = useSettingStore();
 .nav-logo {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    /*border-radius: 5px;*/
     vertical-align: middle;
-    margin-left: 10px;
+    margin-right: 14px;
+    /*border: 1.5px solid green;*/
 }
 
-.nav-title{padding-left: 10px; font-size: 1.2em; color: #000; font-weight: 400; vertical-align: middle;}
+.nav-title{font-size: 1.2em; color: #faee0d; text-shadow: 0 0 1px #faee0d; font-weight: 700; vertical-align: middle;}
 
 </style>

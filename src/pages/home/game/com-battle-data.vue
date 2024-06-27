@@ -97,7 +97,7 @@ watch(gameStore.boardData, () => {
             .item-box-white .chess-count{  }
 
             // vs 文字
-            .vs-text{ display: inline-block; font-size: 36px; margin-top: 56px; color: #FAC03D; text-shadow: 0 0 3px #ED723F }
+            .vs-text{ display: inline-block; font-size: 36px; margin-top: 56px; color: #FAC03D; text-shadow: 0 0 3px #ED723F; }
         }
 
         // 进度条相关
