@@ -1,6 +1,6 @@
 <!-- 全局消息框 -->
 <template>
-    <el-card class="con-box zdy-card" header="日志信息">
+    <el-card class="con-box zdy-card" header="消息打印机">
         <el-scrollbar class="message-box" ref="message-scrollbar" always>
             <div class="message-box-2" ref="message-box-2">
                <div v-for="item in state.messageList" 
@@ -144,16 +144,17 @@ const getWrap = function () {
 <style scoped lang="scss">
 .con-box{
     width: 100%;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0px 0px 5px #ddd;
+    //background-color: #fff;
+    background-color: #272822;
+    border: 1px solid #000;
+    box-shadow: 0 0 5px #333;
     //background-color: #fff;
     
-    :deep(.el-card__header) {padding-left: 14px;}
+    :deep(.el-card__header) {padding-left: 18px; color: #EEE; border-bottom: 1px #555 solid; }
     :deep(.el-card__body) {padding: 0;}
 }
 .message-box{padding: 14px 0px; height: 200px; cursor: text;}
-.message-box-2{ padding: 0px 12px 10px 12px; }
+.message-box-2{ padding: 0px 12px 10px 14px; }
 
 
 // 一条消息 
@@ -163,7 +164,7 @@ const getWrap = function () {
     float: left;
     font-weight: 700;
     text-align: right;
-    color: #333;
+    color: #ddd;
 }
 .message-p{
     width: calc(100% - var(--msg-role-width));
@@ -172,7 +173,7 @@ const getWrap = function () {
 // 不同 index 长度，需要占用不同的宽度 
 .message-item{ --msg-role-width: 4.4em;}
 .msg-index-length-1{--msg-role-width: 4.4em;}
-.msg-index-length-2{--msg-role-width: 4.8em;}
+.msg-index-length-2{--msg-role-width: 4.9em;}
 .msg-index-length-3{--msg-role-width: 5.3em;}
 .msg-index-length-4{--msg-role-width: 5.9em;}
 .msg-index-length-5{--msg-role-width: 6.5em;}
@@ -180,13 +181,13 @@ const getWrap = function () {
 
 // 不同消息类型，需要不同的颜色
 .message-p{display: inline-block;  }
-.message-p-info{ color: #888; .gb-cursor{background-color: #888;} }
+.message-p-info{ color: #bbb; .gb-cursor{background-color: #888;} }
 .message-p-error{ color: red; .gb-cursor{background-color: red;} }
-.message-p-success{ color: green; .gb-cursor{background-color: green;} }
+.message-p-success{ color: #68E868; .gb-cursor{background-color: #68E868;} }
 .message-p-warning{ color: #E6A23C; .gb-cursor{background-color: #E6A23C;} }
 
 // 闪烁的光标
-.gb-cursor {display: inline-block; width: 1.5px; height: 13px; position: relative; top: 4px; left: 3px; background-color: #666; animation: blink 0.4s infinite alternate;}
+.gb-cursor {display: inline-block; width: 2px; height: 13px; position: relative; top: 4px; left: 3px; background-color: #666; animation: blink 0.4s infinite alternate;}
 @keyframes blink { from {opacity: 0;} to {opacity: 1;} }
 
 

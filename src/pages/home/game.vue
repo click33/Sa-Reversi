@@ -20,14 +20,19 @@
 
             <!-- 右边 -->
             <div class="con-panel-right">
-                
+
                 <!-- 黑棋信息 -->
-                <com-black-player-info style="margin-bottom: 14px;"></com-black-player-info>
+                <!-- <com-black-player-info style="margin-bottom: 14px;"></com-black-player-info>-->
 
                 <!-- 白棋信息 -->
-                <com-white-player-info style="margin-bottom: 14px;"></com-white-player-info>
+                <!--  <com-white-player-info style="margin-bottom: 14px;"></com-white-player-info>-->
 
-                <div class="com-message-box">
+                <!-- 房间信息 -->   
+                <div class="com-room-info">
+                    <com-room-info></com-room-info>
+                </div>
+                
+                <div class="com-message-box" style="margin-top: 10px;">
                     <com-message-box></com-message-box>
                 </div>
                 
@@ -43,7 +48,6 @@
         <!-- 底部版权栏 -->
         <nav-bottom></nav-bottom>
         
-
     </div>
 </template>
 
@@ -58,6 +62,7 @@ import ComWhitePlayerInfo from "./game/com-white-player-info";
 import ComMessageBox from "./game/com-message-box";
 import FingerChess from "./finger/finger-chess.vue";
 import {useComStore} from "../../store/com";
+import ComRoomInfo from "./game/com-room-info";
 const gameStore = useGameStore();
 const { proxy } = getCurrentInstance();
 const comStore = useComStore();
@@ -100,9 +105,11 @@ onUnmounted(() => {
         height: 600px;
         background-color: #FFF;
     }
+    .com-room-info{
+        margin-bottom: 20px;
+    }
     .com-message-box{
-        height: 50px;
-        line-height: 50px;
+        
     }
 }
 
