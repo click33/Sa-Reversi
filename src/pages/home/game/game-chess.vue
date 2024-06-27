@@ -10,6 +10,7 @@
 <script setup name="game-chess">
 import {onMounted, reactive, defineExpose} from "vue";
 import {useGameStore} from "../../../store/game";
+import audioManager from "../../../algo/audio-manager";
 let gameStore = useGameStore();
 const { proxy } = getCurrentInstance();
 
@@ -33,21 +34,21 @@ const state = reactive({
 
 // 监听棋子数据变化，更新棋子 UI 展现
 watch(chess, (item) => {
-    if(state.type === 'none' && item.type === 'black') {
-        state.animClass = 'none-to-black';
+    // 播放音效 
+    if(state.type === 'none' && item.type !== 'none') {
+        audioManager.playDownChess({
+            error: () => {
+                console.log('用户未交互文档，无法播放音频...');
+            }
+        });
     }
-    if(state.type === 'none' && item.type === 'white') {
-        state.animClass = 'none-to-white';
-    }
-    if(state.type === 'black' && item.type === 'white') {
-        state.animClass = 'black-to-white';
-    }
-    if(state.type === 'white' && item.type === 'black') {
-        state.animClass = 'white-to-black';
-    }
+    
+    // 动画与数据 
+    state.animClass = `${state.type}-to-${item.type}`;
     state.type = item.type;
     state.tipsType = item.tipsType;
     state.tranCount = item.tranCount;
+
 })
 
 // ------------------ 方法 ------------------

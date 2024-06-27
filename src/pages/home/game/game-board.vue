@@ -64,6 +64,8 @@ onMounted(() => {
     .board-box{
         height: 100%;
         position: relative;
+        background-image: url("../../../assets/board-bg.png");
+        background-size: 33% 33%;
     }
     // 横向坐标轴
     .axis-x{
@@ -103,7 +105,7 @@ onMounted(() => {
     .board-table{
         width: 90%;
         height: 90%;
-        background-color: #13ce66;
+        //background-color: #13ce66;
         //background-color: green;
         position: absolute;
         right: 5%;
