@@ -113,10 +113,10 @@ const down = (x, y, moveSuccessCallback) => {
 
 // 移动小手到棋盘格子上 
 const moveFingerToTd = (camp, top, left, callback) => {
-    // 动画类型 direct=正常，一步到位，yx=先y轴后x轴，mix=混合，think=思考，fast=快速
-    const animArray = ['direct', 'yx', 'mix', 'think', 'fast'];
+    // 动画类型 direct=正常，一步到位，yx=先y轴后x轴，mix=混合，think=思考，fast=快速，shake=晃来晃去，slow=慢速，throw=甩几下 
+    const animArray = ['direct', 'yx', 'mix', 'think', 'fast', 'shake', 'slow', 'throw'];
     state.animType = animArray[Math.floor(Math.random() * animArray.length)];
-    // state.animType = 'fast';
+    // state.animType = 'shake';
     
     // 正常，一步到位
     if(state.animType === 'direct') {
@@ -172,7 +172,110 @@ const moveFingerToTd = (camp, top, left, callback) => {
         setTimeout(callback, 200);
     }
     
+    // 晃来晃去 
+    if(state.animType === 'shake') {
+        state.boxStyle.transitionDuration = '400ms';
+        state.boxStyle.top = `calc(${top}px + ${sa.randomNum(-10, 10)}vh)`;
+        // state.boxStyle.left = `calc(${left}px + ${sa.randomNum(-20, 20)}vw)`;
+        setTimeout(() => {
+            state.boxStyle.transitionDuration = '100ms';
+            state.boxStyle.top = `calc(${top}px + ${sa.randomNum(-5, 5)}vh)`;
+            state.boxStyle.left = `calc(${left}px + ${sa.randomNum(-10, 10)}vw)`;
+            setTimeout(() => {
+                state.boxStyle.top = `calc(${top}px + ${sa.randomNum(-5, 5)}vh)`;
+                state.boxStyle.left = `calc(${left}px + ${sa.randomNum(-10, 10)}vw)`;
+                setTimeout(() => {
+                    state.boxStyle.transitionDuration = '400ms';
+                    state.boxStyle.top = `${top}px`;
+                    state.boxStyle.left = `${left}px`;
+                    setTimeout(callback, 400);
+                }, 100);
+            }, 100);
+        }, 800);
+    }
+
+    // 慢，犹豫不决 
+    if(state.animType === 'slow') {
+        // state.boxStyle.transitionDuration = '400ms';
+        state.boxStyle.transitionDuration = '300ms';
+        slowIterator(top, left, () => {
+            setTimeout(() => {
+                state.boxStyle.transitionDuration = '200ms';
+                state.boxStyle.top = `${top}px`;
+                state.boxStyle.left = `${left}px`;
+                setTimeout(callback, 200);
+            }, 800)
+        }, 3)
+    }
+
+    // 甩几下 
+    if(state.animType === 'throw') {
+        const zjTop = `calc(${top}px + ${sa.randomNum(-10, 10)}vh)`;
+        const zjLeft = state.boxStyle.left;
+        
+        // 向右上甩几下 
+        const driftTop = sa.randomNum(-10, 10);
+        const driftLeft= sa.randomNum(-10, 10);
+
+        const shuaiTop = `calc(${zjTop} - ${driftTop}vh)`;
+        const shuaiLeft = `calc(${zjLeft} - ${driftLeft}vw)`;
+
+        const shuaiTop2 = `calc(${zjTop} + ${driftTop}vh)`;
+        const shuaiLeft2 = `calc(${zjLeft} + ${driftLeft}vw)`;
+        
+        // 先走到附近 
+        state.boxStyle.transitionDuration = '400ms';
+        state.boxStyle.top = zjTop;
+        state.boxStyle.left = zjLeft;
+
+        // 开始甩 
+        setTimeout(()=>{
+            state.boxStyle.transitionDuration = '100ms';
+            throwIterator(shuaiTop, shuaiLeft, shuaiTop2, shuaiLeft2, () => {
+                // 甩完了，开始正式落子 
+                setTimeout(() => {
+                    state.boxStyle.transitionDuration = '200ms';
+                    state.boxStyle.top = `${top}px`;
+                    state.boxStyle.left = `${left}px`;
+                    setTimeout(callback, 200);
+                }, 100)
+            }, 3)
+        }, 600);
+    }
     
+    
+}
+
+// slow 动画，迭代器
+const slowIterator  = (top, left, callback, freq) => {
+    freq--;
+    if(freq < 0) {
+        return callback();
+    }
+    state.boxStyle.top = `calc(${top}px + ${sa.randomNum(-10, 10)}vh)`;
+    state.boxStyle.left = `calc(${left}px + ${sa.randomNum(-10, 10)}vw)`;
+    setTimeout(() => {
+        slowIterator(top, left, callback, freq);
+    }, 1000);
+}
+
+// throw 函数，迭代器
+const throwIterator  = (top, left, top2, left2, callback, freq) => {
+    freq--;
+    if(freq < 0) {
+        return callback();
+    }
+    
+    // 
+    state.boxStyle.top = top;
+    state.boxStyle.left = left;
+    setTimeout(()=>{
+        state.boxStyle.top = top2;
+        state.boxStyle.left = left2;
+        setTimeout(() => {
+            throwIterator(top, left, top2, left2, callback, freq);
+        }, 100);
+    }, 100);
 }
 
 
@@ -204,7 +307,7 @@ onMounted(() => {
     position: absolute;
     border-radius: 50%;
 }
-.finger-img-box{ position: absolute; transform: translate(-18%, 10%);}
+.finger-img-box{ position: absolute; transform: translate(-18%, 3%);}
 .finger-img{transform: rotateX(180deg); width: 100%; height: 100%;}
 
 // 白子样式 
