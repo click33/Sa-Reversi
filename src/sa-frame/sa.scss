@@ -263,4 +263,76 @@ body {
     //.el-checkbox__input.is-checked .el-checkbox__inner{background-color: #00CF70; border-color: #00CF70;}
 }
 
+.small-show{ display: none; }
+
+// 小屏下的表现
+@media screen and (max-width: 768px) {
+    body{
+        --small-screen-package-width: calc(100vw - 28px);
+        
+        .z-width{ width: var(--small-screen-package-width); margin: 0 auto; }
+        // 小屏幕需要隐藏的元素
+        .small-hide{ display: none; }
+        // 小屏幕需要显示的元素
+        .small-show{ display: block; }
+        
+        // 顶部导航修改
+        .nav-top{
+            //.com-logo-box{margin-left: 14px;}
+            //.nav-top-right{margin-right: 14px;}
+        }
+        // 中间内容区
+        .nav-content{min-height: 65vh !important;}
+        // 底部版权部分
+        .nav-bottom{ position: static !important; line-height: 26px !important; width: auto !important; padding: 1.5em 0 2em;  }
+        .nav-bottom-zhan-wei{display: none;}
+        
+        // select 页面 
+        .small--select-page{
+            .con-panel-2{padding: 1.5em;}
+            .con-panel-2 .con-title{ margin-bottom: 20px;}
+            .play-button{width: 100%;}
+            .xy-count-slider{ width: 100% !important; margin-left: 0 !important; margin-top: 14px; }
+            .el-slider__marks .el-slider__marks-text{
+                &:last-child{display: none;}
+            }
+        }
+        
+        // game 页面
+        .small--game-page{
+            // 左侧面板
+            .con-panel-left{ width: var(--small-screen-package-width); }
+            .con-panel-left .game-qp-box{height: var(--small-screen-package-width);}
+            .game-qp-box{ height: var(--small-screen-package-width) !important; }
+            // 对战信息
+            .small-com-battle-data{
+                .el-card__body{padding: 5px 0;}
+                margin-bottom: 14px;
+
+                .role-name-box{
+                    .role-name{ font-size: 16px; margin-bottom: 10px;}
+                }
+                
+                .chess-box {
+                    .item-box{width: 80px;}
+                    .item-box-progress{ width: calc(100% - 160px); text-align: center; margin-bottom: 8px; }
+                    .chess-show{ width: 35px; height: 35px; }
+                    .item-box-black .chess-show{margin-right: 6px;}
+                    .item-box-white .chess-show{margin-left: 6px;}
+                    .chess-count{ font-size: 18px; }
+
+                    .vs-text{ font-size: 24px; }
+                }
+            }
+            // 右侧面板
+            .con-panel-right{ float: none; width: 100%; }
+            //.small-com-room-info{display: none;}
+            
+        }
+        
+        
+        
+        
+    }
+}
 

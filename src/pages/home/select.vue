@@ -1,15 +1,15 @@
 <!-- 等级选择 -->
 <template>
-    <div>
+    <div class="small--select-page">
         <!-- 顶层导航栏 -->
         <nav-top></nav-top>
 
-        <div class="con-panel z-width vue-box">
+        
+        <div class="con-panel nav-content z-width vue-box">
 
             <div class="con-panel-2 bottom-to-top-ys">
 
-                <h1>黑白棋小游戏</h1>
-                <br><br><br>
+                <h2 class="con-title">对局配置</h2>
 
                 <el-form-item label="黑子角色：" class="option-item right-to-left-1">
                     <div class="right-to-left-3">
@@ -158,18 +158,20 @@ const checkXCountYCount = () => {
 // 整体面板
 .con-panel{
     //border: 1px solid #000;
-    margin: 5vh auto 0;
+    //margin: 5vh auto 0;
+    margin-top: 14px;
+    margin-bottom: 14px;
     background-color: transparent;
     //*{color: #333;}
 }
 .con-panel-2{
     padding: 50px 100px;
     background-color: rgba(255, 255,255, 0.5);
+    .con-title{ margin-bottom: 40px; color: #000; }
 }
 
 // 配置项 
 .option-item{
-    h2{ margin-bottom: 20px; color: #000; }
     
     :deep(.el-form-item__label){
         color: #333;
@@ -178,7 +180,7 @@ const checkXCountYCount = () => {
     }
     
     .option-intro{
-        color: #666;
+        color: #888;
         margin-bottom: 10px;
     }
     
@@ -188,6 +190,8 @@ const checkXCountYCount = () => {
     .xy-count-x{ display: inline-block; margin: 0 10px; }
     .xy-count-slider{width: calc( 100% - 140px ); margin-left: 20px;}
     
+    // 强改按钮颜色 
+    :deep(.el-radio-button,.el-checkbox__label){color: #333;}
 }
 .option-item-username{ margin-bottom: 40px; }
 

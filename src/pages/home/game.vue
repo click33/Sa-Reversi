@@ -1,14 +1,17 @@
 <!-- 对战页面 -->
 <template>
-    <div>
+    <div class="small--game-page">
         <!-- 顶层导航栏 -->
         <nav-top></nav-top>
+
         
-        <!-- 主体面板 -->
-        <div class="con-panel z-width" v-if="gameStore.isInit">
+        <!-- 大屏、左右布局 -->
+        <div class="con-panel nav-content z-width" v-if="gameStore.isInit">
 
             <!-- 左边 -->
             <div class="con-panel-left">
+                
+                <!-- 棋盘 -->
                 <div class="game-qp-box">
                     <game-board></game-board>
                 </div>
@@ -28,12 +31,18 @@
                 <!--  <com-white-player-info style="margin-bottom: 14px;"></com-white-player-info>-->
 
                 <!-- 房间信息 -->   
-                <div class="com-room-info">
+                <div class="com-room-info small-hide" style="margin-bottom: 10px;">
                     <com-room-info></com-room-info>
                 </div>
                 
-                <div class="com-message-box" style="margin-top: 10px;">
+                <!-- 消息打印机 -->
+                <div class="com-message-box" style="margin-bottom: 10px;">
                     <com-message-box></com-message-box>
+                </div>
+
+                <!-- 房间信息 -->
+                <div class="com-room-info small-show" style="margin-bottom: 10px;">
+                    <com-room-info></com-room-info>
                 </div>
                 
                 <!-- ad -->
@@ -82,6 +91,9 @@ onMounted(() => {
         comStore.enemyFinger = proxy.$refs['enemyFinger'];
     })
     
+    // 滚动条置顶
+    window.scrollTo(0, 0);
+    
 })
 
 onUnmounted(() => {
@@ -124,4 +136,13 @@ onUnmounted(() => {
     //border: 1px #000 solid;
     //background-color: #FFF;
 }
+
+// 小屏布局样式
+//.small-show{
+//    .game-qp-box{
+//        height: 600px;
+//        background-color: #FFF;
+//    }
+//}
+
 </style>

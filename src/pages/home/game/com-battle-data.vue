@@ -1,6 +1,6 @@
 <!-- 对战数据 -->
 <template>
-    <el-card class="card-box zdy-card fade-in-ys"  shadow="never" header="">
+    <el-card class="card-box zdy-card small-com-battle-data fade-in-ys"  shadow="never" header="">
         <div class="con-box">
             <div class="role-name-box">
                 <div class="role-name role-name-black">
@@ -46,8 +46,8 @@ const state = reactive({
     progressValue: 0,
     // 棋子数量
     chessCount: {
-        blackCount: 22,
-        whiteCount: 22,
+        blackCount: 0,
+        whiteCount: 0,
         noneCount: 0,
     },
 })
@@ -93,7 +93,7 @@ watch(gameStore.boardData, () => {
         .chess-box{
             //border: 1px #000 solid;
             .item-box{ display: inline-block; width: 130px; vertical-align: bottom;}
-            .item-box-vs{text-align: center; flex: 8;}
+            //.item-box-vs{text-align: center; flex: 8;}
             .item-box-progress{ width: calc(100% - 260px); text-align: center; margin-bottom: 8px; }
             .item-box-white{text-align: right; color: #FFF;}
             

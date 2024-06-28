@@ -5,11 +5,15 @@
     <div class="nav-bottom-zhan-wei"></div>
     <div class="nav-bottom">
         <div class="z-width">
-            Copyright ©2024 {{ settingStore.title }} (在线演示站) | 开源仓库：
+            <span>Copyright ©2024 {{ settingStore.title }} (在线演示站) | </span>
+            <br class="small-show" />
+            <span>开源仓库：</span>
             <a class="a-link" href="https://gitee.com/click33/Sa-Reversi" target="_blank">Gitee</a>
             <a class="a-link" href="https://github.com/click33/Sa-Reversi" target="_blank">GitHub</a>
             <a class="a-link" href="https://gitcode.com/click33/Sa-Reversi" target="_blank">GitCode</a>
-             | 备案号：
+             |
+            <br class="small-show" />
+            备案号：
             <a class="a-link" href="https://beian.miit.gov.cn/" target="_blank">鲁ICP备18046274号-1</a>
         </div>
     </div>

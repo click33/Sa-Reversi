@@ -4,7 +4,7 @@
         <!-- 顶层导航栏 -->
         <nav-top></nav-top>
 
-        <div class="con-panel z-width vue-box">
+        <div class="con-panel z-width vue-box nav-content">
 
             <div class="con-panel-2">
                 <h1>黑白棋小游戏</h1>
