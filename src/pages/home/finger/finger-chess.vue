@@ -115,7 +115,13 @@ const down = (x, y, moveSuccessCallback) => {
 const moveFingerToTd = (camp, top, left, callback) => {
     // 动画类型 direct=正常，一步到位，yx=先y轴后x轴，mix=混合，think=思考，fast=快速，shake=晃来晃去，slow=慢速，throw=甩几下 
     const animArray = ['direct', 'yx', 'mix', 'think', 'fast', 'shake', 'slow', 'throw'];
-    state.animType = animArray[Math.floor(Math.random() * animArray.length)];
+    const animArray2 = ['shake', 'slow', 'throw'];
+    let animType = animArray[Math.floor(Math.random() * animArray.length)];
+    // 如果本次和上一次都属于慢速里的几个，则指定为 direct，避免节奏太慢 
+    if(animArray2.includes(animType) && animArray2.includes(state.animType)) {
+        animType = 'direct';
+    }
+    state.animType = animType;
     // state.animType = 'shake';
     
     // 正常，一步到位

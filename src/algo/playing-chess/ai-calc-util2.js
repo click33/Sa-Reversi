@@ -1,19 +1,39 @@
-// AI 计算相关工具函数 
+// AI 计算相关工具函数 2.0 版本 
+
+import {getTranList} from "../chess-tran";
+import {useGameStore} from "../../store/game";
 
 const scoreMap = {
-    'jiao': 10,  // 四角，10分 
+    'jiao': 15,  // 四角，15分 
     'jiaoPang': 0,  // 四角旁边，0分 
-    'bian': 5, // 边，5分 
-    'ciBian': -3, // 次边  
+    'bian': 6, // 边，5分 
+    'ciBian': -2, // 次边  
     'ciJiao': -10, // 次角，角的斜对位置
     'normal': 1, // 普通位置，1分 
 }
 
 // 计算数组中每个落子方案的得分 
-export const calcCanArrScore = function (canArr, xCount, yCount) {
+export const calcCanArrScore2 = function (canArr, boardData, chessType, xCount, yCount) {
 
-    canArr.forEach(item => {
-        item.score = item.tranCount + calcXyScore(item, xCount, yCount);
+    const gameStore = useGameStore();
+    console.log('canArr ', canArr)
+
+    canArr.forEach(downChess => {
+        // 落子位置所得分 
+        const downChessScore = calcXyScore(downChess, xCount, yCount);
+        
+        // 翻转棋子所有位置总得分 
+        const mockDownChess = gameStore.createChess(downChess.x, downChess.y, chessType, 'none');
+        const mockTranArr = getTranList(mockDownChess, boardData, xCount, yCount);
+        let tranChessScore = 0;
+        mockTranArr.forEach(item => {
+            tranChessScore += calcXyScore(item, xCount, yCount);
+        })
+        
+        // 总得分 = 翻转棋子数量 + 落子所得分 + 翻转棋子总所得分
+        downChess.score = downChessScore + tranChessScore;
+        // downChess.score = downChess.tranCount + downChessScore + tranChessScore;
+        console.log(downChess.x, downChess.y, '落子得分：' + downChessScore, '翻转子得分：' + tranChessScore, '总得分：' + downChess.score);
     })
     
     return canArr;

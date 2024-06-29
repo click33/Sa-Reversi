@@ -1,8 +1,8 @@
-import {calcCanArrScore} from "../ai-calc-util";
+import {calcCanArrScore} from "../playing-chess/ai-calc-util";
 import {useSelectStore} from "../../store/select";
 
 /**
- * AI：棋级陪练，行棋算法 
+ * AI：棋圣陪练，行棋算法 
  */
 export default {
     id: 'qisheng',
