@@ -22,6 +22,7 @@ export const useSelectStore = defineStore({
             tipsDown: true,  // 提示落子位置 
             tipsDownTranCount: false,  // 提示落子可回收棋子数量 
             tipsDownScore: false,  // 提示落子得分 
+            showChessPoint: false,  // 显示棋子坐标 
         };
         const defaultSelectStoreString = JSON.stringify(defaultSelectStore);
 

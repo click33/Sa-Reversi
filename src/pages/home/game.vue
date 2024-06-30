@@ -12,13 +12,16 @@
             <div class="con-panel-left">
                 
                 <!-- 棋盘 -->
-                <div class="game-qp-box">
+                <div class="game-qp-box" style="margin-bottom: 14px;">
                     <game-board></game-board>
                 </div>
-                
+
                 <!-- 对战数据 -->
-                <com-battle-data style="margin-top: 10px;"></com-battle-data>
-                
+                <com-battle-data style="margin-bottom: 14px;"></com-battle-data>
+
+                <!-- 按钮列表 -->
+                <com-button-box style="margin-bottom: 14px;"></com-button-box>
+
             </div>
 
             <!-- 右边 -->
@@ -69,13 +72,13 @@ import NavBottom from '/@/pages-components/nav/nav-bottom.vue';
 import GameBoard from './game/game-board.vue';
 import ComBattleData from './game/com-battle-data.vue';
 import {useGameStore} from "../../store/game";
-import ComBlackPlayerInfo from "./game/com-black-player-info";
-import ComWhitePlayerInfo from "./game/com-white-player-info";
+import ComStrategyTree from './game/com-strategy-tree.vue';
 import ComMessageBox from "./game/com-message-box";
 import FingerChess from "./finger/finger-chess.vue";
 import {useComStore} from "../../store/com";
 import ComRoomInfo from "./game/com-room-info";
 import ComAdBox from "./game/com-ad-box";
+import ComButtonBox from "./game/com-button-box";
 const gameStore = useGameStore();
 const { proxy } = getCurrentInstance();
 const comStore = useComStore();

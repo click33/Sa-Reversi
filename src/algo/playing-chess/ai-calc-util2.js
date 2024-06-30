@@ -1,6 +1,6 @@
 // AI 计算相关工具函数 2.0 版本 
 
-import {getTranList} from "../chess-tran";
+import {getTranList} from "./ai-calc-coomon";
 import {useGameStore} from "../../store/game";
 
 const scoreMap = {
@@ -24,7 +24,7 @@ export const calcCanArrScore2 = function (canArr, boardData, chessType, xCount, 
         
         // 翻转棋子所有位置总得分 
         const mockDownChess = gameStore.createChess(downChess.x, downChess.y, chessType, 'none');
-        const mockTranArr = getTranList(mockDownChess, boardData, xCount, yCount);
+        const mockTranArr = getTranList(mockDownChess.x, mockDownChess.y, mockDownChess.type, boardData, xCount, yCount);
         let tranChessScore = 0;
         mockTranArr.forEach(item => {
             tranChessScore += calcXyScore(item, xCount, yCount);

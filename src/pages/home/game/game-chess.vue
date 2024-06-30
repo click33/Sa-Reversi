@@ -4,6 +4,7 @@
          class="chess" :class=" [('chess-' + state.type), (gameStore.justX === state.x && gameStore.justY === state.y ? 'chess-just' : ''), (state.animClass)] "
         >
         <div class="chess-tip" :class=" 'chess-tip-' + state.tipsType "></div>
+        <div class="chess-point" v-if="selectStore.showChessPoint">{{ getXySimpleStr(state.x, state.y) }}</div>
     </div>
 </template>
 
@@ -11,8 +12,11 @@
 import {onMounted, reactive, defineExpose} from "vue";
 import {useGameStore} from "../../../store/game";
 import audioManager from "../../../algo/audio-manager";
+import { getXySimpleStr } from "../../../algo/playing-chess/ai-calc-coomon";
+import {useSelectStore} from "../../../store/select";
 let gameStore = useGameStore();
 const { proxy } = getCurrentInstance();
+const selectStore = useSelectStore();
 
 
 // 组件形参 
@@ -130,5 +134,16 @@ onMounted(() => {
     .chess-tip-black{ animation: big 3s ease-out infinite; background-color: #444; }
     .chess-tip-white{ animation: big 3s ease-out infinite; background-color: #FFF; }
     
+    // 坐标
+    .chess-point{
+        white-space: nowrap;
+        font-size: 12px;
+        display: inline-block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #666;
+    }
     
 </style>

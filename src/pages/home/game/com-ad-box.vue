@@ -5,7 +5,7 @@
     </div>
 </template>
 
-<script setup name="com-black-player-info">
+<script setup name="com-ad-box">
 import {useSelectStore} from "../../../store/select";
 import {useDictStore} from "../../../store/dict";
 import {useGameStore} from "../../../store/game";

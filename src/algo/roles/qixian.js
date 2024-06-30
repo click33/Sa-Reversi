@@ -1,6 +1,12 @@
 import {calcCanArrScore2} from "../playing-chess/ai-calc-util2";
 import {useSelectStore} from "../../store/select";
 import {useGameStore} from "../../store/game";
+import {
+    getXyStr,
+    calcStrategyTree, printStrategyTree
+} from "../playing-chess/ai-calc-coomon";
+import {calcCanArrScore} from "../playing-chess/ai-calc-util";
+import {getCanDownArray} from "../playing-chess/ai-calc-coomon";
 
 /**
  * AI：旗仙陪练，行棋算法 
@@ -10,23 +16,50 @@ export default {
     name: '棋仙',
     // 落子
     downChess: function (downChessFunction, currentPlayerType, canDownArr) {
-        // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
-        canDownArr.sort(() => Math.random() - 0.5);
-        
-        // 计算每个落子方案下的评分 
-        const selectStore = useSelectStore();
+
         const gameStore = useGameStore();
-        canDownArr = calcCanArrScore2(canDownArr, gameStore.boardData, currentPlayerType, selectStore.xCount, selectStore.yCount);
+        // gameStore.strategyTree = [];
+        gameStore.inCalcStrategy = true;
+        
+        
+        nextTick(function () {
+            setTimeout(function () {
+                const strategyTree = calcStrategyTree(gameStore.boardData, currentPlayerType, 3);
 
-        // 按照 score 评分从小到大升序排列  
-        canDownArr.sort((a, b) => a.score - b.score);
+                // 子孙策略数量
+                let subStrategyCount = 0;
+                strategyTree.forEach(item => {
+                    subStrategyCount += item.subStrategyCount ?? 1;
+                })
+                
+                // printStrategyTree(strategyTree);
+                gameStore.inCalcStrategy = false;
+                gameStore.strategyTree = [
+                    {
+                        id: 'top',
+                        type: currentPlayerType,
+                        subStrategyCount: subStrategyCount,
+                        finalScore: strategyTree[strategyTree.length - 1].finalScore,
+                        nextChessCanArray: strategyTree,
+                    }
+                ];
+                gameStore.strategyChessType = currentPlayerType;
+                nextTick(function () {
+                    // 使顶级节点展开 
+                    const dom = document.querySelector('.tree-content-item-top');
+                    if(dom) {
+                        dom.click();
+                    }
+                })
+                // console.log(strategyTree)
 
-        console.log('------------- 策略集合 --------------')
-        canDownArr.forEach(item => {
-            console.log(item.score, JSON.stringify(item));
-        });
+                // 选择最高得分方案，作为最终落子方案 
+                downChessFunction(strategyTree[strategyTree.length - 1]);
+            }, 100);
+        })
 
-        // 棋圣 固定选择最后一个落子方案，得分最高
-        downChessFunction(canDownArr[canDownArr.length - 1]);
+        // 打开手动落子 
+        // gameStore.status = 'userDown';
+        // gameStore.showCanDownByConfig();
     }
 }

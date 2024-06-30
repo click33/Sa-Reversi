@@ -5,6 +5,7 @@ import zhongji from './roles/zhongji';
 import gaoji from './roles/gaoji';
 import qisheng from './roles/qisheng';
 import qihuang from './roles/qihuang';
+import qixian from './roles/qixian';
 
 /**
  * 所有角色 
@@ -16,5 +17,6 @@ export default [
     zhongji,
     gaoji,
     qisheng,
-    qihuang
+    qihuang,
+    qixian
 ]

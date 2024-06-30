@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import {useSelectStore} from "./select";
-import {getTranList} from "../algo/chess-tran";
+import {getCanDownArray, getTranList} from "../algo/playing-chess/ai-calc-coomon";
 import {useDictStore} from "./dict";
 import {useSettingStore} from "./setting";
 import {useMessageStore} from "./message";
 import {useComStore} from "./com";
+import {getXyStr} from "../algo/playing-chess/ai-calc-coomon";
 
 /**
  * 定义游戏进行时参数信息 
@@ -21,6 +22,10 @@ export const useGameStore = defineStore({
             initialChessList: [],   // 初始落子数据
             justX: 0,  // 最新落子x坐标
             justY: 0,  // 最新落子y坐标
+            strategyTree: [],  // 策略树
+            strategyChessType: 'none',  // 策略树对应的棋子类型
+            inCalcStrategy: false,  // 是否在计算策略中... 
+            defaultExpandedKeys: [],  // 默认展开的节点
         }
     },
     actions: {
@@ -185,8 +190,7 @@ export const useGameStore = defineStore({
 
         // 获取坐标的字符串描写形式 
         getXyStr: function (x, y) {
-            const dictStore = useDictStore();
-            return '(' + dictStore.xName[x] + ', ' + y + ')';
+            return getXyStr(x, y);
         },
 
         // ------------------------------ 棋盘操作 ------------------------------ 
@@ -318,7 +322,7 @@ export const useGameStore = defineStore({
             
             // 判断该位置是否是可落子的位置
             const mockDownChess = this.createChess(x, y, downType, 'none');
-            const mockTranArr = getTranList(mockDownChess, this.boardData, selectStore.xCount, selectStore.yCount);
+            const mockTranArr = getTranList(mockDownChess.x, mockDownChess.y, mockDownChess.type, this.boardData, selectStore.xCount, selectStore.yCount);
             if(mockTranArr.length === 0 && !selectStore.allowForceDown){
                 sa.sendMessage(playerTypeName, 'error', '此处不能落子！落子要求必须至少翻转一个对方棋子。');
                 return callback(false);
@@ -344,7 +348,7 @@ export const useGameStore = defineStore({
             
             // 收集所有应该转换的棋子，开始转换 
             const downChess = this.getChess(x, y);
-            const tranArr = getTranList(downChess, this.boardData, selectStore.xCount, selectStore.yCount);
+            const tranArr = getTranList(downChess.x, downChess.y, downChess.type, this.boardData, selectStore.xCount, selectStore.yCount);
             
             // 给个提示，回收了多少枚棋子 
             sa.sendMessage(playerTypeName, 'info', `落子 ${this.getXyStr(x, y)}，回收棋子 ${tranArr.length} 枚。`);
@@ -387,7 +391,7 @@ export const useGameStore = defineStore({
                 }
                 // 假设在此处落子，有超过1个棋子是可以转换的，则代表此处可以落子
                 const mockDownChess = this.createChess(chess.x, chess.y, playerType, 'none');
-                const mockTranArr = getTranList(mockDownChess, this.boardData, selectStore.xCount, selectStore.yCount);
+                const mockTranArr = getTranList(mockDownChess.x, mockDownChess.y, mockDownChess.type, this.boardData, selectStore.xCount, selectStore.yCount);
                 if(mockTranArr.length > 0){
                     chess.tranCount = mockTranArr.length;
                     canDownArr.push(chess);
@@ -424,6 +428,7 @@ export const useGameStore = defineStore({
 
         // 切换一个棋子类型
         changeChessType: function (chess) {
+            chess = this.getChess(chess.x, chess.y);
             if(chess.type === 'black'){
                 this.setChessWhite(chess);
             }
@@ -467,7 +472,7 @@ export const useGameStore = defineStore({
             const currentPlayerType = this.currentPlayerType;
 
             // 获取所有可落子位置
-            const canDownArr = this.getCanDown();
+            const canDownArr = getCanDownArray(this.boardData, currentPlayerType);
             if(canDownArr.length === 0){
                 // 无法落子，切换活动角色 
                 const currentPlayerTypeName = this.getCurrentPlayerTypeName();

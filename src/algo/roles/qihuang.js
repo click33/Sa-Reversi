@@ -3,7 +3,7 @@ import {useSelectStore} from "../../store/select";
 import {useGameStore} from "../../store/game";
 
 /**
- * AI：旗仙陪练，行棋算法 
+ * AI：旗仙陪练，行棋算法
  */
 export default {
     id: 'qihuang',
@@ -12,7 +12,7 @@ export default {
     downChess: function (downChessFunction, currentPlayerType, canDownArr) {
         // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
         canDownArr.sort(() => Math.random() - 0.5);
-        
+
         // 计算每个落子方案下的评分 
         const selectStore = useSelectStore();
         const gameStore = useGameStore();

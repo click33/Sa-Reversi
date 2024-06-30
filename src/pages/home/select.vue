@@ -65,8 +65,9 @@
                 <el-form-item label="辅助选项：" class="option-item right-to-left-5">
                     <div class="right-to-left-7">
                         <el-checkbox v-model="selectStore.tipsDown">提示落子位置</el-checkbox>
-                        <el-checkbox v-model="selectStore.tipsDownTranCount">提示落子可回收棋子数量</el-checkbox>
-                        <el-checkbox v-model="selectStore.tipsDownScore">提示落子得分</el-checkbox>
+<!--                        <el-checkbox v-model="selectStore.tipsDownTranCount">提示落子可回收棋子数量</el-checkbox>-->
+<!--                        <el-checkbox v-model="selectStore.tipsDownScore">提示落子得分</el-checkbox>-->
+                        <el-checkbox v-model="selectStore.showChessPoint">显示棋子坐标</el-checkbox>
                         <p class="option-intro">新手按需勾选，老手不建议勾选，会降低自身棋力水平</p>
                     </div>
                 </el-form-item>
