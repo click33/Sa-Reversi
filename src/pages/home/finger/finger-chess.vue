@@ -317,9 +317,9 @@ onMounted(() => {
 .finger-img{transform: rotateX(180deg); width: 100%; height: 100%;}
 
 // 白子样式 
-.finger-type-white { .finger-chess{ background-color: #FFF; box-shadow: 0 0 20px #000; } }
+.finger-type-white { .finger-chess{ background-color: #FFF; box-shadow: 0 0 30px red;  } }
 // 黑子样式 
-.finger-type-black { .finger-chess{ background-color: #000; box-shadow: 0 0 25px yellow; } }
+.finger-type-black { .finger-chess{ background-color: #000; box-shadow: 0 0 20px yellow; } }
 
 // we阵营样式 
 .finger-camp-we {  }

@@ -255,7 +255,7 @@ export const useGameStore = defineStore({
                     
                     // 覆盖原子 
                     this.changeChessType(chess);
-                    this.clearCanDown();
+                    this.clearCanDownTips();
                     nextTick(() => {
                         this.showCanDownByConfig();
                     });
@@ -281,7 +281,10 @@ export const useGameStore = defineStore({
             this.justY = y;
             
             // 清除落子提示
-            this.clearCanDown();
+            this.clearCanDownTips();
+            
+            // 清除上一次的翻转落子样式 
+            this.clearJustTranTips();
             
             // 根据用户选择的执子类型，调用对应的方法
             if(downType === 'black'){
@@ -298,6 +301,7 @@ export const useGameStore = defineStore({
             // 给个提示，回收了多少枚棋子 
             sa.sendMessage(playerTypeName, 'info', `落子 ${getXyStr(x, y)}，回收棋子 ${tranArr.length} 枚。`);
             
+            // 开始翻转棋子 
             this.changeChessArrType_withAnim(tranArr, 0, () => {
                 this.prevIsPause = false; // 打个标记 
                 callback(true);
@@ -307,7 +311,9 @@ export const useGameStore = defineStore({
         // 切换一组棋子类型（不带延迟动画）
         changeChessArrType: function (tranArr) {
             tranArr.forEach(item => {
-                this.changeChessType(item);
+                const chess = this.getChess(tranArr[i].x, tranArr[i].y);
+                this.changeChessType(chess);
+                item.isJustTran = true;
             })
         },
         
@@ -317,7 +323,10 @@ export const useGameStore = defineStore({
                 if(i >= tranArr.length) {
                     return callback();
                 }
-                this.changeChessType(tranArr[i]);
+                const chess = this.getChess(tranArr[i].x, tranArr[i].y);
+                this.changeChessType(chess);
+                chess.isJustTran = true;
+                
                 i++;
                 this.changeChessArrType_withAnim(tranArr, i, callback);
             }, 200)
@@ -343,9 +352,16 @@ export const useGameStore = defineStore({
         },
 
         // 清除所有可落子提示
-        clearCanDown: function () {
+        clearCanDownTips: function () {
             this.forEachBoardData(chess => {
                 chess.tipsType = 'none';
+            })
+        },
+
+        // 清除刚刚翻转的棋子样式提示 
+        clearJustTranTips: function () {
+            this.forEachBoardData(chess => {
+                chess.isJustTran = false;
             })
         },
 
