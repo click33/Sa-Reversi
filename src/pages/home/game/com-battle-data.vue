@@ -55,7 +55,7 @@ const state = reactive({
 // 监听棋盘棋子变动时，更改这边的显示 
 watch(gameStore.boardData, () => {
     // 各棋子数量
-    state.chessCount = gameStore.getChessCount();
+    state.chessCount = gameStore.getChessCountInfo();
     // 计算进度条 
     const blackCount = state.chessCount.blackCount;
     const allCount = state.chessCount.blackCount + state.chessCount.whiteCount;

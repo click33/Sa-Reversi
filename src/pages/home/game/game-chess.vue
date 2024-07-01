@@ -12,8 +12,8 @@
 import {onMounted, reactive, defineExpose} from "vue";
 import {useGameStore} from "../../../store/game";
 import audioManager from "../../../algo/audio-manager";
-import { getXySimpleStr } from "../../../algo/playing-chess/ai-calc-coomon";
 import {useSelectStore} from "../../../store/select";
+import {getXySimpleStr} from "../../../algo/playing-chess/chess-funs";
 let gameStore = useGameStore();
 const { proxy } = getCurrentInstance();
 const selectStore = useSelectStore();

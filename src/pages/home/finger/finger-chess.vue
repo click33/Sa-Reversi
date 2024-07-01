@@ -122,7 +122,7 @@ const moveFingerToTd = (camp, top, left, callback) => {
         animType = 'direct';
     }
     state.animType = animType;
-    state.animType = 'fast';
+    // state.animType = 'fast';
     
     // 正常，一步到位
     if(state.animType === 'direct') {

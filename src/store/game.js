@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia'
 import {useSelectStore} from "./select";
-import {getCanDownArray, getTranList} from "../algo/playing-chess/ai-calc-coomon";
 import {useDictStore} from "./dict";
 import {useSettingStore} from "./setting";
 import {useMessageStore} from "./message";
 import {useComStore} from "./com";
-import {getXyStr} from "../algo/playing-chess/ai-calc-coomon";
+import {createBackChess, createChess, getXyStr} from "../algo/playing-chess/chess-funs";
+import {getTranList} from "../algo/playing-chess/tran-funs";
+import {getCanDownArray} from "../algo/playing-chess/board-calc";
+import {forEachBoardData, getChessByXy, getChessCountInfo} from "../algo/playing-chess/board-funs";
 
 /**
  * 定义游戏进行时参数信息 
@@ -19,7 +21,7 @@ export const useGameStore = defineStore({
             status: 'defDown',  // 程序状态：defDown 默认棋子落子中，userDown 用户落子中，end 已结束，tran 翻转棋子或AI运算中 
             prevIsPause: false,  // 上一个玩家状态是否为无子可落的跳过 
             boardData: null,    // 棋盘数据
-            initialChessList: [],   // 初始落子数据
+            startChessList: [],   // 初始落子数据
             justX: 0,  // 最新落子x坐标
             justY: 0,  // 最新落子y坐标
             strategyTree: [],  // 策略树
@@ -55,8 +57,8 @@ export const useGameStore = defineStore({
 
                 // 显示初始落子
                 sa.sendMessage('系统', 'info', '正在进行初始落子...');
-                this.initInitialChessList();
-                this.initialChessListToBoardData_withAnim(0, () => {
+                this.calcStartChessList();
+                this.startChessListToBoardData_withAnim(0, () => {
                     sa.sendMessage('系统', 'info', '初始落子完毕，对战开始...');
                     this.setCurrentPlayerType('black');
                     this.stepForward();
@@ -76,8 +78,8 @@ export const useGameStore = defineStore({
             for (let j = 1; j <= yCount; j++) {
                 const yArr = [{ type: 'fill' }];
                 for (let i = 1; i <= xCount; i++) {
-                    const item = this.createChess(i, j, 'none', 'none');
-                    yArr.push(item)
+                    const item = createChess(i, j, 'none');
+                    yArr.push(item);
                 }
                 xArr.push(yArr);
             }
@@ -85,7 +87,7 @@ export const useGameStore = defineStore({
         },
 
         // 计算初始落子数据
-        initInitialChessList: function () {
+        calcStartChessList: function () {
             // 8 x 8 的棋盘，默认落子数据应该长这样 
             // { x: 5, y: 4, type: 'black' },
             // { x: 4, y: 4, type: 'white' },
@@ -96,7 +98,7 @@ export const useGameStore = defineStore({
             const x = parseInt(selectStore.xCount / 2);
             const y = parseInt(selectStore.yCount / 2);
 
-            this.initialChessList = [
+            this.startChessList = [
                 { x: x + 1, y: y, type: 'black' },
                 { x: x, y: y, type: 'white' },
                 { x: x, y: y + 1, type: 'black' },
@@ -106,37 +108,25 @@ export const useGameStore = defineStore({
         },
 
         // 将初始落子，更新棋盘数据 (无动画)
-        initialChessListToBoardData: function () {
-            this.initialChessList.forEach(item => {
+        startChessListToBoardData: function () {
+            this.startChessList.forEach(item => {
                 this.getChess(item.x, item.y).type = item.type;
             })
         },
 
         // 将初始落子，更新棋盘数据 (带动画，视觉上更流畅)
-        initialChessListToBoardData_withAnim: function (i, callback) {
+        startChessListToBoardData_withAnim: function (i, callback) {
             setTimeout(() => {
-                if(i >= this.initialChessList.length) {
+                if(i >= this.startChessList.length) {
                     callback();
                     return;
                 }
 
-                const item = this.initialChessList[i];
+                const item = this.startChessList[i];
                 this.getChess(item.x, item.y).type = item.type;
                 i++;
-                this.initialChessListToBoardData_withAnim(i, callback);
-            }, 500)
-        },
-
-        // 创建一个棋子数据
-        createChess: function (x, y, type, tipsType) {
-            return {
-                x,   // x轴坐标 
-                y,  // y轴坐标 
-                type,  // 棋子类型 
-                tipsType,  // 提示类型
-                tranCount: 0,  // 此处落子可翻转的棋子数量
-                score: 0,  // 此处落子可得评分 
-            }
+                this.startChessListToBoardData_withAnim(i, callback);
+            }, 400)
         },
 
         // ------------------------------ 一些基础信息获取 ------------------------------ 
@@ -188,70 +178,25 @@ export const useGameStore = defineStore({
             }
         },
 
-        // 获取坐标的字符串描写形式 
-        getXyStr: function (x, y) {
-            return getXyStr(x, y);
-        },
-
+        
         // ------------------------------ 棋盘操作 ------------------------------ 
-
-        // 遍历棋盘所有格子 (只遍历棋盘数据，不包括填充格)
-        forEachBoardData: function(callback){
-            this.boardData.forEach(tr => {
-                if(tr.type === 'fill') {
-                    return;
-                }
-                tr.forEach(td => {
-                    if(td.type === 'fill') {
-                        return;
-                    }
-                    callback(td);
-                })
-            });
-        },
 
         // 获取指定坐标的棋子
         getChess: function (x, y) {
-            return this.boardData[y][x];
+            return getChessByXy(this.boardData, x, y);
         },
 
-        // 获取指定棋盘，指定坐标的棋子 
-        getBoardChess: function (boardData, x, y) {
-            return boardData[y][x];
+        // 遍历棋盘数据
+        forEachBoardData: function (callback) {
+            forEachBoardData(this.boardData, callback);
         },
-    
+        
         // 获取每种棋子的数量
-        getChessCount: function () {
-            let blackCount = 0;  // 黑棋数量
-            let whiteCount = 0;  // 白棋数量
-            let noneCount = 0;  // 空格数量 
-            this.boardData.forEach(x => {
-                if(x.type === 'fill') {
-                    return;
-                }
-                x.forEach(y => {
-                    if(y.type === 'fill') {
-                        return;
-                    }
-                    if(y.type === 'black'){
-                        blackCount++;
-                    }
-                    else if(y.type === 'white'){
-                        whiteCount++;
-                    }
-                    else{
-                        noneCount++;
-                    }
-                })
-            });
-            return {
-                blackCount, 
-                whiteCount, 
-                noneCount
-            }
+        getChessCountInfo: function () {
+            return getChessCountInfo(this.boardData);
         },
 
-        // 在棋盘的指定位置落子，并在翻转所有棋子后回调一个函数 
+        // 在棋盘的指定位置落子，并在翻转所有棋子后回调一个函数 (判断该用哪个手指落子)
         downChess: function (x, y, downType, callback){
             const comStore = useComStore();
             const selectStore = useSelectStore();
@@ -303,9 +248,9 @@ export const useGameStore = defineStore({
                 if (selectStore.allowCoverDown) {
                     // 给个消息提示 
                     if(chess.type === downType) {
-                        sa.sendMessage(playerTypeName, 'warning', `覆盖落子 ${this.getXyStr(x, y)}，放弃棋子1枚。`);
+                        sa.sendMessage(playerTypeName, 'warning', `覆盖落子 ${getXyStr(x, y)}，放弃棋子1枚。`);
                     } else {
-                        sa.sendMessage(playerTypeName, 'warning', `覆盖落子 ${this.getXyStr(x, y)}，回收棋子1枚。`);
+                        sa.sendMessage(playerTypeName, 'warning', `覆盖落子 ${getXyStr(x, y)}，回收棋子1枚。`);
                     }
                     
                     // 覆盖原子 
@@ -321,8 +266,8 @@ export const useGameStore = defineStore({
             }
             
             // 判断该位置是否是可落子的位置
-            const mockDownChess = this.createChess(x, y, downType, 'none');
-            const mockTranArr = getTranList(mockDownChess.x, mockDownChess.y, mockDownChess.type, this.boardData, selectStore.xCount, selectStore.yCount);
+            const mockDownChess = createBackChess(x, y, downType);
+            const mockTranArr = getTranList(this.boardData, mockDownChess.x, mockDownChess.y, mockDownChess.type);
             if(mockTranArr.length === 0 && !selectStore.allowForceDown){
                 sa.sendMessage(playerTypeName, 'error', '此处不能落子！落子要求必须至少翻转一个对方棋子。');
                 return callback(false);
@@ -348,10 +293,10 @@ export const useGameStore = defineStore({
             
             // 收集所有应该转换的棋子，开始转换 
             const downChess = this.getChess(x, y);
-            const tranArr = getTranList(downChess.x, downChess.y, downChess.type, this.boardData, selectStore.xCount, selectStore.yCount);
+            const tranArr = getTranList(this.boardData, downChess.x, downChess.y, downChess.type);
             
             // 给个提示，回收了多少枚棋子 
-            sa.sendMessage(playerTypeName, 'info', `落子 ${this.getXyStr(x, y)}，回收棋子 ${tranArr.length} 枚。`);
+            sa.sendMessage(playerTypeName, 'info', `落子 ${getXyStr(x, y)}，回收棋子 ${tranArr.length} 枚。`);
             
             this.changeChessArrType_withAnim(tranArr, 0, () => {
                 this.prevIsPause = false; // 打个标记 
@@ -366,7 +311,7 @@ export const useGameStore = defineStore({
             })
         },
         
-        // 切换一组棋子类型（带延迟动画）
+        // 切换一组棋子类型（带翻转延迟动画）
         changeChessArrType_withAnim: function (tranArr, i = 0, callback) {
             setTimeout(() => {
                 if(i >= tranArr.length) {
@@ -379,33 +324,14 @@ export const useGameStore = defineStore({
         },
 
         // 计算棋盘所有可落子位置 
-        getCanDown: function (playerType) {
-            playerType = playerType ?? this.currentPlayerType;
-            const canDownArr = [];
-            let selectStore = useSelectStore();
-
-            // 遍历所有棋子，计算每个格子是否可以落子
-            this.forEachBoardData(chess => {
-                if(chess.type !== 'none'){
-                    return;
-                }
-                // 假设在此处落子，有超过1个棋子是可以转换的，则代表此处可以落子
-                const mockDownChess = this.createChess(chess.x, chess.y, playerType, 'none');
-                const mockTranArr = getTranList(mockDownChess.x, mockDownChess.y, mockDownChess.type, this.boardData, selectStore.xCount, selectStore.yCount);
-                if(mockTranArr.length > 0){
-                    chess.tranCount = mockTranArr.length;
-                    canDownArr.push(chess);
-                }
-            })
-
-            // 
-            return canDownArr;
+        getCanDown: function () {
+            return getCanDownArray(this.boardData, this.currentPlayerType);
         },
 
         // 计算并显示当前玩家的可落子位置 
         showCanDown: function () {
             const chessType = this.currentPlayerType;
-            this.getCanDown().forEach(chess => chess.tipsType = chessType);
+            this.getCanDown().forEach(chess => this.getChess(chess.x, chess.y).tipsType = chessType);
         },
 
         // 计算并显示当前玩家的可落子位置（根据 selectStore 里的配置，智能判断该不该显示） 
@@ -416,7 +342,7 @@ export const useGameStore = defineStore({
             }
         },
 
-        // 清楚所有可落子提示
+        // 清除所有可落子提示
         clearCanDown: function () {
             this.forEachBoardData(chess => {
                 chess.tipsType = 'none';
@@ -531,7 +457,7 @@ export const useGameStore = defineStore({
         
         // 在程序已结束时，获取棋盘结算数据 str
         getEndJsStr: function () {
-            const chessCount = this.getChessCount();
+            const chessCount = this.getChessCountInfo();
             let endData = '';
             if(chessCount.blackCount > chessCount.whiteCount){
                 endData = '黑子获胜！';

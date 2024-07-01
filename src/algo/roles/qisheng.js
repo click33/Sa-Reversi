@@ -1,5 +1,5 @@
-import {calcCanArrScore} from "../playing-chess/ai-calc-util";
-import {useSelectStore} from "../../store/select";
+import {calcCanArrScore, printCanDownArray} from "../playing-chess/easy-strategy";
+import {chaosArray} from "../playing-chess/common-util";
 
 /**
  * AI：棋圣陪练，行棋算法 
@@ -9,21 +9,19 @@ export default {
     name: '棋圣',
     // 落子
     downChess: function ({ downChessFunction, boardData, currentPlayerType, canDownArr }) {
-        // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
-        canDownArr.sort(() => Math.random() - 0.5);
+        // 打乱一下数组，让 AI 落子显得更随机一些
+        chaosArray(canDownArr);
         
         // 计算每个落子方案下的评分 
-        const selectStore = useSelectStore();
-        canDownArr = calcCanArrScore(canDownArr, selectStore.xCount, selectStore.yCount);
+        const { xCount, yCount } = getBoardXyCount(boardData);
+        canDownArr = calcCanArrScore(canDownArr, xCount, yCount);
 
         // 按照 score 评分从小到大升序排列  
         canDownArr.sort((a, b) => a.score - b.score);
 
-        console.log('------------- 策略集合 --------------')
-        canDownArr.forEach(item => {
-            console.log(item.score, JSON.stringify(item));
-        });
-
+        // 在 f12 控制台打印一下
+        printCanDownArray(canDownArr);
+        
         // 棋圣 固定选择最后一个落子方案，得分最高
         downChessFunction(canDownArr[canDownArr.length - 1]);
     }

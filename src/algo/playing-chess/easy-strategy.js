@@ -1,7 +1,8 @@
-// AI 计算相关工具函数 2.0 版本 
+// 简单行棋策略计算相关函数 
 
-import {getTranList} from "./ai-calc-coomon";
-import {useGameStore} from "../../store/game";
+import {createBackChess, getXyStr, hasChessXy} from "./chess-funs";
+import {getTranList} from "./tran-funs";
+import {getBoardXyCount} from "./board-funs";
 
 const scoreMap = {
     'jiao': 15,  // 四角，15分 
@@ -13,29 +14,40 @@ const scoreMap = {
 }
 
 // 计算数组中每个落子方案的得分 
-export const calcCanArrScore2 = function (canArr, boardData, chessType, xCount, yCount) {
+export const calcCanArrScore = function (canArr, xCount, yCount) {
 
-    const gameStore = useGameStore();
-    console.log('canArr ', canArr)
+    canArr.forEach(item => {
+        item.score = item.tranCount + calcXyScore(item, xCount, yCount);
+    })
+    
+    return canArr;
+}
 
+// 计算数组中每个落子方案的得分（连带着翻转的棋子一起计算）
+export const calcCanArrScore2 = function (canArr, boardData, chessType) {
+
+    const { xCount, yCount } = getBoardXyCount(boardData);
+    
     canArr.forEach(downChess => {
         // 落子位置所得分 
         const downChessScore = calcXyScore(downChess, xCount, yCount);
-        
+
         // 翻转棋子所有位置总得分 
-        const mockDownChess = gameStore.createChess(downChess.x, downChess.y, chessType, 'none');
-        const mockTranArr = getTranList(mockDownChess.x, mockDownChess.y, mockDownChess.type, boardData, xCount, yCount);
+        const mockDownChess = createBackChess(downChess.x, downChess.y, chessType);
+        const mockTranArr = getTranList(boardData, mockDownChess.x, mockDownChess.y, mockDownChess.type);
         let tranChessScore = 0;
         mockTranArr.forEach(item => {
             tranChessScore += calcXyScore(item, xCount, yCount);
         })
-        
-        // 总得分 = 翻转棋子数量 + 落子所得分 + 翻转棋子总所得分
+
+        // 总得分 = 落子所得分 + 翻转棋子总所得分
+        downChess.downChessScore = downChessScore;
+        downChess.tranChessScore = tranChessScore;
         downChess.score = downChessScore + tranChessScore;
         // downChess.score = downChess.tranCount + downChessScore + tranChessScore;
-        console.log(downChess.x, downChess.y, '落子得分：' + downChessScore, '翻转子得分：' + tranChessScore, '总得分：' + downChess.score);
+        // console.log(downChess.x, downChess.y, '落子得分：' + downChessScore, '翻转子得分：' + tranChessScore, '总得分：' + downChess.score);
     })
-    
+
     return canArr;
 }
 
@@ -55,7 +67,7 @@ export const calcXyFuWeiName = function (item, xCount, yCount) {
         {x: 1, y: yCount}, 
         {x: xCount, y: yCount} 
     ];
-    if( hasXy(jiaoArr, item) ){
+    if( hasChessXy(jiaoArr, item) ){
         return 'jiao';
     }
 
@@ -66,7 +78,7 @@ export const calcXyFuWeiName = function (item, xCount, yCount) {
         {x: 2, y: yCount}, {x: 1, y: yCount - 1},
         {x: xCount - 1, y: yCount}, {x: xCount, y: yCount - 1},
     ];
-    if( hasXy(jiaoPangArr, item) ){
+    if( hasChessXy(jiaoPangArr, item) ){
         return 'jiaoPang';
     }
     
@@ -77,7 +89,7 @@ export const calcXyFuWeiName = function (item, xCount, yCount) {
         {x: 2, y: yCount - 1},
         {x: xCount - 1, y: yCount - 1}
     ];
-    if( hasXy(ciJiaoArr, item) ){
+    if( hasChessXy(ciJiaoArr, item) ){
         return 'ciJiao';
     }
 
@@ -97,16 +109,10 @@ export const calcXyFuWeiName = function (item, xCount, yCount) {
     return 'normal';
 }
 
-// arr 中是否包含 item 
-const hasXy = function (arr, item2) {
-    for (const item of arr) {
-        if(equalsXy(item, item2)) {
-            return true;
-        }
-    }
-    return false;
-}
-// 两个item坐标是否相同
-const equalsXy = function (item, item2) {
-    return item.x === item2.x && item.y === item2.y;
+// 在 f12 控制台打印 canDownArr
+export const printCanDownArray = function (canDownArr) {
+    console.log('------------- 策略集合 --------------')
+    canDownArr.forEach(item => {
+        console.log(`${getXyStr(item)}，回收棋子${item.tranCount}枚，落子评分：${item.score}`, item);
+    });
 }

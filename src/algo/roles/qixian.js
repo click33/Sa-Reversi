@@ -1,15 +1,8 @@
-import {calcCanArrScore2} from "../playing-chess/ai-calc-util2";
-import {useSelectStore} from "../../store/select";
 import {useGameStore} from "../../store/game";
-import {
-    getXyStr,
-    calcStrategyTree, printStrategyTree
-} from "../playing-chess/ai-calc-coomon";
-import {calcCanArrScore} from "../playing-chess/ai-calc-util";
-import {getCanDownArray} from "../playing-chess/ai-calc-coomon";
+import {calcStrategyTree} from "../playing-chess/depth-strategy";
 
 /**
- * AI：旗仙陪练，行棋算法 
+ * AI：棋仙陪练，行棋算法 
  */
 export default {
     id: 'qixian',
@@ -20,7 +13,6 @@ export default {
         const gameStore = useGameStore();
         // gameStore.strategyTree = [];
         gameStore.inCalcStrategy = true;
-        
         
         nextTick(function () {
             setTimeout(function () {
