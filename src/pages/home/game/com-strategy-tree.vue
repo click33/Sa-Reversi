@@ -131,15 +131,10 @@ const getStrategyChessTypeName = () => {
         .el-tree-node__children .el-tree-node__children .el-tree-node__children .el-tree-node__children .el-tree-node__children .el-tree-node__content{ color: #aaa; }
     }
     
-    .min-max-tips{
-        margin-left: 5px;
-        color: #DA70D6;
-    }
-    
-    .cz-btn{
-        float: right;
-        margin-right: 10px;
-    }
+    // 最大最小
+    .min-max-tips{margin-left: 5px;color: #DA70D6;}
+    // 
+    .cz-btn{float: right; margin-right: 10px;}
     
 }
 

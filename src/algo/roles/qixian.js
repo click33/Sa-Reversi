@@ -15,7 +15,7 @@ export default {
     id: 'qixian',
     name: '棋仙',
     // 落子
-    downChess: function (downChessFunction, currentPlayerType, canDownArr) {
+    downChess: function ({ downChessFunction, boardData, currentPlayerType, canDownArr }) {
 
         const gameStore = useGameStore();
         // gameStore.strategyTree = [];

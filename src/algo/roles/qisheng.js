@@ -8,7 +8,7 @@ export default {
     id: 'qisheng',
     name: '棋圣',
     // 落子
-    downChess: function (downChessFunction, currentPlayerType, canDownArr) {
+    downChess: function ({ downChessFunction, boardData, currentPlayerType, canDownArr }) {
         // 打乱顺序（如果不打乱一下，AI落子会有向上落子的倾向）
         canDownArr.sort(() => Math.random() - 0.5);
         

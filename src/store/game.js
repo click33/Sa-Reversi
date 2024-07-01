@@ -459,13 +459,17 @@ export const useGameStore = defineStore({
             });
         },
         
+        // 落子回调函数 
+        downChessFunction: function(informDown) {
+            this.downChess(informDown.x, informDown.y, this.currentPlayerType, ( isDownSuccess ) => {
+                if(isDownSuccess) {
+                    this.next();
+                }
+            });
+        },
+        
         // 程序走一个落子步骤  
         stepForward: function() {
-            this.stepForwardMethod();
-        },
-
-        // 程序走一个落子步骤  
-        stepForwardMethod: function() {
             // console.log('开始AI落子');
 
             // 当前执子玩家 
@@ -493,23 +497,13 @@ export const useGameStore = defineStore({
                 return;
             }
 
-            // AI 落子回调函数 
-            const downChessFunction = informDown => {
-                this.downChess(informDown.x, informDown.y, currentPlayerType, ( isDownSuccess ) => {
-                    if(isDownSuccess) {
-                        this.next();
-                    }
-                });
-            }
-
             // 调用 AI 算法落子 
             // 参数：落子回调，当前活动角色，可落子位置数组 
-            // const aiRole = '';
-
-            const aiRole = this.getCurrentRole();
-            aiRole.downChess(downChessFunction, currentPlayerType, canDownArr);
+            const downChessFunction = this.downChessFunction;
+            const boardData = this.boardData;
+            this.getCurrentRole().downChess({ downChessFunction, boardData, currentPlayerType, canDownArr });
         },
-        
+
         // 程序进行下一步动作 
         next: function () {
             // 停顿 500ms 再下一步，让用户视觉上更容易看到落子过程  
