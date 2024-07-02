@@ -7,6 +7,13 @@ export const copyObject = function (chess) {
     return JSON.parse(JSON.stringify(chess));
 };
 
+// 拷贝对象属性 obj1-> obj2
+export const copyProperty = function (obj1, obj2) {
+    for (const key in obj1) {
+        obj2[key] = obj1[key];
+    }
+};
+
 // 拷贝一个数组 
 export const copyArray = function (array) {
     const newArray = [];

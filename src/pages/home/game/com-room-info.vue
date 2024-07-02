@@ -47,6 +47,18 @@
             </div>
             <!-- 一项信息 -->
             <div class="info-item">
+                <div class="info-role">回合：</div>
+                <p class="info-p-info right-to-left-6">
+                    <span class="fade-in-ys2" v-if="gameStore.stepList.length === 0">开局</span>
+                    <span class="fade-in-ys2" v-else>
+                        <span>{{ gameStore.stepIndex}}</span>
+                        <span> / </span>
+                        <span>{{ gameStore.stepList.length - 1 }}</span>
+                    </span>
+                </p>
+            </div>
+            <!-- 一项信息 -->
+            <div class="info-item">
                 <div class="info-role">执子：</div>
                 <p class="info-p-info right-to-left-6">
                     <span class="fade-in-ys2" v-if="gameStore.currentPlayerType === 'black'">等待黑方落子...</span>

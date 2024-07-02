@@ -2,7 +2,8 @@
 <template>
     <div class="con-box vue-box">
         <el-button type="primary" @click="openStrategyTree">策略树</el-button>
-
+        <el-button type="primary" @click="stepBack" :disabled="gameStore.stepIndex === 0 || gameStore.stepList.length === 0">← 后退</el-button>
+        <el-button type="primary" @click="stepForward" :disabled="gameStore.stepIndex === gameStore.stepList.length - 1">前进 →</el-button>
 
         <!-- 策略树窗口 -->
         <lay-layer v-model="state.showStrategyTree"
@@ -26,6 +27,9 @@ import {useDictStore} from "../../../store/dict";
 import {useGameStore} from "../../../store/game";
 import ComStrategyTree from '../game/com-strategy-tree.vue';
 import {reactive} from "vue";
+import {forEachBoardData, getBoardToString, setChessByXy} from "../../../algo/playing-chess/board-funs";
+import {copyProperty} from "../../../algo/playing-chess/common-util";
+import {__nextChessType} from "../../../algo/playing-chess/chess-funs";
 let selectStore = useSelectStore();
 var dictStore = useDictStore();
 var gameStore = useGameStore();
@@ -37,12 +41,51 @@ const state = reactive({
 });
 
 
+// 打开策略树 
 const openStrategyTree = () => {
     if(document.body.clientWidth < 768) {
         return sa.msg('屏幕太小了，显示不开，来电脑端体验吧');
     }
     state.showStrategyTree = true;
 }
+
+// 后退
+const stepBack = () => {
+    if(gameStore.stepIndex <= 0) {
+        return sa.msg('已经最前了!');
+    }
+    gameStore.stepIndex--;
+    const step = gameStore.stepList[gameStore.stepIndex];
+    forEachBoardData(step.boardData, chess => {
+        copyProperty(chess, gameStore.getChess(chess.x, chess.y));
+    })
+    gameStore.currentPlayerType = step.nextPlayerType;
+    gameStore.showCanDownByConfig();
+    
+    console.log('回退成功，该你下起了 ', gameStore.currentPlayerType)
+    console.log(step)
+    console.log(getBoardToString(step.boardData));
+}
+
+// 前进 
+const stepForward = () => {
+    if(gameStore.stepIndex >= gameStore.stepList.length - 1) {
+        return sa.msg('已经最后了!');
+    }
+    gameStore.stepIndex++;
+    const step = gameStore.stepList[gameStore.stepIndex];
+    forEachBoardData(step.boardData, chess => {
+        copyProperty(chess, gameStore.getChess(chess.x, chess.y));
+    })
+    gameStore.currentPlayerType = step.nextPlayerType;
+    gameStore.showCanDownByConfig();
+
+    console.log('前进成功，该你下起了 ', gameStore.currentPlayerType)
+    console.log(step)
+    console.log(getBoardToString(step.boardData));
+}
+
+
 
 // ------------------ 生命周期 ------------------
 onMounted(() => {

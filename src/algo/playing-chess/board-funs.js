@@ -77,6 +77,25 @@ export const __copyBoardData = function (boardData) {
     return copyBoardData;
 };
 
+// 拷贝棋盘 （只保留一些后台计算需要的属性）
+export const __copyBoardDataToBack = function (boardData) {
+    const copyBoardData = [];
+    boardData.forEach(tr => {
+        if (tr.type === 'fill') {
+            const copyTr = copyObject(tr);
+            copyBoardData.push(copyTr);
+            return;
+        }
+        const copyTr = [];
+        tr.forEach(td => {
+            const copyTd = copyObject(td);
+            copyTr.push(copyTd);
+        })
+        copyBoardData.push(copyTr);
+    });
+    return copyBoardData;
+};
+
 // 获取一个棋盘的字符串描写形式 
 export const getBoardToString = function (boardData) {
     let fullStr = '';

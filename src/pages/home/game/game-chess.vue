@@ -3,7 +3,7 @@
     <div ref="chessRef" 
          class="chess" :class=" [
              ('chess-' + state.type), 
-             (gameStore.justX === state.x && gameStore.justY === state.y ? 'chess-just-down' : ''), 
+             (state.isJustDown ? 'chess-just-down' : ''), 
              (state.animClass),
              (state.isJustTran ? 'chess-just-tran' : ''),
              ] "
@@ -58,6 +58,7 @@ watch(chess, (item) => {
     state.type = item.type;
     state.tipsType = item.tipsType;
     state.tranCount = item.tranCount;
+    state.isJustDown = item.isJustDown;
     state.isJustTran = item.isJustTran;
     // console.log('item---', item)
     // console.log('gameStore.getChess(prop.x, prop.y)', gameStore.getChess(prop.x, prop.y))

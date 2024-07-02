@@ -13,6 +13,7 @@ export const createChess = function (x, y, type) {
         tipsType: 'none',  // 提示类型
         tranCount: 0,  // 此处落子可翻转的棋子数量
         score: 0,  // 此处落子可得评分 
+        isJustDown: false,  // 是否为刚刚落子的棋子 
         isJustTran: false,  // 是否为刚刚翻转的棋子  
     }
 };
@@ -26,6 +27,11 @@ export const createBackChess = function (x, y, type) {
         tranCount: 0,  // 此处落子可翻转的棋子数量 
         score: 0,  // 此处落子可得评分 
     }
+};
+
+// 拷贝棋子（只保留一些后台计算需要的属性）
+export const copyChessToBack = function (chess) {
+    return createBackChess(chess.x, chess.y, chess.type);
 };
 
 // 判断一个 格子/棋子 是否为 已经落子 状态
