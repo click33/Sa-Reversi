@@ -49,7 +49,7 @@
             <div class="info-item">
                 <div class="info-role">回合：</div>
                 <p class="info-p-info right-to-left-6">
-                    <span class="fade-in-ys2" v-if="gameStore.stepList.length === 0">开局</span>
+                    <span class="fade-in-ys2" v-if="gameStore.stepIndex === -1">开局</span>
                     <span class="fade-in-ys2" v-else>
                         <span>{{ gameStore.stepIndex}}</span>
                         <span> / </span>

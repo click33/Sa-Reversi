@@ -54,7 +54,9 @@ watch(chess, (item) => {
     }
     
     // 动画与数据 
-    state.animClass = `${state.type}-to-${item.type}`;
+    if(state.type !== item.type) {
+        state.animClass = `${state.type}-to-${item.type}`;
+    }
     state.type = item.type;
     state.tipsType = item.tipsType;
     state.tranCount = item.tranCount;
@@ -156,6 +158,18 @@ onMounted(() => {
     @keyframes none-to-white {
         0%{ width: 0; height: 0; }
         100%{ width: 85%; height: 85%; background-color: #FFF;}
+    }
+    // 黑子变无子 动画 
+    .black-to-none{ animation: black-to-none 0.3s ease-out 1; }
+    @keyframes black-to-none {
+        0%{ width: 85%; height: 85%; background-color: #000;}
+        100%{ width: 0; height: 0; }
+    }
+    // 白子变无子 动画 
+    .white-to-none{ animation: white-to-none 0.3s ease-out 1; }
+    @keyframes white-to-none {
+        0%{ width: 85%; height: 85%; background-color: #FFF;}
+        100%{ width: 0; height: 0; }
     }
     // 黑子变白子 动画 
     .black-to-white{ animation: black-to-white 0.3s ease-out 1; }

@@ -15,6 +15,7 @@ import {
     getChessCountInfo
 } from "../algo/playing-chess/board-funs";
 import {createStep} from "../algo/playing-chess/step-funs";
+import {copyProperty} from "../algo/playing-chess/common-util";
 
 /**
  * 定义游戏进行时参数信息 
@@ -64,6 +65,8 @@ export const useGameStore = defineStore({
                 useMessageStore().index = 0;
                 sa.sendMessage('系统', 'success', '游戏开始...');
 
+                this.stepIndex = -1;
+                
                 // 显示初始落子
                 sa.sendMessage('系统', 'info', '正在进行初始落子...');
                 this.calcStartChessList();
@@ -74,9 +77,9 @@ export const useGameStore = defineStore({
                     this.setCurrentPlayerType('black');
                     
                     // 记录此时的棋盘数据
-                    this.addStep(this.currentPlayerType, 'start');
+                    this.addStep(-1, -1, 'none', this.currentPlayerType, 'start');
                     
-                    this.stepForward();
+                    this.procForward();
                 });
 
             });
@@ -212,47 +215,42 @@ export const useGameStore = defineStore({
         },
 
         // 在棋盘的指定位置落子，并在翻转所有棋子后回调一个函数 (判断该用哪个手指落子)
-        downChess: function (x, y, downType, callback){
+        downChess_withAnim: function (x, y, downType, callback){
             const comStore = useComStore();
             const selectStore = useSelectStore();
             
             // 判断此次应该用哪个手指进行落子 
             
-            // 双 user，不使用手指 
-            if(selectStore.blackRole === 'user' && selectStore.whiteRole === 'user'){
-                return this.downChess_Method(x, y, downType, callback);
-            }
-            
-            // 双 AI，必使用手指：黑子用 weFinger，白子用 enemyFinger
-            if(selectStore.blackRole !== 'user' && selectStore.whiteRole !== 'user'){
+            // 双 user 或 双 AI，必使用手指：黑子用 weFinger，白子用 enemyFinger
+            if( (selectStore.blackRole === 'user' && selectStore.whiteRole === 'user') || (selectStore.blackRole !== 'user' && selectStore.whiteRole !== 'user') ){
                 if(downType === 'black'){
-                    return comStore.weFinger.down(x, y, () => this.downChess_Method(x, y, downType, callback));
+                    return comStore.weFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
                 } else {
-                    return comStore.enemyFinger.down(x, y, () => this.downChess_Method(x, y, downType, callback));
+                    return comStore.enemyFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
                 }
             }
             
             // 黑子 AI，白子 user，黑手落子时使用 enemyFinger 手指 
             if(selectStore.blackRole !== 'user' && selectStore.whiteRole === 'user'){
                 if(downType === 'black'){
-                    return comStore.enemyFinger.down(x, y, () => this.downChess_Method(x, y, downType, callback));
+                    return comStore.enemyFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
                 } else {
-                    return this.downChess_Method(x, y, downType, callback);
+                    return comStore.weFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
                 }
             }
             
             // 黑子 user，白子 AI，白手落子时使用 enemyFinger 手指 
             if(selectStore.blackRole === 'user' && selectStore.whiteRole !== 'user'){
                 if(downType === 'white'){
-                    return comStore.enemyFinger.down(x, y, () => this.downChess_Method(x, y, downType, callback));
+                    return comStore.enemyFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
                 } else {
-                    return this.downChess_Method(x, y, downType, callback);
+                    return comStore.weFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
                 }
             }
         },
         
         // 在棋盘的指定位置落子，并在翻转所有棋子后回调一个函数 
-        downChess_Method: function (x, y, downType, callback) {
+        downChess_noneAnim: function (x, y, downType, callback) {
 
             const selectStore = useSelectStore();
             const chess = this.getChess(x, y);
@@ -299,8 +297,7 @@ export const useGameStore = defineStore({
             sa.sendMessage(playerTypeName, 'info', `落子 ${getXyStr(x, y)}，回收棋子 ${tranArr.length} 枚。`);
             this.changeChessArrType_withAnim(tranArr, 0, () => {
                 this.prevIsPause = false; // 打个标记 
-                this.addStep(this.getNextPlayerType(), this.getCurrentRole().id);
-                callback(true);
+                callback(true, chess);
             });
         },
         
@@ -338,7 +335,7 @@ export const useGameStore = defineStore({
             // 先清除原来的 
             this.clearCanDownTips();
             nextTick(() => {
-                setTimeout(function (){
+                setTimeout(() => {
                     const chessType = this.currentPlayerType;
                     this.getCanDown().forEach(chess => this.getChess(chess.x, chess.y).tipsType = chessType);
                 }, 10)
@@ -401,12 +398,12 @@ export const useGameStore = defineStore({
         // ------------------------------ 落子步骤记录 ------------------------------ 
         
         // 增加一个落子步骤 
-        addStep: function (nextPlayerType, role) {
+        addStep: function (x, y, type, nextPlayerType, role) {
             this.stepIndex++;
             
             // 镜像一下棋盘数据 
             const boardData = __copyBoardData(this.boardData);
-            const step = createStep(this.stepIndex, nextPlayerType, role, boardData);
+            const step = createStep(this.stepIndex, x, y, type, nextPlayerType, role, boardData);
             this.stepList.push(step);
             
             // 如果后面有着法，则清空后面的着法  
@@ -416,13 +413,74 @@ export const useGameStore = defineStore({
             
         },
 
-        
+        // 后退一步
+        stepBack: function() {
+            if(this.stepIndex <= 0) {
+                return sa.msg('已经最前了!');
+            }
+            this.stepIndex--;
+            const step = this.stepList[this.stepIndex];
+            forEachBoardData(step.boardData, chess => {
+                copyProperty(chess, this.getChess(chess.x, chess.y));
+            })
+            this.currentPlayerType = step.nextPlayerType;
+            this.showCanDownByConfig();
+
+            // console.log('回退成功，该你下棋了 ', gameStore.currentPlayerType)
+            // console.log(step)
+            // console.log(getBoardToString(step.boardData));
+        },
+
+        // 前进一步
+        stepForward: function() {
+            if(this.stepIndex >= this.stepList.length - 1) {
+                return sa.msg('已经最后了!');
+            }
+            this.stepIndex++;
+            const step = this.stepList[this.stepIndex];
+            forEachBoardData(step.boardData, chess => {
+                copyProperty(chess, this.getChess(chess.x, chess.y));
+            })
+            this.currentPlayerType = step.nextPlayerType;
+            this.showCanDownByConfig();
+
+            // console.log('前进成功，该你下棋了 ', this.currentPlayerType)
+            // console.log(step)
+            // console.log(getBoardToString(step.boardData));
+        },
+
+        // 带动画前进一步 【待开发】
+        stepForward_withAnim: function() {
+            if(this.stepIndex >= this.stepList.length - 1) {
+                return sa.msg('已经最后了!');
+            }
+            this.stepIndex++;
+            const step = this.stepList[this.stepIndex];
+
+            this.downChess_withAnim(step.x, step.y, step.type, ( isDownSuccess, chess ) => {
+                this.currentPlayerType = step.nextPlayerType;
+                this.showCanDownByConfig();
+            });
+            
+            // forEachBoardData(step.boardData, chess => {
+            //     copyProperty(chess, this.getChess(chess.x, chess.y));
+            // })
+            
+            
+
+            // console.log('前进成功，该你下棋了 ', this.currentPlayerType)
+            // console.log(step)
+            // console.log(getBoardToString(step.boardData));
+        },
+
+
         // ------------------------------ 程序运转 ------------------------------ 
 
         // 用户手动落子调用的方法 
         userDownChess: function(x, y) {
-            this.downChess(x, y, this.currentPlayerType, ( isDownSuccess ) => {
+            this.downChess_noneAnim(x, y, this.currentPlayerType, ( isDownSuccess, chess ) => {
                 if(isDownSuccess) {
+                    this.addStep(chess.x, chess.y, chess.type, this.getNextPlayerType(), this.getCurrentRole().id);
                     this.next();
                 }
             });
@@ -430,15 +488,16 @@ export const useGameStore = defineStore({
         
         // 落子回调函数 
         downChessFunction: function(informDown) {
-            this.downChess(informDown.x, informDown.y, this.currentPlayerType, ( isDownSuccess ) => {
+            this.downChess_withAnim(informDown.x, informDown.y, this.currentPlayerType, ( isDownSuccess, chess ) => {
                 if(isDownSuccess) {
+                    this.addStep(chess.x, chess.y, chess.type, this.getNextPlayerType(), this.getCurrentRole().id);
                     this.next();
                 }
             });
         },
         
         // 程序走一个落子步骤  
-        stepForward: function() {
+        procForward: function() {
             // console.log('开始AI落子');
 
             // 当前执子玩家 
@@ -486,7 +545,7 @@ export const useGameStore = defineStore({
                 this.changeCurrentPlayerType();
 
                 // 下一步
-                this.stepForward();
+                this.procForward();
             }, 500);
         },
 
