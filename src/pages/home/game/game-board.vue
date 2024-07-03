@@ -31,6 +31,7 @@ import GameChess from "./game-chess.vue";
 import {useGameStore} from "../../../store/game";
 import {useSelectStore} from "../../../store/select";
 import {useDictStore} from "../../../store/dict";
+import {getXyStr} from "../../../algo/playing-chess/chess-funs";
 const gameStore = useGameStore();
 const selectStore = useSelectStore();
 const { proxy } = getCurrentInstance();
@@ -39,17 +40,38 @@ const dictStore = useDictStore();
 
 // 点击单元格
 const down = (x, y) => {
-    if(gameStore.status === 'defDown') {
+    
+    if(gameStore.status === 'notStarted') {
+        return sa.sendMessage('系统', 'warning', '游戏尚未开始...');
+    }
+    if(gameStore.status === 'startDown') {
         return sa.sendMessage('系统', 'warning', '请等待初始棋子落子完毕。');
     }
-    else if(gameStore.status === 'userDown') {
-        gameStore.userDownChess(x, y);
-    }
     else if(gameStore.status === 'end') {
-        return sa.sendMessage('系统', 'success', '对局已结束！' + gameStore.getEndJsStr(), true);
+        return sa.sendMessage('系统', 'success', '对局已结束！' + gameStore.getEndJsStr());
     }
-    else if(gameStore.status === 'tran') {
-        return sa.sendMessage('系统', 'warning', '请等待 AI 运算完毕或棋子翻转完毕。');
+    else if(gameStore.status === 'judge') {
+        return sa.sendMessage('系统', 'warning', '系统判断中，请稍后操作...');
+    }
+    else if(gameStore.status === 'blackDown' || gameStore.status === 'whiteDown') {
+        return sa.sendMessage('系统', 'warning', '请等待落子完毕...');
+    }
+    else if(gameStore.status === 'waitBlack' || gameStore.status === 'waitWhite') {
+        // 计算是否需要给出相应的提示 
+        const isLatestStep = gameStore.stepIndex + 1 >= gameStore.stepList.length - 1; // 是否是最后一步，或全新步
+        const role = gameStore.getRole(gameStore.currentPlayerType);
+        if(role.id === 'user' && isLatestStep) {
+            gameStore.userDownChess(x, y);
+        }
+        else if(role.id === 'user' && !isLatestStep) {
+            sa.confirm(`落子${getXyStr(x, y)}，将清空后续已有回合记录，是否继续？`, () => gameStore.userDownChess(x, y) );
+        }
+        else if(role.id !== 'user' && isLatestStep) {
+            sa.confirm(`代替AI落子${getXyStr(x, y)}，是否继续？`, () => gameStore.userDownChess(x, y) );
+        }
+        else if(role.id !== 'user' && !isLatestStep) {
+            sa.confirm(`代替AI落子${getXyStr(x, y)}，并清空后续已有回合记录，是否继续？`, () => gameStore.userDownChess(x, y) );
+        }
     }
 }
 

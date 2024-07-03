@@ -1,5 +1,6 @@
 import {calcCanArrScore, printCanDownArray} from "../playing-chess/easy-strategy";
 import {chaosArray} from "../playing-chess/common-util";
+import {getBoardXyCount} from "../playing-chess/board-funs";
 
 /**
  * AI：棋圣陪练，行棋算法 
@@ -8,7 +9,7 @@ export default {
     id: 'qisheng',
     name: '棋圣',
     // 落子
-    downChess: function ({ downChessFunction, boardData, currentPlayerType, canDownArr }) {
+    downChess: function ({ downChessFunction, boardData, downChessType, canDownArr }) {
         // 打乱一下数组，让 AI 落子显得更随机一些
         chaosArray(canDownArr);
         
@@ -23,6 +24,6 @@ export default {
         printCanDownArray(canDownArr);
         
         // 棋圣 固定选择最后一个落子方案，得分最高
-        downChessFunction(canDownArr[canDownArr.length - 1]);
+        downChessFunction(canDownArr[canDownArr.length - 1], downChessType);
     }
 }

@@ -31,8 +31,8 @@ export const useDictStore = defineStore({
     },
     actions: {
         // 根据等级获取等级名称
-        getRole(aiRoleId) {
-            return this.roleList.find(item => item.id === aiRoleId);
+        getRole(roleId) {
+            return this.roleList.find(item => item.id === roleId);
         },
     }
 })

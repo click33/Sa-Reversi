@@ -9,7 +9,7 @@ export default {
     id: 'caigou',
     name: '菜狗',
     // 落子
-    downChess: function ({ downChessFunction, boardData, currentPlayerType, canDownArr }) {
+    downChess: function ({ downChessFunction, boardData, downChessType, canDownArr }) {
         // 打乱一下数组，让 AI 落子显得更随机一些
         chaosArray(canDownArr);
 
@@ -21,9 +21,11 @@ export default {
         canDownArr.sort((a, b) => a.score - b.score);
         
         // 在 f12 控制台打印一下
-        printCanDownArray(canDownArr);
+        // printCanDownArray(canDownArr);
 
         // 菜狗 固定选择第一个落子方案，得分最低 
-        downChessFunction(canDownArr[0]);
+        setTimeout(function () {
+            downChessFunction(canDownArr[0], downChessType);
+        }, 1)
     }
 }

@@ -4,7 +4,13 @@ import {useDictStore} from "./dict";
 import {useSettingStore} from "./setting";
 import {useMessageStore} from "./message";
 import {useComStore} from "./com";
-import {createBackChess, createChess, getXyStr} from "../algo/playing-chess/chess-funs";
+import {
+    __getChessTypeName,
+    __nextChessType,
+    createBackChess,
+    createChess,
+    getXyStr
+} from "../algo/playing-chess/chess-funs";
 import {getTranList} from "../algo/playing-chess/tran-funs";
 import {getCanDownArray} from "../algo/playing-chess/board-calc";
 import {
@@ -26,8 +32,11 @@ export const useGameStore = defineStore({
         return {
             isInit: false,  // 是否初始化
             currentPlayerType: 'black', // 当前执子玩家类型：black、white
-            status: 'defDown',  // 程序状态：defDown 默认棋子落子中，userDown 用户落子中，end 已结束，tran 翻转棋子或AI运算中 
-            prevIsPause: false,  // 上一个玩家状态是否为无子可落的跳过 
+            // 程序状态：notStarted=未开始，startDown 初始落子中，end=已结束，
+            // judge=系统判断中，每次落子完毕，系统判断下一步程序流程 
+            // waitBlack=等待黑棋落子，waitWhite=等待白棋落子，（等待其开始判断落在哪里了）
+            // blackDown=黑棋落子中，whiteDown=白棋落子中 （已经判断出该落在哪里了，开始落子/或已落子等待翻子动画完毕）
+            status: 'notStarted',  
             boardData: null,    // 棋盘数据
             startChessList: [],   // 初始落子数据
             stepIndex: -1,   // 目前下到了第几步 
@@ -68,21 +77,67 @@ export const useGameStore = defineStore({
                 this.stepIndex = -1;
                 
                 // 显示初始落子
+                this.status = 'startDown';
                 sa.sendMessage('系统', 'info', '正在进行初始落子...');
                 this.calcStartChessList();
                 this.startChessListToBoardData_withAnim(0, () => {
                     
                     // 投递个消息，初始落子完毕
                     sa.sendMessage('系统', 'info', '初始落子完毕，对战开始...');
-                    this.setCurrentPlayerType('black');
                     
-                    // 记录此时的棋盘数据
+                    // 镜像棋盘数据，用于回溯 
                     this.addStep(-1, -1, 'none', this.currentPlayerType, 'start');
-                    
-                    this.procForward();
+
+                    // 黑棋开始下棋 
+                    this.currentPlayerType = 'black';
+                    this.status  = 'judge';
                 });
 
             });
+        },
+
+        // 循环执行 
+        loop: function () {
+            
+            const status = this.status;
+            console.log(status)
+            
+            if(status === 'notStarted') {
+                return;
+            }
+            if(status === 'startDown') {
+                return;
+            }
+            if(status === 'end') {
+                return;
+            }
+            
+            const dictStore = useDictStore();
+            
+            // 系统判断中 
+            if(status === 'judge') {
+                return this.programJudge(this.currentPlayerType);
+            }
+            
+            // 等待黑棋落子  
+            if(status === 'waitBlack') {
+                return ;
+            }
+            // 等待白棋落子 
+            if(status === 'waitWhite') {
+                return ;
+            }
+            // 黑棋落子中 
+            if(status === 'blackDown') {
+                return;
+            }
+            // 白棋落子中 
+            if(status === 'whiteDown') {
+                return;
+            }
+            
+            // 未知状态 
+            console.log('未知状态：', status);
         },
         
         // 卸载游戏运算：从游戏界面离开时，需要停止后台的游戏运算
@@ -185,18 +240,40 @@ export const useGameStore = defineStore({
             return playerType === 'black' ? '黑子' : '白子';
         },
 
-        // 获取当前执子的所属角色 
-        getCurrentRole: function () {
+        // 获取指定执子玩家 对应的角色
+        getRole: function (playerType) {
             const dictStore = useDictStore();
             const selectStore = useSelectStore();
-            if(this.currentPlayerType === 'black') {
+            if(playerType === 'black') {
                 return dictStore.getRole(selectStore.blackRole);
             } else {
                 return dictStore.getRole(selectStore.whiteRole);
             }
         },
 
-        
+        // 获取黑棋执子所属角色 
+        getBlackRole: function () {
+            return this.getRole('black');
+        },
+
+        // 获取白棋执子所属角色 
+        getWhiteRole: function () {
+            return this.getRole('white');
+        },
+
+        // 获取当前执子的所属角色 
+        getCurrentRole: function () {
+            return this.getRole(this.currentPlayerType);
+        },
+
+        // 获取指定id的角色
+        getRoleById: function (id) {
+            const dictStore = useDictStore();
+            return dictStore.getRole(id);
+        },
+
+
+
         // ------------------------------ 棋盘操作 ------------------------------ 
 
         // 获取指定坐标的棋子
@@ -215,7 +292,7 @@ export const useGameStore = defineStore({
         },
 
         // 在棋盘的指定位置落子，并在翻转所有棋子后回调一个函数 (判断该用哪个手指落子)
-        downChess_withAnim: function (x, y, downType, callback){
+        fingerMoveAnim: function (x, y, downType, downAnimType, callback){
             const comStore = useComStore();
             const selectStore = useSelectStore();
             
@@ -224,27 +301,27 @@ export const useGameStore = defineStore({
             // 双 user 或 双 AI，必使用手指：黑子用 weFinger，白子用 enemyFinger
             if( (selectStore.blackRole === 'user' && selectStore.whiteRole === 'user') || (selectStore.blackRole !== 'user' && selectStore.whiteRole !== 'user') ){
                 if(downType === 'black'){
-                    return comStore.weFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
+                    return comStore.weFinger.down(x, y, downType, downAnimType, callback);
                 } else {
-                    return comStore.enemyFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
+                    return comStore.enemyFinger.down(x, y, downType, downAnimType, callback);
                 }
             }
             
             // 黑子 AI，白子 user，黑手落子时使用 enemyFinger 手指 
             if(selectStore.blackRole !== 'user' && selectStore.whiteRole === 'user'){
                 if(downType === 'black'){
-                    return comStore.enemyFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
+                    return comStore.enemyFinger.down(x, y, downType, downAnimType, callback);
                 } else {
-                    return comStore.weFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
+                    return comStore.weFinger.down(x, y, downType, downAnimType, callback);
                 }
             }
             
             // 黑子 user，白子 AI，白手落子时使用 enemyFinger 手指 
             if(selectStore.blackRole === 'user' && selectStore.whiteRole !== 'user'){
                 if(downType === 'white'){
-                    return comStore.enemyFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
+                    return comStore.enemyFinger.down(x, y, downType, downAnimType, callback);
                 } else {
-                    return comStore.weFinger.down(x, y, () => this.downChess_noneAnim(x, y, downType, callback));
+                    return comStore.weFinger.down(x, y, downType, downAnimType, callback);
                 }
             }
         },
@@ -256,7 +333,7 @@ export const useGameStore = defineStore({
             const chess = this.getChess(x, y);
             const playerTypeName = this.getPlayerTypeName( downType );
 
-            // 判断该位置是否已经有棋子了
+            // 判断该位置是否已经有棋子了，是否为覆盖落子
             if(chess.type === 'black' || chess.type === 'white'){
                 if (selectStore.allowCoverDown) {
                     // 给个消息提示 
@@ -268,23 +345,25 @@ export const useGameStore = defineStore({
                     
                     // 覆盖原子 
                     this.changeChessType(chess);
-                    this.clearCanDownTips();
                     this.showCanDownByConfig();
+                    this.addStep(chess.x, chess.y, downType, downType, this.getCurrentRole().id);
                 } else {
                     sa.sendMessage(playerTypeName, 'error', '这个地方已经有落子了，请更换落子位置！');
                 }
-                return callback(false);
+                this.status = downType === 'black' ? 'waitBlack' : 'waitWhite';
+                return;
             }
             
             // 判断该位置是否是可落子的位置
             const tranArr = getTranList(this.boardData, chess.x, chess.y, downType);
             if(tranArr.length === 0 && !selectStore.allowForceDown){
                 sa.sendMessage(playerTypeName, 'error', '此处不能落子！落子要求必须至少翻转一个对方棋子。');
-                return callback(false);
+                this.status = downType === 'black' ? 'waitBlack' : 'waitWhite';
+                return;
             }
             
             // 落子运算 
-            this.status = 'tran';
+            // this.status = 'tran';
             
             // 清除提示信息：可落子提示、上一次的翻转落子样式、上一次的落子高亮提示 
             this.clearAllTips();
@@ -296,7 +375,6 @@ export const useGameStore = defineStore({
             // 开始翻转棋子 
             sa.sendMessage(playerTypeName, 'info', `落子 ${getXyStr(x, y)}，回收棋子 ${tranArr.length} 枚。`);
             this.changeChessArrType_withAnim(tranArr, 0, () => {
-                this.prevIsPause = false; // 打个标记 
                 callback(true, chess);
             });
         },
@@ -306,7 +384,7 @@ export const useGameStore = defineStore({
             tranArr.forEach(item => {
                 const chess = this.getChess(tranArr[i].x, tranArr[i].y);
                 this.changeChessType(chess);
-                item.isJustTran = true;
+                chess.isJustTran = true;
             })
         },
         
@@ -338,14 +416,14 @@ export const useGameStore = defineStore({
                 setTimeout(() => {
                     const chessType = this.currentPlayerType;
                     this.getCanDown().forEach(chess => this.getChess(chess.x, chess.y).tipsType = chessType);
-                }, 10)
+                }, 10);
             });
         },
 
         // 计算并显示当前玩家的可落子位置（根据 selectStore 里的配置，智能判断该不该显示） 
         showCanDownByConfig: function () {
             const selectStore = useSelectStore();
-            if(selectStore.tipsDown) {
+            if(selectStore.tipsDown && this.getCurrentRole().id === 'user') {
                 this.showCanDown();
             }
         },
@@ -420,15 +498,21 @@ export const useGameStore = defineStore({
             }
             this.stepIndex--;
             const step = this.stepList[this.stepIndex];
+
+            // sa.sendMessage('系统', 'warning', `后退一步！`);
+            const stepNext = this.stepList[this.stepIndex + 1];
+            if(stepNext.x === -1 && stepNext.y === -1) {
+                sa.sendMessage('系统', 'warning', `后退一步！`);
+            } else {
+                sa.sendMessage('系统', 'warning', `后退一步：收回${__getChessTypeName(stepNext.type)}落子${getXyStr(stepNext)}`);
+            }
+
             forEachBoardData(step.boardData, chess => {
                 copyProperty(chess, this.getChess(chess.x, chess.y));
             })
             this.currentPlayerType = step.nextPlayerType;
+            this.status = this.currentPlayerType === 'black' ? 'waitBlack' : 'waitWhite';
             this.showCanDownByConfig();
-
-            // console.log('回退成功，该你下棋了 ', gameStore.currentPlayerType)
-            // console.log(step)
-            // console.log(getBoardToString(step.boardData));
         },
 
         // 前进一步
@@ -438,115 +522,136 @@ export const useGameStore = defineStore({
             }
             this.stepIndex++;
             const step = this.stepList[this.stepIndex];
+
+            if(step.x === -1 && step.y === -1) {
+                sa.sendMessage('系统', 'warning', `前进一步：${__getChessTypeName(step.type)}无处可落，${__getChessTypeName(step.nextPlayerType)}继续落子！`);
+            } else {
+                sa.sendMessage('系统', 'warning', `前进一步：${__getChessTypeName(step.type)}落子${getXyStr(step)}`);
+            }
+            
             forEachBoardData(step.boardData, chess => {
                 copyProperty(chess, this.getChess(chess.x, chess.y));
             })
             this.currentPlayerType = step.nextPlayerType;
+            this.status = this.currentPlayerType === 'black' ? 'waitBlack' : 'waitWhite';
             this.showCanDownByConfig();
-
-            // console.log('前进成功，该你下棋了 ', this.currentPlayerType)
-            // console.log(step)
-            // console.log(getBoardToString(step.boardData));
         },
 
-        // 带动画前进一步 【待开发】
+        // 带动画前进一步 
         stepForward_withAnim: function() {
             if(this.stepIndex >= this.stepList.length - 1) {
                 return sa.msg('已经最后了!');
             }
             this.stepIndex++;
             const step = this.stepList[this.stepIndex];
-
-            this.downChess_withAnim(step.x, step.y, step.type, ( isDownSuccess, chess ) => {
+            
+            const fn = () => {
+                forEachBoardData(step.boardData, chess => {
+                    copyProperty(chess, this.getChess(chess.x, chess.y));
+                })
                 this.currentPlayerType = step.nextPlayerType;
+                this.status = this.currentPlayerType === 'black' ? 'waitBlack' : 'waitWhite';
                 this.showCanDownByConfig();
-            });
+            }
             
-            // forEachBoardData(step.boardData, chess => {
-            //     copyProperty(chess, this.getChess(chess.x, chess.y));
-            // })
-            
-            
-
-            // console.log('前进成功，该你下棋了 ', this.currentPlayerType)
-            // console.log(step)
-            // console.log(getBoardToString(step.boardData));
+            if(step.x === -1 && step.y === -1) {
+                sa.sendMessage('系统', 'warning', `前进一步：${__getChessTypeName(step.type)}无处可落，${__getChessTypeName(step.nextPlayerType)}继续落子！`);
+                fn();
+            } else {
+                sa.sendMessage('系统', 'warning', `前进一步：${__getChessTypeName(step.type)}落子${getXyStr(step)}`);
+                this.fingerMoveAnim(step.x, step.y, step.type, 'default', fn);
+            }
         },
 
+        // 判断上一步是否为指定棋子的“无子可落”
+        prevIsSkip: function (chessType){
+            const index = this.stepIndex - 1;
+            if(index < 0) {
+                return false;
+            }
+            const step = this.stepList[index];
+            return step.type === chessType && step.x === -1 && step.y === -1;
+        },
 
         // ------------------------------ 程序运转 ------------------------------ 
 
         // 用户手动落子调用的方法 
         userDownChess: function(x, y) {
-            this.downChess_noneAnim(x, y, this.currentPlayerType, ( isDownSuccess, chess ) => {
-                if(isDownSuccess) {
-                    this.addStep(chess.x, chess.y, chess.type, this.getNextPlayerType(), this.getCurrentRole().id);
-                    this.next();
-                }
-            });
+            this.status = this.currentPlayerType === 'black' ? 'blackDown' : 'whiteDown'; // 状态改为落子中 
+            this.downChessFunction( { x, y }, this.currentPlayerType, 'none');
+        },
+        
+        // 点击按钮，调用 AI 走棋
+        aiDownChess: function() {
+            // this.status = this.currentPlayerType === 'black' ? 'blackDown' : 'whiteDown'; // 状态改为落子中 
+            let role = this.getRole(this.currentPlayerType);
+            if(role.id === 'user') {
+                role = this.getRoleById('qixian');
+                sa.sendMessage(this.getCurrentPlayerTypeName(), 'success', `调用 AI (${role.name}) 帮走棋！`);
+            }
+            // console.log(role.name + '帮走棋！');
+            this.programJudge(this.currentPlayerType, role);
         },
         
         // 落子回调函数 
-        downChessFunction: function(informDown) {
-            this.downChess_withAnim(informDown.x, informDown.y, this.currentPlayerType, ( isDownSuccess, chess ) => {
-                if(isDownSuccess) {
-                    this.addStep(chess.x, chess.y, chess.type, this.getNextPlayerType(), this.getCurrentRole().id);
-                    this.next();
-                }
+        downChessFunction: function(informDown, downChessType, downAnimType) {
+            this.fingerMoveAnim(informDown.x, informDown.y, downChessType, downAnimType, () => {
+                this.downChess_noneAnim(informDown.x, informDown.y, downChessType, ( isDownSuccess, chess ) => {
+                    if(isDownSuccess) {
+                        const nextPlayerType = __nextChessType(downChessType);
+                        const downChessTypeRole = downChessType === 'black' ? this.getBlackRole() : this.getWhiteRole();
+                        this.addStep(chess.x, chess.y, chess.type, nextPlayerType, downChessTypeRole.id);
+
+                        // 延时一下，让用户有个缓冲观察时间 
+                        setTimeout( () => {
+                            this.currentPlayerType = nextPlayerType;
+                            this.status = 'judge';
+                        }, 400);
+                    }
+                });
             });
         },
         
-        // 程序走一个落子步骤  
-        procForward: function() {
-            // console.log('开始AI落子');
-
-            // 当前执子玩家 
-            const currentPlayerType = this.currentPlayerType;
-
+        // 调用程序行一步棋 
+        programJudge: function(chessType, role) {
+            // 获取当前玩家类型，和下一个玩家类型
+            const chessTypeName = __getChessTypeName(chessType);
+            const nextChessType = __nextChessType(chessType);
+            const nextChessTypeName = __getChessTypeName(nextChessType);
+            
             // 获取所有可落子位置
-            const canDownArr = getCanDownArray(this.boardData, currentPlayerType);
+            const canDownArr = getCanDownArray(this.boardData, chessType);
             if(canDownArr.length === 0){
-                // 无法落子，切换活动角色 
-                const currentPlayerTypeName = this.getCurrentPlayerTypeName();
-                const nextPlayerTypeName = this.getNextPlayerTypeName();
 
-                // 如果是连着两方都是无子可落，则游戏结束 
-                if(this.prevIsPause) {
-                    sa.sendMessage(currentPlayerTypeName, 'warning', `${currentPlayerTypeName}无处可落，双方均无子可落！`);
-                    return this.endGame();
-                }
-
-                // 发个通知，让用户知道发生了什么 
-                sa.sendMessage(currentPlayerTypeName, 'warning', `${currentPlayerTypeName}无处可落，${nextPlayerTypeName}继续落子！`);
-
-                // 打个标记 
-                this.prevIsPause = true;
-                this.next();
-                return;
-            }
-
-            // 调用 AI 算法落子 
-            // 参数：落子回调，当前活动角色，可落子位置数组 
-            const downChessFunction = this.downChessFunction;
-            const boardData = __copyBoardDataToBack(this.boardData);
-            this.getCurrentRole().downChess({ downChessFunction, boardData, currentPlayerType, canDownArr });
-        },
-
-        // 程序进行下一步动作 
-        next: function () {
-            // 停顿 500ms 再下一步，让用户视觉上更容易看到落子过程  
-            setTimeout(() => {
-                // 如果尚未初始化，则不进行下一步了 
-                if(this.isInit === false) {
+                // 如果双方均无子可落，则游戏结束 
+                const nextCanDownArr = getCanDownArray(this.boardData, nextChessType);
+                if(nextCanDownArr.length === 0){
+                    sa.sendMessage('系统', 'warning', `双方无子可落，游戏结束！`);
+                    this.endGame();
                     return;
                 }
 
-                // 切换执子玩家 
-                this.changeCurrentPlayerType();
+                // 加个记录，落子 -1,-1 代表黑子无子可落 
+                this.addStep(-1, -1, chessType, nextChessType, this.getBlackRole().id);
 
-                // 下一步
-                this.procForward();
-            }, 500);
+                // 发个通知，让用户知道发生了什么 
+                sa.sendMessage(chessTypeName, 'warning', `${chessTypeName}无处可落，${nextChessTypeName}继续落子！`);
+                this.currentPlayerType = nextChessType;
+                this.status = nextChessType === 'black' ? 'waitBlack' : 'waitWhite';
+                // this.status = 'judge';
+                return;
+            }
+
+            // 调用 role 落子 
+            const downChessFunction = this.downChessFunction;
+            const boardData = __copyBoardDataToBack(this.boardData);
+            role = role ?? this.getRole(chessType);
+            const downChessType = chessType;
+            this.status = chessType === 'black' ? 'waitBlack' : 'waitWhite'; // 状态改为等待落子 
+            if(role.id !== 'user') {
+                this.status = downChessType === 'black' ? 'blackDown' : 'whiteDown'; // 状态改为落子中 
+            }
+            role.downChess({ downChessFunction, boardData, downChessType, canDownArr });
         },
 
         // ------------------------------ 对局结束 ------------------------------ 

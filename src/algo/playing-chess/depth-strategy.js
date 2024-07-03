@@ -50,8 +50,8 @@ export const __mockDownChessAndCalcScore = function (canDownArray, boardData, do
         // 模拟落子 
         canDownChess.id = getXySimpleStr(canDownChess) + '__' + sa.randomString(16);
         canDownChess.type = downChessType;
-        const { boardData, tranArr } = __mockDownChess(boardData, canDownChess.x, canDownChess.y, canDownChess.type);
-        canDownChess.downAfterBoard = boardData;// 模拟落子后的棋盘样子
+        const { downAfterBoard, tranArr } = __mockDownChess(boardData, canDownChess.x, canDownChess.y, canDownChess.type);
+        canDownChess.downAfterBoard = downAfterBoard;// 模拟落子后的棋盘样子
         canDownChess.tranCount = tranArr.length; // 回收棋子数量
         canDownChess.blackFullScore = calcStaticScore(canDownChess.downAfterBoard, 'black');  // 此时的黑子盘面得分 
         canDownChess.whiteFullScore = calcStaticScore(canDownChess.downAfterBoard, 'white');  // 此时的白子盘面得分 

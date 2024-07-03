@@ -83,6 +83,13 @@ const gameStore = useGameStore();
 const { proxy } = getCurrentInstance();
 const comStore = useComStore();
 
+
+// ---------------- 状态变量 ----------------
+const state = reactive({
+    loopInterval: '',  // 定时器指针 
+})
+
+
 onMounted(() => {
     if(! gameStore.isInit){
         gameStore.init();
@@ -96,11 +103,22 @@ onMounted(() => {
     
     // 滚动条置顶
     window.scrollTo(0, 0);
+
+    // 初始化定时器
+    if(!state.loopInterval) {
+        const interval = 1000 / 60;
+        state.loopInterval = setInterval(function (){
+            gameStore.loop();
+        }, interval);
+    }
     
 })
 
 onUnmounted(() => {
     gameStore.destroy();
+    if(state.loopInterval) {
+        clearInterval(state.loopInterval);
+    }
 })
 
 </script>

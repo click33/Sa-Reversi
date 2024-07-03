@@ -12,8 +12,6 @@
 
 <script setup name="enemy-finger">
 import { onMounted, reactive } from "vue";
-import { useGameStore } from "../../../store/game";
-let gameStore = useGameStore();
 
 // 组件形参 
 const prop = defineProps({
@@ -48,7 +46,11 @@ const state = reactive({
 // ------------------ 方法 ------------------
 
 // 在指定位置放置棋子
-const down = (x, y, moveSuccessCallback) => {
+const down = (x, y, type, fingerAnimType, moveSuccessCallback) => {
+    if(fingerAnimType === 'none') {
+        return moveSuccessCallback();
+    }
+    
     let chessDOM = document.querySelector(`.chess-${x}-${y}`);
     // chessDOM = document.querySelector(`.finger-box`);
     
@@ -56,7 +58,7 @@ const down = (x, y, moveSuccessCallback) => {
     state.isHold = true;
     
     // 设定棋子类型
-    state.type = gameStore.currentPlayerType;
+    state.type = type;
     
     // 设定棋子宽高 
     const chessWidth = chessDOM.clientWidth;
@@ -89,7 +91,7 @@ const down = (x, y, moveSuccessCallback) => {
         }
         
         // 开始移动 
-        moveFingerToTd(prop.camp, moveTop, moveLeft, function (){
+        moveFingerToTd(prop.camp, moveTop, moveLeft, fingerAnimType, function (){
             // 棋子放置成功，调用回调函数 
             if(moveSuccessCallback) {
                 moveSuccessCallback();
@@ -112,7 +114,7 @@ const down = (x, y, moveSuccessCallback) => {
 }
 
 // 移动小手到棋盘格子上 
-const moveFingerToTd = (camp, top, left, callback) => {
+const moveFingerToTd = (camp, top, left, fingerAnimType, callback) => {
     // 动画类型 direct=正常，一步到位，yx=先y轴后x轴，mix=混合，think=思考，fast=快速，shake=晃来晃去，slow=慢速，throw=甩几下 
     const animArray = ['direct', 'yx', 'mix', 'think', 'fast', 'shake', 'slow', 'throw'];
     const animArray2 = ['shake', 'slow', 'throw'];

@@ -8,7 +8,7 @@ export default {
     id: 'zhongji',
     name: '中级陪练',
     // 落子函数
-    downChess: function ({ downChessFunction, boardData, currentPlayerType, canDownArr }) {
+    downChess: function ({ downChessFunction, boardData, downChessType, canDownArr }) {
         // 打乱一下数组，让 AI 落子显得更随机一些
         chaosArray(canDownArr);
         
@@ -19,6 +19,6 @@ export default {
         printCanDownArray(canDownArr);
 
         // 中级陪练 固定选择最中间一个落子方案，回收一半的棋子 
-        downChessFunction(canDownArr[ parseInt(canDownArr.length / 2) ]);
+        downChessFunction(canDownArr[ parseInt(canDownArr.length / 2) ], downChessType);
     }
 }

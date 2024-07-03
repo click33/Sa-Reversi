@@ -8,7 +8,7 @@ export default {
     id: 'qixian',
     name: '棋仙',
     // 落子
-    downChess: function ({ downChessFunction, boardData, currentPlayerType, canDownArr }) {
+    downChess: function ({ downChessFunction, boardData, downChessType, canDownArr }) {
 
         const gameStore = useGameStore();
         // gameStore.strategyTree = [];
@@ -16,7 +16,7 @@ export default {
         
         nextTick(function () {
             setTimeout(function () {
-                const strategyTree = calcStrategyTree(gameStore.boardData, currentPlayerType, 3);
+                const strategyTree = calcStrategyTree(boardData, downChessType, 3);
 
                 // 子孙策略数量
                 let subStrategyCount = 0;
@@ -29,13 +29,13 @@ export default {
                 gameStore.strategyTree = [
                     {
                         id: 'top',
-                        type: currentPlayerType,
+                        type: downChessType,
                         subStrategyCount: subStrategyCount,
                         finalScore: strategyTree[strategyTree.length - 1].finalScore,
                         nextChessCanArray: strategyTree,
                     }
                 ];
-                gameStore.strategyChessType = currentPlayerType;
+                gameStore.strategyChessType = downChessType;
                 nextTick(function () {
                     // 使顶级节点展开 
                     const dom = document.querySelector('.tree-content-item-top');
@@ -46,7 +46,7 @@ export default {
                 // console.log(strategyTree)
 
                 // 选择最高得分方案，作为最终落子方案 
-                downChessFunction(strategyTree[strategyTree.length - 1]);
+                downChessFunction(strategyTree[strategyTree.length - 1], downChessType);
             }, 100);
         })
 

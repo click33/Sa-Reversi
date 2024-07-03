@@ -8,7 +8,7 @@ export default {
     id: 'chuji',
     name: '初级陪练',
     // 落子函数
-    downChess: function ({ downChessFunction, boardData, currentPlayerType, canDownArr }) {
+    downChess: function ({ downChessFunction, boardData, downChessType, canDownArr }) {
         // 打乱一下数组，让 AI 落子显得更随机一些
         chaosArray(canDownArr);
         
@@ -19,6 +19,6 @@ export default {
         printCanDownArray(canDownArr);
 
         // 初级陪练 选择第一个落子方案，回收最少的棋子 
-        downChessFunction(canDownArr[0])
+        downChessFunction(canDownArr[0], downChessType);
     }
 }

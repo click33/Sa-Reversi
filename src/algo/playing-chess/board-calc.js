@@ -64,7 +64,7 @@ export const __mockDownChess = function(boardData, x, y, downType){
 
     // 
     return {
-        boardData: copyBoardData,
+        downAfterBoard: copyBoardData,
         tranArr: tranArr
     };
 };

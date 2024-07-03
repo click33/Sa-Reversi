@@ -40,9 +40,14 @@
             <div class="info-item">
                 <div class="info-role">状态：</div>
                 <p class="info-p-success right-to-left-5">
-                    <span class="fade-in-ys" v-if=" ['defDown'].includes(gameStore.status) ">棋盘初始化...</span>
-                    <span class="fade-in-ys" v-if=" ['userDown', 'tran'].includes(gameStore.status) ">游戏中...</span>
-                    <span class="fade-in-ys" v-if=" ['end'].includes(gameStore.status) ">对局结束</span>
+                    <span v-if=" gameStore.status === 'notStarted' ">未开始</span>
+                    <span v-if=" gameStore.status === 'startDown' ">初始落子化...</span>
+                    <span v-if=" gameStore.status === 'end' ">对局结束</span>
+                    <span v-if=" gameStore.status === 'judge' ">系统判断中...</span>
+                    <span v-if=" gameStore.status === 'waitBlack' ">等待黑棋落子...</span>
+                    <span v-if=" gameStore.status === 'waitWhite' ">等待白棋落子...</span>
+                    <span v-if=" gameStore.status === 'blackDown' ">黑棋落子中...</span>
+                    <span v-if=" gameStore.status === 'whiteDown' ">白棋落子中...</span>
                 </p>
             </div>
             <!-- 一项信息 -->
@@ -61,8 +66,8 @@
             <div class="info-item">
                 <div class="info-role">执子：</div>
                 <p class="info-p-info right-to-left-6">
-                    <span class="fade-in-ys2" v-if="gameStore.currentPlayerType === 'black'">等待黑方落子...</span>
-                    <span class="fade-in-ys2" v-else>等待白方落子...</span>
+                    <span class="fade-in-ys2" v-if="gameStore.currentPlayerType === 'black'">黑棋</span>
+                    <span class="fade-in-ys2" v-else>白棋</span>
                 </p>
             </div>
         </div>

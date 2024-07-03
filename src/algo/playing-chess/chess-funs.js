@@ -91,6 +91,11 @@ export const __nextChessType = function (type) {
     return 'black';
 }
 
+// 获取指定执子玩家 对应的棋子名称
+export const __getChessTypeName = function (type) {
+    return type === 'black' ? '黑子' : '白子';
+}
+
 
 
 
