@@ -62,28 +62,14 @@ const stepForward = () => {
 
 // 带动画效果前进 
 const stepForward_withAnim = () => {
-    gameStore.stepForward_withAnim();
+    gameStore.statusIsFreeCallback(() => {
+        gameStore.stepForward_withAnim();
+    })
 }
 
 // AI 走棋
 const aiDownChess = () => {
-
-    if(gameStore.status === 'notStarted') {
-        return sa.sendMessage('系统', 'warning', '游戏尚未开始...');
-    }
-    if(gameStore.status === 'startDown') {
-        return sa.sendMessage('系统', 'warning', '请等待初始棋子落子完毕。');
-    }
-    else if(gameStore.status === 'end') {
-        return sa.sendMessage('系统', 'success', '对局已结束！' + gameStore.getEndJsStr());
-    }
-    else if(gameStore.status === 'judge') {
-        return sa.sendMessage('系统', 'warning', '系统判断中，请稍后操作...');
-    }
-    else if(gameStore.status === 'blackDown' || gameStore.status === 'whiteDown') {
-        return sa.sendMessage('系统', 'warning', '请等待落子完毕...');
-    }
-    else if(gameStore.status === 'waitBlack' || gameStore.status === 'waitWhite') {
+    gameStore.statusIsFreeCallback(() => {
         // 计算是否需要给出相应的提示 
         const isLatestStep = gameStore.stepIndex + 1 >= gameStore.stepList.length - 1; // 是否是最后一步，或全新步 
         if(isLatestStep) {
@@ -92,7 +78,7 @@ const aiDownChess = () => {
         else if(!isLatestStep) {
             sa.confirm(`当前步骤调用 AI 走棋，将清空后续已有回合记录，是否继续？`, () => gameStore.aiDownChess() );
         }
-    }
+    })
 }
 
 

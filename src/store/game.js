@@ -559,6 +559,7 @@ export const useGameStore = defineStore({
                 fn();
             } else {
                 sa.sendMessage('系统', 'warning', `前进一步：${__getChessTypeName(step.type)}落子${getXyStr(step)}`);
+                this.status = step.type === 'black' ? 'blackDown' : 'whiteDown';
                 this.fingerMoveAnim(step.x, step.y, step.type, 'default', fn);
             }
         },
@@ -654,6 +655,28 @@ export const useGameStore = defineStore({
             role.downChess({ downChessFunction, boardData, downChessType, canDownArr });
         },
 
+        // 判断状态是否可自由调度，如果可以则执行一个回调函数，否则在消息打印机输出不可调度的原因
+        statusIsFreeCallback: function(callback) {
+            if(this.status === 'notStarted') {
+                return sa.sendMessage('系统', 'warning', '游戏尚未开始...');
+            }
+            if(this.status === 'startDown') {
+                return sa.sendMessage('系统', 'warning', '请等待初始棋子落子完毕。');
+            }
+            else if(this.status === 'end') {
+                return sa.sendMessage('系统', 'success', '对局已结束！' + this.getEndJsStr());
+            }
+            else if(this.status === 'judge') {
+                return sa.sendMessage('系统', 'warning', '系统判断中，请稍后操作...');
+            }
+            else if(this.status === 'blackDown' || this.status === 'whiteDown') {
+                return sa.sendMessage('系统', 'warning', '请等待落子完毕...');
+            }
+            else if(this.status === 'waitBlack' || this.status === 'waitWhite') {
+                callback();
+            }
+        },
+        
         // ------------------------------ 对局结束 ------------------------------ 
 
         // 结束游戏，输出结算信息 

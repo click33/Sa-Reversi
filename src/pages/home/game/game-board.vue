@@ -40,23 +40,7 @@ const dictStore = useDictStore();
 
 // 点击单元格
 const down = (x, y) => {
-    
-    if(gameStore.status === 'notStarted') {
-        return sa.sendMessage('系统', 'warning', '游戏尚未开始...');
-    }
-    if(gameStore.status === 'startDown') {
-        return sa.sendMessage('系统', 'warning', '请等待初始棋子落子完毕。');
-    }
-    else if(gameStore.status === 'end') {
-        return sa.sendMessage('系统', 'success', '对局已结束！' + gameStore.getEndJsStr());
-    }
-    else if(gameStore.status === 'judge') {
-        return sa.sendMessage('系统', 'warning', '系统判断中，请稍后操作...');
-    }
-    else if(gameStore.status === 'blackDown' || gameStore.status === 'whiteDown') {
-        return sa.sendMessage('系统', 'warning', '请等待落子完毕...');
-    }
-    else if(gameStore.status === 'waitBlack' || gameStore.status === 'waitWhite') {
+    gameStore.statusIsFreeCallback(() => {
         // 计算是否需要给出相应的提示 
         const isLatestStep = gameStore.stepIndex + 1 >= gameStore.stepList.length - 1; // 是否是最后一步，或全新步
         const role = gameStore.getRole(gameStore.currentPlayerType);
@@ -72,7 +56,7 @@ const down = (x, y) => {
         else if(role.id !== 'user' && !isLatestStep) {
             sa.confirm(`代替AI落子${getXyStr(x, y)}，并清空后续已有回合记录，是否继续？`, () => gameStore.userDownChess(x, y) );
         }
-    }
+    });
 }
 
 // 组件加载时触发
