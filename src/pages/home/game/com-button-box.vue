@@ -8,8 +8,8 @@
         <el-button type="primary" @click="aiDownChess">AI 走棋</el-button>
 
         <!-- 策略树窗口 -->
-        <lay-layer v-model="state.showStrategyTree"
-                   :title=" '策略树 (棋仙AI)' + (gameStore.inCalcStrategy ? ' 计算中...' : '') "
+        <lay-layer v-model="gameStore.showStrategyTreeWin"
+                   :title=" '策略树' + (gameStore.blackStrategyTreeInCall || gameStore.whiteStrategyTreeInCall ? ' 计算中...' : '') "
                    :maxmin="true"
                    :moveOut="true"
                    skin="lay-layer-strategy"
@@ -17,7 +17,7 @@
                    :resize="true"
                    offset="l"
         >
-            <com-strategy-tree></com-strategy-tree>
+            <com-strategy-tree ref="strategyTree"></com-strategy-tree>
         </lay-layer>
         
     </div>
@@ -27,18 +27,20 @@
 import {useSelectStore} from "../../../store/select";
 import {useDictStore} from "../../../store/dict";
 import {useGameStore} from "../../../store/game";
-import ComStrategyTree from '../game/com-strategy-tree.vue';
+import ComStrategyTree from '../strategy/com-strategy-tree.vue';
 import {reactive} from "vue";
-import {getXyStr} from "../../../algo/playing-chess/chess-funs";
+import {useComStore} from "../../../store/com";
+const { proxy } = getCurrentInstance();
 
-let selectStore = useSelectStore();
-var dictStore = useDictStore();
-var gameStore = useGameStore();
+const selectStore = useSelectStore();
+const dictStore = useDictStore();
+const gameStore = useGameStore();
+const comStore = useComStore();
 
 
 // ------------------ 数据 ------------------
 const state = reactive({
-    showStrategyTree: false,
+    // showStrategyTree: false,
 });
 
 
@@ -47,7 +49,7 @@ const openStrategyTree = () => {
     if(document.body.clientWidth < 768) {
         return sa.msg('屏幕太小了，显示不开，来电脑端体验吧');
     }
-    state.showStrategyTree = true;
+    gameStore.showStrategyTreeWin = true;
 }
 
 // 后退
@@ -84,7 +86,13 @@ const aiDownChess = () => {
 
 // ------------------ 生命周期 ------------------
 onMounted(() => {
-    // openStrategyTree();
+    openStrategyTree();
+
+    // 保存全局组件句柄 
+    nextTick(() => {
+        comStore.strategyTree = proxy.$refs['strategyTree'];
+    })
+
 });
 
 </script>

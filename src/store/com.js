@@ -8,7 +8,8 @@ export const useComStore = defineStore({
     state: () => {
         return {
             weFinger: null,  // 我方组件
-            enemyFinger: null   // 敌方手指
+            enemyFinger: null,   // 敌方手指
+            strategyTree: null, // 策略树组件
         }
     },
     actions: {

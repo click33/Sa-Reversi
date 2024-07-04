@@ -56,19 +56,27 @@ export const hasChessXy = function (arr, chess) {
 
 // 获取坐标的字符串描写形式，形如： (A, 1)
 export const getXyStr = function (x, y) {
-    const dictStore = useDictStore();
-    if (x && x.x) {
-        return '(' + dictStore.xName[x.x] + ', ' + x.y + ')';
+    if( typeof x === 'object' ) {
+        y = x.y;
+        x = x.x;
     }
+    if (x === -1 && y === -1) {
+        return '(无子可落)';
+    }
+    const dictStore = useDictStore();
     return '(' + dictStore.xName[x] + ', ' + y + ')';
 };
 
 // 获取坐标的字符串描写简单形式，形如： A,1
 export const getXySimpleStr = function (x, y) {
-    const dictStore = useDictStore();
-    if (x && x.x) {
-        return dictStore.xName[x.x] + ',' + x.y;
+    if( typeof x === 'object' ) {
+        y = x.y;
+        x = x.x;
     }
+    if(x === -1 && y === -1) {
+        return '无子可落';
+    }
+    const dictStore = useDictStore();
     return dictStore.xName[x] + ',' + y;
 };
 

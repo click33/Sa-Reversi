@@ -23,8 +23,8 @@ export const calcStrategyTree = function (boardData, calcChessType, iterationDep
     // 3、为迭代好的策略树，计算最终得分 
     __calcTreeFinalScore_Method(canDownArray, calcChessType);
 
-    // 4、最后，按照第一层的策略 finalScore 分数排序，从小到大 
-    canDownArray.sort((a, b) => a.finalScore - b.finalScore);
+    // 4、最后，按照第一层的策略 subjectMaxScore 分数排序，从小到大 
+    canDownArray.sort((a, b) => a.subjectMaxScore - b.subjectMaxScore);
     const minItem = canDownArray[0];
     const maxItem = canDownArray[canDownArray.length - 1];
     minItem.isMin = true;
@@ -47,16 +47,26 @@ export const __mockDownChessAndCalcScore = function (canDownArray, boardData, do
 
     canDownArray = copyArray(canDownArray);
     canDownArray.forEach(canDownChess => {
+
+        const { downAfterBoard, tranArr } = __mockDownChess(boardData, canDownChess.x, canDownChess.y, downChessType);
+        
         // 模拟落子 
-        canDownChess.id = getXySimpleStr(canDownChess) + '__' + sa.randomString(16);
-        canDownChess.type = downChessType;
-        const { downAfterBoard, tranArr } = __mockDownChess(boardData, canDownChess.x, canDownChess.y, canDownChess.type);
+        canDownChess.id = getXySimpleStr(canDownChess) + '__' + sa.randomString(16); // 策略树节点唯一标识符
+        canDownChess.type = downChessType;  // 棋子类型 
+        canDownChess.showType = 'depth';  // 策略树显示模式
         canDownChess.downAfterBoard = downAfterBoard;// 模拟落子后的棋盘样子
         canDownChess.tranCount = tranArr.length; // 回收棋子数量
-        canDownChess.blackFullScore = calcStaticScore(canDownChess.downAfterBoard, 'black');  // 此时的黑子盘面得分 
-        canDownChess.whiteFullScore = calcStaticScore(canDownChess.downAfterBoard, 'white');  // 此时的白子盘面得分 
-        canDownChess.blackLeadScore = canDownChess.blackFullScore - canDownChess.whiteFullScore;  // 黑子领先得分 
-        canDownChess.whiteLeadScore = canDownChess.whiteFullScore - canDownChess.blackFullScore;  // 白子领先得分 
+        
+        canDownChess.blackStaticScore = calcStaticScore(canDownChess.downAfterBoard, 'black');  // 此时的黑子盘面得分 
+        canDownChess.whiteStaticScore = calcStaticScore(canDownChess.downAfterBoard, 'white');  // 此时的白子盘面得分 
+        canDownChess.weStaticScore = canDownChess[`${canDownChess.type}StaticScore`];  // 此时落子方的盘面得分 
+        // canDownChess.enemyStaticScore = canDownChess[`${__nextChessType(canDownChess.type)}StaticScore`];  // 此时落子方敌对方的盘面得分 
+        
+        canDownChess.blackLeadScore = canDownChess.blackStaticScore - canDownChess.whiteStaticScore;  // 黑子领先得分 
+        canDownChess.whiteLeadScore = canDownChess.whiteStaticScore - canDownChess.blackStaticScore;  // 白子领先得分 
+        canDownChess.weLeadScore = canDownChess[`${canDownChess.type}LeadScore`];  // 此时落子方的领先得分 
+        // canDownChess.enemyLeadScore = canDownChess[`${__nextChessType(canDownChess.type)}LeadScore`];  // 此时落子方敌对方的领先得分 
+        
         canDownChess.currentDepth = canDownChess.currentDepth ?? currentDepth ?? 1;  // 当前迭代深度 
 
         // 计算迭代深度是否已完成 
@@ -70,6 +80,16 @@ export const __mockDownChessAndCalcScore = function (canDownArray, boardData, do
         // 此时对手应该的应对策略，继续向深层迭代
         const nextChessType = __nextChessType(canDownChess.type);
         const nextChessCanArray = getCanDownArray(canDownChess.downAfterBoard, nextChessType);
+        // 如果没有落子方案，说明对手无子可落，塞个 x=-1, y=-1 的特殊对象进去 
+        if(nextChessCanArray.length === 0) {
+            const notDownChess = {
+                x: -1, 
+                y: -1, 
+                type: nextChessType,
+                tranCount: 0,
+            }
+            nextChessCanArray.push(notDownChess);
+        }
         chaosArray(nextChessCanArray);
         canDownChess.nextChessCanArray = __mockDownChessAndCalcScore(nextChessCanArray, canDownChess.downAfterBoard, nextChessType, canDownChess.currentDepth + 1, iterationDepth);
     })
@@ -87,36 +107,39 @@ export const __calcTreeFinalScore_Method = function (canDownArray, chessType) {
     canDownArray.forEach(canDownChess => {
         // nextChessCanArray 不存在，或者为空数组，则说明已经遍历到了叶子节点，直接计算最终得分 
         if (!canDownChess.nextChessCanArray || canDownChess.nextChessCanArray.length === 0) {
-            const enemyChessType = __nextChessType(chessType);
-            canDownChess.blackFinalScore = canDownChess.blackLeadScore;  // 黑子最终得分 
-            canDownChess.whiteFinalScore = canDownChess.whiteLeadScore;  // 白子最终得分 
-            // 最终得分 
-            canDownChess.finalScore = canDownChess[`${chessType}FinalScore`];
+            
+            canDownChess.subjectType = chessType;  // 计算主体 棋子类型 
+            canDownChess.subjectMaxScore = canDownChess[`${chessType}LeadScore`];  // 计算主体 最大得分
+            canDownChess.subStrategyCount = 1; // 子孙策略数量
+            
         } else {
             // 否则，继续向下迭代 
             __calcTreeFinalScore_Method(canDownChess.nextChessCanArray, chessType);
 
-            // 按照 finalScore 值排序，从小到大 
-            canDownChess.nextChessCanArray.sort((a, b) => a.finalScore - b.finalScore);
+            // 按照 subjectMaxScore 值排序，从小到大 
+            canDownChess.nextChessCanArray.sort((a, b) => a.subjectMaxScore - b.subjectMaxScore);
 
-            // 比较：要求的 chessType 类型，和子策略组的 nextChessType 类型是否一致，
-            //      如果一致：   代表子策略是己方行棋，取 weFinalScore 最高分 
-            //      如果不一致： 代表子策略是对方行棋，取 weFinalScore 最低分（即：假设对手选择最优落子法）
-            const nextChessType = canDownChess.nextChessCanArray[0].type;
+            // 比较：要求的 chessType 类型，和子策略组的 type 类型是否一致，
+            //      如果一致：   代表子策略是己方行棋，取 subjectMaxScore 最高分 
+            //      如果不一致： 代表子策略是对方行棋，取 subjectMaxScore 最低分（即：假设对手选择最优落子法）
+            const childChessType = canDownChess.nextChessCanArray[0].type;
+            canDownChess.subjectType = chessType;  // 计算主体 棋子类型 
+            
             // 最低分和最高分
             const minItem = canDownChess.nextChessCanArray[0];
             const maxItem = canDownChess.nextChessCanArray[canDownChess.nextChessCanArray.length - 1];
             minItem.isMin = true;
             maxItem.isMax = true;
-            if (chessType === nextChessType) {
-                canDownChess.finalScore = maxItem.finalScore;
+            if (chessType === childChessType) {
+                canDownChess.subjectMaxScore = maxItem.subjectMaxScore;
             } else {
-                canDownChess.finalScore = minItem.finalScore;
+                canDownChess.subjectMaxScore = minItem.subjectMaxScore;
             }
+            
             // 子孙策略数量
             canDownChess.subStrategyCount = 0;
             canDownChess.nextChessCanArray.forEach(item => {
-                canDownChess.subStrategyCount += item.subStrategyCount ?? 1;
+                canDownChess.subStrategyCount += item.subStrategyCount;
             })
 
         }
@@ -128,7 +151,7 @@ export const __calcTreeFinalScore_Method = function (canDownArray, chessType) {
 // 在控制台格式化打印策略树 （树深度超过3层时会非常费劲，打印半天打不完，还容易卡死，谨慎调用）
 export const printStrategyTree = function (strategyTree, tStr = '') {
     strategyTree.forEach(item => {
-        console.log(tStr + getXyStr(item) + ' ' + item.type, item.finalScore, item);
+        console.log(tStr + getXyStr(item) + ' ' + item.type, item.subjectMaxScore, item);
         if (item.nextChessCanArray) {
             printStrategyTree(item.nextChessCanArray, tStr + '\t');
         }

@@ -1,5 +1,5 @@
 import {chaosArray} from "../playing-chess/common-util";
-import {printCanDownArray} from "../playing-chess/easy-strategy";
+import {showTranStrategyTree} from "../playing-chess/strategy-show-funs";
 
 /**
  * AI：初级陪练，行棋算法 
@@ -15,8 +15,8 @@ export default {
         // 按照 tranCount 从小到大升序排列  
         canDownArr.sort((a, b) => a.tranCount - b.tranCount);
 
-        // 在 f12 控制台打印一下
-        printCanDownArray(canDownArr);
+        // 显示策略树
+        showTranStrategyTree(canDownArr, downChessType, this.name);
 
         // 初级陪练 选择第一个落子方案，回收最少的棋子 
         downChessFunction(canDownArr[0], downChessType);

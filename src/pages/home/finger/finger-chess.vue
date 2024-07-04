@@ -212,8 +212,8 @@ const moveFingerToTd = (camp, top, left, fingerAnimType, callback) => {
                 state.boxStyle.top = `${top}px`;
                 state.boxStyle.left = `${left}px`;
                 setTimeout(callback, 200);
-            }, 800)
-        }, 3)
+            }, 200)
+        }, 2)
     }
 
     // 甩几下 

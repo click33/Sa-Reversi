@@ -72,12 +72,10 @@ import NavBottom from '/@/pages-components/nav/nav-bottom.vue';
 import GameBoard from './game/game-board.vue';
 import ComBattleData from './game/com-battle-data.vue';
 import {useGameStore} from "../../store/game";
-import ComStrategyTree from './game/com-strategy-tree.vue';
 import ComMessageBox from "./game/com-message-box";
 import FingerChess from "./finger/finger-chess.vue";
 import {useComStore} from "../../store/com";
 import ComRoomInfo from "./game/com-room-info";
-import ComAdBox from "./game/com-ad-box";
 import ComButtonBox from "./game/com-button-box";
 const gameStore = useGameStore();
 const { proxy } = getCurrentInstance();
@@ -106,7 +104,7 @@ onMounted(() => {
 
     // 初始化定时器
     if(!state.loopInterval) {
-        const interval = 1000 / 60;
+        const interval = 1000 / 10;
         state.loopInterval = setInterval(function (){
             gameStore.loop();
         }, interval);

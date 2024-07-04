@@ -1,5 +1,6 @@
 import {useGameStore} from "../../store/game";
 import {calcStrategyTree} from "../playing-chess/depth-strategy";
+import {showDepthStrategyTree, showDepthStrategyTreeCostTime} from "../playing-chess/strategy-show-funs";
 
 /**
  * AI：棋仙陪练，行棋算法 
@@ -11,47 +12,26 @@ export default {
     downChess: function ({ downChessFunction, boardData, downChessType, canDownArr }) {
 
         const gameStore = useGameStore();
-        // gameStore.strategyTree = [];
-        gameStore.inCalcStrategy = true;
-        
-        nextTick(function () {
-            setTimeout(function () {
-                const strategyTree = calcStrategyTree(boardData, downChessType, 3);
+        gameStore[`${downChessType}StrategyTreeInCall`] = true;
 
-                // 子孙策略数量
-                let subStrategyCount = 0;
-                strategyTree.forEach(item => {
-                    subStrategyCount += item.subStrategyCount ?? 1;
-                })
-                
-                // printStrategyTree(strategyTree);
-                gameStore.inCalcStrategy = false;
-                gameStore.strategyTree = [
-                    {
-                        id: 'top',
-                        type: downChessType,
-                        subStrategyCount: subStrategyCount,
-                        finalScore: strategyTree[strategyTree.length - 1].finalScore,
-                        nextChessCanArray: strategyTree,
-                    }
-                ];
-                gameStore.strategyChessType = downChessType;
-                nextTick(function () {
-                    // 使顶级节点展开 
-                    const dom = document.querySelector('.tree-content-item-top');
-                    if(dom) {
-                        dom.click();
-                    }
-                })
-                // console.log(strategyTree)
+        setTimeout(() => {
+            const startTime = performance.now();
+            const strategyTree = calcStrategyTree(boardData, downChessType, 3);
+            // 显示到策略树上 
+            showDepthStrategyTree(strategyTree, downChessType, this.name);
+
+            setTimeout(() => {
+                // 显示耗时 
+                const endTime = performance.now();
+                showDepthStrategyTreeCostTime(downChessType, parseInt(endTime - startTime));
+                console.log(parseInt(endTime - startTime))
 
                 // 选择最高得分方案，作为最终落子方案 
+                gameStore[`${downChessType}StrategyTreeInCall`] = false;
                 downChessFunction(strategyTree[strategyTree.length - 1], downChessType);
-            }, 100);
-        })
+            }, 10);
+                    
+        }, 300)
 
-        // 打开手动落子 
-        // gameStore.status = 'userDown';
-        // gameStore.showCanDownByConfig();
     }
 }

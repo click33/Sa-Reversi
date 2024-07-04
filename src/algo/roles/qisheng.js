@@ -1,6 +1,7 @@
-import {calcCanArrScore, printCanDownArray} from "../playing-chess/easy-strategy";
+import {calcCanArrScore} from "../playing-chess/easy-strategy";
 import {chaosArray} from "../playing-chess/common-util";
 import {getBoardXyCount} from "../playing-chess/board-funs";
+import {showScoreStrategyTree} from "../playing-chess/strategy-show-funs";
 
 /**
  * AI：棋圣陪练，行棋算法 
@@ -20,8 +21,8 @@ export default {
         // 按照 score 评分从小到大升序排列  
         canDownArr.sort((a, b) => a.score - b.score);
 
-        // 在 f12 控制台打印一下
-        printCanDownArray(canDownArr);
+        // 显示策略树
+        showScoreStrategyTree(canDownArr, downChessType, this.name);
         
         // 棋圣 固定选择最后一个落子方案，得分最高
         downChessFunction(canDownArr[canDownArr.length - 1], downChessType);

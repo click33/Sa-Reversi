@@ -1,39 +1,21 @@
-<!-- 策略树信息展示 -->
+<!-- 策略树信息-详细项展示 -->
 <template>
-    <el-scrollbar class="con-box-st zdy-card small-com-strategy-tree fade-in-ys">
-        <div class="info-box">
-<!--            <div class="in-calc-tips" v-if="gameStore.inCalcStrategy">-->
-<!--                <el-icon-Loading class="in-calc-tips-i"></el-icon-Loading>-->
-<!--                <br>-->
-<!--                <span class="in-calc-tips-txt">计算中...</span>-->
-<!--            </div>-->
-            <el-tree
-                :data="gameStore.strategyTree"
-                :props="state.props"
-                empty-text=""
-            >
-                <template #default="{ node, data }">
-                    <p class="tree-content-item tree-content-item-top" v-if="data.id === 'top'">
-                        <span>{{ (data.type === 'black' ? '黑子' : '白子') }} 策略树</span>
-                        <span>，{{ data.subStrategyCount }} 变化</span>
-                        <span>，{{getStrategyChessTypeName()}}评分: {{ data.finalScore }}</span>
-                    </p>
-                    <p class="tree-content-item" v-else>
-                        <span>{{ (data.type === 'black' ? '黑子' : '白子') }} {{ getXyStr(data) }}</span>
-                        <span>，{{ data.subStrategyCount ?? 1 }} 变化</span>
-                        <span>，{{getStrategyChessTypeName()}}评分: {{ data.finalScore }}</span>
-                        <span class="min-max-tips" v-if="data.isMin"> (min) </span>
-                        <span class="min-max-tips" v-if="data.isMax"> (max) </span>
-                        <span class="cz-btn">
-                            <el-link type="primary" @click.stop="printStrategy(data)">data</el-link>
-                            <el-link type="primary" style="margin-left: 6px;" @click.stop="printBoardData(data)">board</el-link>
-                        </span>
-                    </p>
-                </template>
-            </el-tree>
-            <div style="height: 100px;"></div>
-        </div>
-    </el-scrollbar>
+    <p class="tree-content-item tree-content-item-top" v-if="props.data.id === 'top' || true">
+        <span>{{ (props.data.type === 'black' ? '黑子' : '白子') }} 策略树</span>
+        <span>，{{ props.data.subStrategyCount }} 变化</span>
+        <span>，{{getStrategyChessTypeName()}}评分: {{ props.data.finalScore }}</span>
+    </p>
+    <p class="tree-content-item" v-else>
+        <span>{{ (props.data.type === 'black' ? '黑子' : '白子') }} {{ getXyStr(props.data) }}</span>
+        <span>，{{ props.data.subStrategyCount ?? 1 }} 变化</span>
+        <span>，{{getStrategyChessTypeName()}}评分: {{ props.data.finalScore }}</span>
+        <span class="min-max-tips" v-if="props.data.isMin"> (min) </span>
+        <span class="min-max-tips" v-if="props.data.isMax"> (max) </span>
+        <span class="cz-btn">
+            <el-link type="primary" @click.stop="printStrategy(props.data)">data</el-link>
+            <el-link type="primary" style="margin-left: 6px;" @click.stop="printBoardData(props.data)">board</el-link>
+        </span>
+    </p>
 </template>
 
 <script setup name="com-strategy-tree">
@@ -49,15 +31,22 @@ const selectStore = useSelectStore();
 const dictStore = useDictStore();
 const settingStore = useSettingStore();
 
-
-// ------------------ 数据 ------------------
-const state = reactive({
-    props: {
-        value: 'id',
-        label: 'label',
-        children: 'nextChessCanArray',
+const props = defineProps({
+    data: {
+        type: Object,
     },
+    node: {
+        type: Object,
+    },
+    chessType: {
+        type: String,
+    }
 });
+
+console.log('是什么，', props.data)
+// const node = defineProps('node');
+
+
 
 // ------------------ 方法 ------------------
 

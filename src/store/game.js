@@ -43,10 +43,37 @@ export const useGameStore = defineStore({
             stepList: [],   // 落子数据 
             // justX: 0,  // 最新落子x坐标
             // justY: 0,  // 最新落子y坐标
-            strategyTree: [],  // 策略树
-            strategyChessType: 'none',  // 策略树对应的棋子类型
-            inCalcStrategy: false,  // 是否在计算策略中... 
-            defaultExpandedKeys: [],  // 默认展开的节点
+            showStrategyTreeWin: false,  // 显示策略树窗口
+            // 黑子策略树
+            strategyTree: [
+                {
+                    id: 'black-top',
+                    type: 'black',
+                    subjectType: 'black',
+                    roleName: '',
+                    showType: 'tran', // 显示类型：tran=翻转数量，score=打分，depth=深度打分
+                    maxTranCount: 0, 
+                    subjectMaxScore: 0,
+                    subStrategyCount: 0,
+                    nextChessCanArray: [],
+                    costTime: 0, // 计算耗时
+                },
+                {
+                    id: 'white-top',
+                    type: 'white',
+                    subjectType: 'white',
+                    roleName: '',
+                    showType: 'tran',
+                    maxTranCount: 0,
+                    subjectMaxScore: 0,
+                    subStrategyCount: 0,
+                    nextChessCanArray: [],
+                    costTime: 0, // 计算耗时
+                }
+            ],  
+            whiteStrategyTree: [],  // 白子策略树
+            blackStrategyTreeInCall: false,  // 黑子策略树是否正在计算... 
+            whiteStrategyTreeInCall: false,  // 白子策略树是否正在计算... 
         }
     },
     actions: {

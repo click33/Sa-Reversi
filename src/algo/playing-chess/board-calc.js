@@ -51,6 +51,14 @@ export const calcStaticScore = function (boardData, chessType) {
 export const __mockDownChess = function(boardData, x, y, downType){
     const copyBoardData = __copyBoardData(boardData);
     
+    // 如果是 x=-1, y=-1，则代表不落子
+    if(x === -1 && y === -1) {
+        return {
+            downAfterBoard: copyBoardData,
+            tranArr: []
+        };
+    }
+    
     // 计算落子后棋子翻转所有位置
     const chess = createBackChess(x, y, downType);
     const tranArr = getTranList(copyBoardData, chess.x, chess.y, downType);
