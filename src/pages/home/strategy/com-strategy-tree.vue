@@ -3,35 +3,37 @@
     <el-scrollbar class="con-box-st zdy-card small-com-strategy-tree fade-in-ys">
         <div class="info-box">
             <el-tree
-                :data="gameStore.strategyTree"
+                :data="state.strategyTree"
                 :props="state.props"
+                :load="loadNode"
+                lazy
                 empty-text=""
             >
                 <template #default="{ node, data }">
                     <p class="tree-content-item" :class=" 'tci-' + data.id " v-if="data.id === 'black-top' || data.id === 'white-top' ">
                         <span>{{ (data.type === 'black' ? '黑子' : '白子') }} 策略树</span>
                         <span v-if="data.roleName"> ({{ data.roleName }}) </span>
-                        <span>，变化: {{ data.subStrategyCount }}</span>
-                        <span v-if="data.showType === 'tran' ">，最多可回收: {{ data.maxTranCount }} 枚</span>
-                        <span v-else>，最大可得分: {{ data.subjectMaxScore }}</span>
+                        <span>, 变化 {{ data.subStrategyCount }}</span>
+                        <span v-if="data.showType === 'tran' ">, 最多可回收: {{ data.maxTranCount }} 枚</span>
+                        <span v-else>, 最大可得分: {{ data.subjectMaxScore }}</span>
                         <span v-if="data.showType === 'depth'"> (计算耗时: {{ data.costTime / 1000 }} s)</span>
                     </p>
                     <p class="tree-content-item" :class=" 'tci-' + data.id " v-else>
                         <span>{{ (data.type === 'black' ? '黑子' : '白子') }} {{ getXyStr(data) }}</span>
                         <template v-if="data.showType === 'tran'">
-                            <span>，回收: {{ data.tranCount }} 枚</span>
+                            <span>, 回收: {{ data.tranCount }} 枚</span>
                         </template>
                         <template v-else-if="data.showType === 'score'">
-                            <span>，回收: {{ data.tranCount }} 枚 </span>
-                            <span>，评分: {{ data.score }} </span>
+                            <span>, 回收: {{ data.tranCount }} 枚 </span>
+                            <span>, 评分: {{ data.score }} </span>
                         </template>
                         <template v-else-if="data.showType === 'depth'">
-                            <span>，变化: {{ data.subStrategyCount }}</span>
-                            <span>，评分: {{ data.weLeadScore }} </span>
-                            <span>，{{getSubjectName(data)}}最大可得分: {{ data.subjectMaxScore }}</span>
+                            <span>, 变化 {{ data.subStrategyCount }}</span>
+                            <span>, 评分: {{ data.weLeadScore }} </span>
+                            <span>, {{getSubjectName(data)}}最高得分: {{ data.subjectMaxScore }}</span>
                         </template>
-                        <span class="min-max-tips" v-if="data.isMin"> (min)</span>
-                        <span class="min-max-tips" v-if="data.isMax"> (max)</span>
+                        <span class="min-max-tips" v-if="data.isMin && !data.isMax"> min</span>
+                        <span class="min-max-tips" v-if="data.isMax"> max</span>
                         <span class="cz-btn">
                             <el-link type="primary" @click.stop="printStrategy(data)">data</el-link>
                             <el-link type="primary" style="margin-left: 6px;" @click.stop="printBoardData(data)">board</el-link>
@@ -53,6 +55,7 @@ import {useSettingStore} from "../../../store/setting";
 import {__nextChessType, getXyStr} from "../../../algo/playing-chess/chess-funs";
 import {getBoardToString} from "../../../algo/playing-chess/board-funs";
 import ComStrategyTreeItem from "./com-strategy-tree-item.vue";
+import {copyProperty} from "../../../algo/playing-chess/common-util";
 const gameStore = useGameStore();
 const selectStore = useSelectStore();
 const dictStore = useDictStore();
@@ -64,8 +67,16 @@ const state = reactive({
     props: {
         value: 'id',
         label: 'label',
+        isLeaf: 'leaf',
         children: 'nextChessCanArray',
     },
+    // 真正显示的策略树数据
+    // 采用懒加载模式，可以使树的节点展示更流畅，性能提供50倍以上
+    //      非懒加载模式，深度计算3层，500多变化，页面卡死四五秒左右
+    //      懒加载模式后，深度计算5层，3万多变化，页面2秒多展示完毕 
+    strategyTree: [
+        
+    ],
 });
 
 // ------------------ 方法 ------------------
@@ -110,9 +121,78 @@ const getSubjectName = (data) => {
     return '未知';
 }
 
+// 加载子节点 
+const loadNode = (node, resolve) => {
+    // console.log('加载子节点：', node);
+    // 加载顶层节点
+    if(node.id === 0){
+        const strategyTree = [{}, {}];
+        copyProperty(gameStore.strategyTree[0], strategyTree[0]);
+        copyProperty(gameStore.strategyTree[1], strategyTree[1]);
+        strategyTree.forEach(item => {
+            item.nextChessCanArray = [{}];
+        });
+        resolve(strategyTree);
+    } else {
+        // 加载某个子节点
+        const strategy = findNode(gameStore.strategyTree, node.data.id);
+        if(strategy && strategy.nextChessCanArray && strategy.nextChessCanArray.length > 0) {
+            const arr = [];
+            strategy.nextChessCanArray.forEach(item => {
+                const item2 = copyProperty(item, {});
+                item2.leaf = !(item2.nextChessCanArray && item2.nextChessCanArray.length > 0);
+                item2.nextChessCanArray = [];
+                arr.push(item2);
+            })
+            resolve(arr);
+        } else {
+            resolve([]);
+        }
+    }
+}
+
+// 刷新第一组节点数据
+const refreshFirstNode = (chessType) => {
+    const strategyItem0 = copyProperty(gameStore.strategyTree[0], {});
+    strategyItem0.nextChessCanArray = [];
+    strategyItem0.leaf = false;
+
+    const strategyItem1 = copyProperty(gameStore.strategyTree[1], {});
+    strategyItem1.nextChessCanArray = [];
+    strategyItem1.leaf = false;
+
+    state.strategyTree = [strategyItem0, strategyItem1];
+}
+
+// 显示计算耗时数据 
+const showCostTime = (chessType, costTime) => {
+    const strategyTreeItem = chessType === 'black' ? state.strategyTree[0] : state.strategyTree[1];
+    if(strategyTreeItem) {
+        strategyTreeItem.costTime = costTime;
+    }
+}
+
+// 遍历策略树，查找某个id子节点 
+const findNode = (strategyTree, id) => {
+    for (let i = 0; i < strategyTree.length; i++) {
+        const item = strategyTree[i];
+        if(item.id === id){
+            return item;
+        }
+        if(item.nextChessCanArray && item.nextChessCanArray.length > 0){
+            const item2 = findNode(item.nextChessCanArray, id);
+            if(item2){
+                return item2;
+            }
+        }
+    }
+    return null;
+}
 
 defineExpose({
-    expandTree
+    expandTree,
+    refreshFirstNode,
+    showCostTime
 })
 
 </script>
@@ -149,6 +229,7 @@ defineExpose({
     
     .tree-content-item{
         width: 95%;
+        font-size: 13px;
     }
     
     // 每层不一样的颜色，让肉眼更容易分辨 
@@ -166,7 +247,7 @@ defineExpose({
     // 最大最小
     .min-max-tips{margin-left: 5px;color: #DA70D6;}
     // 
-    .cz-btn{float: right; margin-right: 10px;}
+    .cz-btn{position: absolute; right: 10px;}
     
 }
 

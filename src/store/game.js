@@ -127,7 +127,7 @@ export const useGameStore = defineStore({
         loop: function () {
             
             const status = this.status;
-            console.log(status)
+            // console.log(status)
             
             if(status === 'notStarted') {
                 return;
@@ -138,8 +138,6 @@ export const useGameStore = defineStore({
             if(status === 'end') {
                 return;
             }
-            
-            const dictStore = useDictStore();
             
             // 系统判断中 
             if(status === 'judge') {
@@ -665,8 +663,8 @@ export const useGameStore = defineStore({
                 // 发个通知，让用户知道发生了什么 
                 sa.sendMessage(chessTypeName, 'warning', `${chessTypeName}无处可落，${nextChessTypeName}继续落子！`);
                 this.currentPlayerType = nextChessType;
-                this.status = nextChessType === 'black' ? 'waitBlack' : 'waitWhite';
-                // this.status = 'judge';
+                // this.status = nextChessType === 'black' ? 'waitBlack' : 'waitWhite';
+                this.status = 'judge';
                 return;
             }
 

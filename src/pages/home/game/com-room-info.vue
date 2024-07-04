@@ -48,6 +48,7 @@
                     <span v-if=" gameStore.status === 'waitWhite' ">等待白棋落子...</span>
                     <span v-if=" gameStore.status === 'blackDown' ">黑棋落子中...</span>
                     <span v-if=" gameStore.status === 'whiteDown' ">白棋落子中...</span>
+                    <span> ({{ gameStore.status }}) </span>
                 </p>
             </div>
             <!-- 一项信息 -->

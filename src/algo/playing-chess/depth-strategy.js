@@ -57,8 +57,8 @@ export const __mockDownChessAndCalcScore = function (canDownArray, boardData, do
         canDownChess.downAfterBoard = downAfterBoard;// 模拟落子后的棋盘样子
         canDownChess.tranCount = tranArr.length; // 回收棋子数量
         
-        canDownChess.blackStaticScore = calcStaticScore(canDownChess.downAfterBoard, 'black');  // 此时的黑子盘面得分 
-        canDownChess.whiteStaticScore = calcStaticScore(canDownChess.downAfterBoard, 'white');  // 此时的白子盘面得分 
+        canDownChess.blackStaticScore = calcStaticScore(canDownChess.downAfterBoard, 'black', canDownChess.x === -1);  // 此时的黑子盘面得分 
+        canDownChess.whiteStaticScore = calcStaticScore(canDownChess.downAfterBoard, 'white', canDownChess.x === -1);  // 此时的白子盘面得分 
         canDownChess.weStaticScore = canDownChess[`${canDownChess.type}StaticScore`];  // 此时落子方的盘面得分 
         // canDownChess.enemyStaticScore = canDownChess[`${__nextChessType(canDownChess.type)}StaticScore`];  // 此时落子方敌对方的盘面得分 
         

@@ -12,6 +12,7 @@ export const copyProperty = function (obj1, obj2) {
     for (const key in obj1) {
         obj2[key] = obj1[key];
     }
+    return obj2;
 };
 
 // 拷贝一个数组 

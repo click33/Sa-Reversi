@@ -1,7 +1,7 @@
 // 棋盘运算相关函数 
 import {createBackChess, hasChessXy} from "./chess-funs";
 import {getTranList} from "./tran-funs";
-import {__copyBoardData, forEachBoardData, getBoardXyCount, setChessByXy} from "./board-funs";
+import {__copyBoardData, forEachBoardData, getBoardXyCount, getChessCountInfo, setChessByXy} from "./board-funs";
 import {copyObject} from "./common-util";
 
 const scoreMap = {
@@ -35,8 +35,20 @@ export const getCanDownArray = function (boardData, chessType) {
     return canDownArr;
 };
 
-// 计算一个棋盘指定类型棋子的总得分 
-export const calcStaticScore = function (boardData, chessType) {
+// 计算一个棋盘指定类型棋子的总得分 (tryCalcEnd=true时，尝试计算盘面是否已结束)
+export const calcStaticScore = function (boardData, chessType, tryCalcEnd) {
+    if(tryCalcEnd) {
+        if(isEnd(boardData)) {
+            const { blackCount, whiteCount, noneCount } = getChessCountInfo(boardData);
+            if(blackCount !== whiteCount) {
+                if(chessType ===  'black') {
+                    return blackCount > whiteCount ? 9999 : -9999;
+                } else {
+                    return whiteCount > blackCount ? 9999 : -9999;
+                }
+            }
+        }
+    }
     const { xCount, yCount } = getBoardXyCount(boardData);
     let score = 0;
     forEachBoardData(boardData, chess => {
@@ -135,3 +147,7 @@ export const calcXyFuWeiName = function (chess, xCount, yCount) {
     return 'normal';
 }
 
+// 计算一个盘面是否已经结束 
+export const isEnd = function (boardData) {
+    return getCanDownArray(boardData, 'black').length === 0 && getCanDownArray(boardData, 'white').length === 0;
+};

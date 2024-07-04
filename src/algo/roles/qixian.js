@@ -16,20 +16,26 @@ export default {
 
         setTimeout(() => {
             const startTime = performance.now();
-            const strategyTree = calcStrategyTree(boardData, downChessType, 3);
-            // 显示到策略树上 
+            // 计算策略树
+            const strategyTree = calcStrategyTree(boardData, downChessType, 4);
+            
+            // const endTime0 = performance.now();
+            // console.log('计算耗时：', parseInt(endTime0 - startTime))
+            
+            // 显示策略树 
             showDepthStrategyTree(strategyTree, downChessType, this.name);
 
             setTimeout(() => {
-                // 显示耗时 
+                // 计算耗时数据 
                 const endTime = performance.now();
+                // console.log('刷新UI耗时：', parseInt(endTime - startTime))
+                
                 showDepthStrategyTreeCostTime(downChessType, parseInt(endTime - startTime));
-                console.log(parseInt(endTime - startTime))
 
                 // 选择最高得分方案，作为最终落子方案 
                 gameStore[`${downChessType}StrategyTreeInCall`] = false;
                 downChessFunction(strategyTree[strategyTree.length - 1], downChessType);
-            }, 10);
+            }, 1);
                     
         }, 300)
 
