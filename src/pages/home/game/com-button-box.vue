@@ -1,11 +1,11 @@
 <!-- 操作按钮列表 -->
 <template>
     <div class="con-box vue-box">
-        <el-button type="primary" @click="openStrategyTree">策略树</el-button>
         <el-button type="primary" @click="stepBack" :disabled="gameStore.stepIndex === 0 || gameStore.stepList.length === 0">← 后退</el-button>
         <el-button type="primary" @click="stepForward" :disabled="gameStore.stepIndex === gameStore.stepList.length - 1">前进 →</el-button>
         <el-button type="primary" @click="stepForward_withAnim" :disabled="gameStore.stepIndex === gameStore.stepList.length - 1">带动画前进 →</el-button>
         <el-button type="primary" @click="aiDownChess">AI 走棋</el-button>
+        <el-button type="primary" @click="openStrategyTree">显示策略树</el-button>
 
         <!-- 策略树窗口 -->
         <lay-layer v-model="gameStore.showStrategyTreeWin"
@@ -105,6 +105,11 @@ onMounted(() => {
         width: 100%;
         min-height: 10px;
         background-color: transparent;
+    }
+    :deep(.el-button) {
+        margin-right: 10px;
+        margin-bottom: 10px;
+        margin-left: 0px;
     }
     
 </style>
