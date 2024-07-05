@@ -12,7 +12,13 @@ export const useSelectStore = defineStore({
         // 玩家选择的参数信息   --- 注意：从这里改动配置后，需要手动刷新页面才会生效
         const defaultSelectStore = {
             blackRole: 'user',  // 黑子角色 
-            whiteRole: 'caigou',  // 白子角色 
+            whiteRole: 'caigou',  // 白子角色
+            blackHornStrong: false,  // 黑子占四角
+            blackEdgeStrong: false,  // 黑子占四边
+            blackRandomFourStrong: false,  // 黑子随机四子
+            whiteHornStrong: false,  // 白子占四角
+            whiteEdgeStrong: false,  // 白子占四边
+            whiteRandomFourStrong: false,  // 白子随机四子
             username: '', // 玩家昵称 
             xCount: 8,  // 棋盘行数
             yCount: 8,  // 棋盘列数

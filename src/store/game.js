@@ -16,7 +16,7 @@ import {getCanDownArray} from "../algo/playing-chess/board-calc";
 import {
     __copyBoardData,
     __copyBoardDataToBack,
-    forEachBoardData, getBoardToString,
+    forEachBoardData, getBoardToString, getBoardXyCount,
     getChessByXy,
     getChessCountInfo
 } from "../algo/playing-chess/board-funs";
@@ -193,15 +193,75 @@ export const useGameStore = defineStore({
             // { x: 5, y: 5, type: 'white' },
 
             const selectStore = useSelectStore();
-            const x = parseInt(selectStore.xCount / 2);
-            const y = parseInt(selectStore.yCount / 2);
+            const { xCount, yCount } = getBoardXyCount(this.boardData);
+            const xCenter = parseInt(xCount / 2);
+            const yCenter = parseInt(yCount / 2);
 
+            // 中间默认落子数据 
             this.startChessList = [
-                { x: x + 1, y: y, type: 'black' },
-                { x: x, y: y, type: 'white' },
-                { x: x, y: y + 1, type: 'black' },
-                { x: x + 1, y: y + 1, type: 'white' },
-            ]
+                { x: xCenter + 1, y: yCenter, type: 'black' },
+                { x: xCenter, y: yCenter, type: 'white' },
+                { x: xCenter, y: yCenter + 1, type: 'black' },
+                { x: xCenter + 1, y: yCenter + 1, type: 'white' },
+            ];
+            
+            // 判断是否有额外加强 
+            // blackHornStrong: false,  // 黑子占四角
+            // whiteHornStrong: false,  // 白子占四角
+            // blackEdgeStrong: false,  // 黑子占四边
+            // whiteEdgeStrong: false,  // 白子占四边
+            // blackRandomFourStrong: false,  // 黑子随机四子
+            // whiteRandomFourStrong: false,  // 白子随机四子 
+            
+            // 占四边
+            const _addEdgeStrong = (chessType) => {
+                for (let i = 1; i <= xCount; i++) {
+                    this.startChessList.push({x: i, y: 1, type: chessType, startType: 'edge'});
+                }
+                for (let j = 2; j <= yCount - 1; j++) {
+                    this.startChessList.push({x: xCount, y: j, type: chessType, startType: 'edge'});
+                }
+                for (let i = xCount; i >= 1; i--) {
+                    this.startChessList.push({x: i, y: yCount, type: chessType, startType: 'edge'});
+                }
+                for (let j = xCount - 1; j >= 2; j--) {
+                    this.startChessList.push({x: 1, y: j, type: chessType, startType: 'edge'});
+                }
+            }
+            if(selectStore.blackEdgeStrong) {
+                _addEdgeStrong('black');
+            }
+            if(selectStore.whiteEdgeStrong) {
+                _addEdgeStrong('white');
+            }
+
+            // 占四角
+            const _addHornStrong = (chessType) => {
+                this.startChessList.push({x: 1, y: 1, type: chessType});
+                this.startChessList.push({x: xCount, y: 1, type: chessType});
+                this.startChessList.push({x: 1, y: yCount, type: chessType});
+                this.startChessList.push({x: xCount, y: yCount, type: chessType});
+            }
+            if(selectStore.blackHornStrong) {
+                _addHornStrong('black');
+            }
+            if(selectStore.whiteHornStrong) {
+                _addHornStrong('white');
+            }
+
+            // 随机四子
+            const _addRandomFourStrong = (chessType) => {
+                this.startChessList.push({x: sa.randomNum(1, xCount), y: sa.randomNum(1, yCount), type: chessType});
+                this.startChessList.push({x: sa.randomNum(1, xCount), y: sa.randomNum(1, yCount), type: chessType});
+                this.startChessList.push({x: sa.randomNum(1, xCount), y: sa.randomNum(1, yCount), type: chessType});
+                this.startChessList.push({x: sa.randomNum(1, xCount), y: sa.randomNum(1, yCount), type: chessType});
+            }
+            if(selectStore.blackRandomFourStrong) {
+                _addRandomFourStrong('black');
+            }
+            if(selectStore.whiteRandomFourStrong) {
+                _addRandomFourStrong('white');
+            }
 
         },
 
@@ -213,7 +273,7 @@ export const useGameStore = defineStore({
         },
 
         // 将初始落子，更新棋盘数据 (带动画，视觉上更流畅)
-        startChessListToBoardData_withAnim: function (i, callback) {
+        startChessListToBoardData_withAnim: function (i, callback, sleepTime = 400) {
             setTimeout(() => {
                 if(i >= this.startChessList.length) {
                     callback();
@@ -223,8 +283,11 @@ export const useGameStore = defineStore({
                 const item = this.startChessList[i];
                 this.getChess(item.x, item.y).type = item.type;
                 i++;
-                this.startChessListToBoardData_withAnim(i, callback);
-            }, 400)
+                sleepTime = item.startType === 'edge' ? 150 : 400;
+                // sleepTime = sleepTime - 20;
+                // sleepTime = sleepTime < 100 ? 100 : sleepTime;
+                this.startChessListToBoardData_withAnim(i, callback, sleepTime);
+            }, sleepTime)
         },
 
         // ------------------------------ 一些基础信息获取 ------------------------------ 
