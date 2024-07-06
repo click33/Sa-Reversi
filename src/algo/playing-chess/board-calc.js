@@ -37,18 +37,6 @@ export const getCanDownArray = function (boardData, chessType) {
 
 // 计算一个棋盘指定类型棋子的总得分 (tryCalcEnd=true时，尝试计算盘面是否已结束)
 export const calcStaticScore = function (boardData, chessType, tryCalcEnd) {
-    if(tryCalcEnd) {
-        if(isEnd(boardData)) {
-            const { blackCount, whiteCount, noneCount } = getChessCountInfo(boardData);
-            if(blackCount !== whiteCount) {
-                if(chessType ===  'black') {
-                    return blackCount > whiteCount ? 9999 : -9999;
-                } else {
-                    return whiteCount > blackCount ? 9999 : -9999;
-                }
-            }
-        }
-    }
     const { xCount, yCount } = getBoardXyCount(boardData);
     let score = 0;
     forEachBoardData(boardData, chess => {
@@ -56,6 +44,18 @@ export const calcStaticScore = function (boardData, chessType, tryCalcEnd) {
             score += calcXyScore(chess, xCount, yCount);
         }
     })
+    if(tryCalcEnd) {
+        if(isEnd(boardData)) {
+            const { blackCount, whiteCount } = getChessCountInfo(boardData);
+            if(blackCount !== whiteCount) {
+                if(chessType ===  'black') {
+                    score += blackCount > whiteCount ? 9999 : -9999;
+                } else {
+                    score += whiteCount > blackCount ? 9999 : -9999;
+                }
+            }
+        }
+    }
     return score;
 }
 

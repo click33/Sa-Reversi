@@ -14,11 +14,14 @@ export const useSelectStore = defineStore({
             blackRole: 'user',  // 黑子角色 
             whiteRole: 'caigou',  // 白子角色
             blackHornStrong: false,  // 黑子占四角
-            blackEdgeStrong: false,  // 黑子占四边
-            blackRandomFourStrong: false,  // 黑子随机四子
             whiteHornStrong: false,  // 白子占四角
+            blackEdgeStrong: false,  // 黑子占四边
             whiteEdgeStrong: false,  // 白子占四边
+            blackRandomFourStrong: false,  // 黑子随机四子
             whiteRandomFourStrong: false,  // 白子随机四子
+            blackQxDepth: 4,  // 黑子AI棋仙迭代深度 
+            whiteQxDepth: 4,  // 白子AI棋仙迭代深度 
+            helpQxDepth: 4,  // AI 帮走棋子时，AI棋仙迭代深度 
             username: '', // 玩家昵称 
             xCount: 8,  // 棋盘行数
             yCount: 8,  // 棋盘列数

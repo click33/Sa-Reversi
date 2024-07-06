@@ -1,6 +1,7 @@
 import {useGameStore} from "../../store/game";
 import {calcStrategyTree} from "../playing-chess/depth-strategy";
 import {showDepthStrategyTree, showDepthStrategyTreeCostTime} from "../playing-chess/strategy-show-funs";
+import {useSelectStore} from "../../store/select";
 
 /**
  * AI：棋仙陪练，行棋算法 
@@ -17,7 +18,7 @@ export default {
         setTimeout(() => {
             const startTime = performance.now();
             // 计算策略树
-            const strategyTree = calcStrategyTree(boardData, downChessType, 4);
+            const strategyTree = calcStrategyTree(boardData, downChessType, getQxDepth(downChessType));
             
             // const endTime0 = performance.now();
             // console.log('计算耗时：', parseInt(endTime0 - startTime))
@@ -41,3 +42,12 @@ export default {
 
     }
 }
+
+const getQxDepth = function (downChessType) {
+    const selectStore = useSelectStore();
+    let depth = selectStore[`${downChessType}QxDepth`];
+    if(selectStore[`${downChessType}Role`] === 'user') {
+        depth = selectStore.helpQxDepth;
+    }
+    return depth;
+};

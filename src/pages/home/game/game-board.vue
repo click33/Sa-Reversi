@@ -3,18 +3,18 @@
     <div class="board-box fade-in-ys">
         <!-- 横向坐标轴 -->
         <div class="axis-x">
-            <div v-for="x in selectStore.xCount" :key="x">{{ dictStore.xName[x] }}</div>
+            <div v-for="x in gameStore.xCount" :key="x">{{ dictStore.xName[x] }}</div>
         </div>
         <!-- 纵向坐标轴 -->
         <div class="axis-y">
-            <div v-for="y in selectStore.yCount" :key="y">
+            <div v-for="y in gameStore.yCount" :key="y">
                 <span>{{ y }}</span>
             </div>
         </div>
         <!-- 棋盘本身 -->
         <table class="board-table">
-            <tr v-for="y in selectStore.yCount" :key="y">
-                <td v-for="x in selectStore.xCount" :key="x" @click="down(x, y)">
+            <tr v-for="y in gameStore.yCount" :key="y">
+                <td v-for="x in gameStore.xCount" :key="x" @click="down(x, y)">
                     <game-chess :class=" `chess-${x}-${y}` " :x="x" :y="y"></game-chess>
                 </td>
             </tr>

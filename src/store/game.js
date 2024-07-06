@@ -1,22 +1,17 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
 import {useSelectStore} from "./select";
 import {useDictStore} from "./dict";
 import {useSettingStore} from "./setting";
 import {useMessageStore} from "./message";
 import {useComStore} from "./com";
-import {
-    __getChessTypeName,
-    __nextChessType,
-    createBackChess,
-    createChess,
-    getXyStr
-} from "../algo/playing-chess/chess-funs";
+import {__getChessTypeName, __nextChessType, createChess, getXyStr, hasChessXy} from "../algo/playing-chess/chess-funs";
 import {getTranList} from "../algo/playing-chess/tran-funs";
 import {getCanDownArray} from "../algo/playing-chess/board-calc";
 import {
     __copyBoardData,
     __copyBoardDataToBack,
-    forEachBoardData, getBoardToString, getBoardXyCount,
+    forEachBoardData,
+    getBoardXyCount,
     getChessByXy,
     getChessCountInfo
 } from "../algo/playing-chess/board-funs";
@@ -36,7 +31,9 @@ export const useGameStore = defineStore({
             // judge=系统判断中，每次落子完毕，系统判断下一步程序流程 
             // waitBlack=等待黑棋落子，waitWhite=等待白棋落子，（等待其开始判断落在哪里了）
             // blackDown=黑棋落子中，whiteDown=白棋落子中 （已经判断出该落在哪里了，开始落子/或已落子等待翻子动画完毕）
-            status: 'notStarted',  
+            status: 'notStarted',
+            xCount: 8,  // 棋盘行数
+            yCount: 8,  // 棋盘列数
             boardData: null,    // 棋盘数据
             startChessList: [],   // 初始落子数据
             stepIndex: -1,   // 目前下到了第几步 
@@ -181,6 +178,8 @@ export const useGameStore = defineStore({
                 }
                 xArr.push(yArr);
             }
+            this.xCount = xCount;
+            this.yCount = yCount;
             this.boardData = xArr;
         },
 
@@ -204,14 +203,6 @@ export const useGameStore = defineStore({
                 { x: xCenter, y: yCenter + 1, type: 'black' },
                 { x: xCenter + 1, y: yCenter + 1, type: 'white' },
             ];
-            
-            // 判断是否有额外加强 
-            // blackHornStrong: false,  // 黑子占四角
-            // whiteHornStrong: false,  // 白子占四角
-            // blackEdgeStrong: false,  // 黑子占四边
-            // whiteEdgeStrong: false,  // 白子占四边
-            // blackRandomFourStrong: false,  // 黑子随机四子
-            // whiteRandomFourStrong: false,  // 白子随机四子 
             
             // 占四边
             const _addEdgeStrong = (chessType) => {
@@ -251,10 +242,17 @@ export const useGameStore = defineStore({
 
             // 随机四子
             const _addRandomFourStrong = (chessType) => {
-                this.startChessList.push({x: sa.randomNum(1, xCount), y: sa.randomNum(1, yCount), type: chessType});
-                this.startChessList.push({x: sa.randomNum(1, xCount), y: sa.randomNum(1, yCount), type: chessType});
-                this.startChessList.push({x: sa.randomNum(1, xCount), y: sa.randomNum(1, yCount), type: chessType});
-                this.startChessList.push({x: sa.randomNum(1, xCount), y: sa.randomNum(1, yCount), type: chessType});
+                const arr = [];
+                for (let i = 0; i < 4; i++) {
+                    const chess = {x: sa.randomNum(1, xCount), y: sa.randomNum(1, yCount), type: chessType};
+                    // 防止随机到中间的初始化棋子，导致运气太好直接胜利 
+                    if( hasChessXy(arr, chess) || ( (chess.x === xCenter || chess.x === xCenter + 1) && (chess.y === yCenter || chess.y === yCenter + 1) ) ) {
+                        i--;
+                        continue;
+                    }
+                    arr.push(chess);
+                }
+                this.startChessList.push(...arr);
             }
             if(selectStore.blackRandomFourStrong) {
                 _addRandomFourStrong('black');

@@ -16,10 +16,10 @@
             <div class="info-item">
                 <div class="info-role">棋盘：</div>
                 <p class="info-p-warning right-to-left-2">
-                    <span>{{ selectStore.xCount }} x {{ selectStore.yCount }} </span>
-                    <span v-if="selectStore.xCount === selectStore.yCount">
-                        <span v-if="dictStore.boardLengthMarks[selectStore.xCount]">
-                            （{{ dictStore.boardLengthMarks[selectStore.xCount] }}）
+                    <span>{{ gameStore.xCount }} x {{ gameStore.yCount }} </span>
+                    <span v-if="gameStore.xCount === gameStore.yCount">
+                        <span v-if="dictStore.boardLengthMarks[gameStore.xCount]">
+                            （{{ dictStore.boardLengthMarks[gameStore.xCount] }}）
                         </span>
                     </span>
                 </p>
