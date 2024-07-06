@@ -9,6 +9,14 @@
 
             <!-- 右边用户信息 -->
             <div class="nav-top-right">
+                <div class="theme-switch-box">
+                    <el-switch v-model="selectStore.theme"
+                               style="--el-switch-on-color: #000; --el-switch-off-color: #ccc; "
+                               active-value="dark"
+                               inactive-value="light"
+                               inline-prompt active-text="Dark" inactive-text="Light"
+                    ></el-switch>
+                </div>
                 <router-link to="/select">新对局</router-link>
             </div>
         </div>
@@ -18,6 +26,8 @@
 
 <script setup name="nav-top">
 import NavTopLogo from './nav-top-logo.vue';
+import {useSelectStore} from "../../store/select";
+const selectStore = useSelectStore();
 
 
 </script>
@@ -44,5 +54,10 @@ import NavTopLogo from './nav-top-logo.vue';
         float: right;
         font-weight: 700;
         a { color: #faee0d; }
+    }
+    .theme-switch-box{
+        display: inline-block;
+        margin-right: 10px;
+        
     }
 </style>

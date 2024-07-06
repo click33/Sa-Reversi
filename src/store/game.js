@@ -16,7 +16,7 @@ import {
     getChessCountInfo
 } from "../algo/playing-chess/board-funs";
 import {createStep} from "../algo/playing-chess/step-funs";
-import {copyProperty} from "../algo/playing-chess/common-util";
+import {chaosArray, copyProperty} from "../algo/playing-chess/common-util";
 
 /**
  * 定义游戏进行时参数信息 
@@ -238,6 +238,21 @@ export const useGameStore = defineStore({
             }
             if(selectStore.whiteHornStrong) {
                 _addHornStrong('white');
+            }
+            
+            // 占一角
+            const fourHornArray = [
+                {x: 1, y: 1},
+                {x: xCount, y: 1},
+                {x: 1, y: yCount},
+                {x: xCount, y: yCount},
+            ]
+            chaosArray(fourHornArray);
+            if(selectStore.blackOneHornStrong) {
+                this.startChessList.push({x: fourHornArray[0].x, y: fourHornArray[0].y, type: 'black'});
+            }
+            if(selectStore.whiteOneHornStrong) {
+                this.startChessList.push({x: fourHornArray[1].x, y: fourHornArray[1].y, type: 'white'});
             }
 
             // 随机四子
@@ -674,7 +689,8 @@ export const useGameStore = defineStore({
             let role = this.getRole(this.currentPlayerType);
             if(role.id === 'user') {
                 role = this.getRoleById('qixian');
-                sa.sendMessage(this.getCurrentPlayerTypeName(), 'success', `调用 AI (${role.name}) 帮走棋！`);
+                const roleName = useDictStore().getRoleName(role.id, 'help');
+                sa.sendMessage(this.getCurrentPlayerTypeName(), 'success', `调用 AI (${roleName}) 帮走棋！`);
             }
             // console.log(role.name + '帮走棋！');
             this.programJudge(this.currentPlayerType, role);

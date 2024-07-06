@@ -13,6 +13,8 @@ export const useSelectStore = defineStore({
         const defaultSelectStore = {
             blackRole: 'user',  // 黑子角色 
             whiteRole: 'caigou',  // 白子角色
+            blackOneHornStrong: false,  // 黑子占一角
+            whiteOneHornStrong: false,  // 白子占一角
             blackHornStrong: false,  // 黑子占四角
             whiteHornStrong: false,  // 白子占四角
             blackEdgeStrong: false,  // 黑子占四边
@@ -32,6 +34,7 @@ export const useSelectStore = defineStore({
             tipsDownTranCount: false,  // 提示落子可回收棋子数量 
             tipsDownScore: false,  // 提示落子得分 
             showChessPoint: false,  // 显示棋子坐标 
+            theme: 'light',  // 主题：light、dark 
         };
         const defaultSelectStoreString = JSON.stringify(defaultSelectStore);
 

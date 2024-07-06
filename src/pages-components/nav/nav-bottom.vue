@@ -42,7 +42,7 @@ const settingStore = useSettingStore();
         text-align: center;
         background-color: #222;
         //background-color: #EEE;
-        border-top: 1px solid #ddd;
+        border-top: 1px solid #444;
         color: #aaa;
     }
     .a-link{

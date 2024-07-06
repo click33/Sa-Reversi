@@ -13,6 +13,7 @@
                     </el-radio-group>
                     <div class="chess-role-strong">
                         <div class="ss-checkbox-box">
+                            <el-checkbox v-model="selectStore.blackOneHornStrong">占一角</el-checkbox>
                             <el-checkbox v-model="selectStore.blackHornStrong">占四角</el-checkbox>
                             <el-checkbox v-model="selectStore.blackEdgeStrong">占四边</el-checkbox>
                             <el-checkbox v-model="selectStore.blackRandomFourStrong">随机四子</el-checkbox>
@@ -38,6 +39,7 @@
                     </el-radio-group>
                     <div class="chess-role-strong">
                         <div class="ss-checkbox-box">
+                            <el-checkbox v-model="selectStore.whiteOneHornStrong">占一角</el-checkbox>
                             <el-checkbox v-model="selectStore.whiteHornStrong">占四角</el-checkbox>
                             <el-checkbox v-model="selectStore.whiteEdgeStrong">占四边</el-checkbox>
                             <el-checkbox v-model="selectStore.whiteRandomFourStrong">随机四子</el-checkbox>

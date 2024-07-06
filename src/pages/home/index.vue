@@ -1,6 +1,6 @@
 <!-- 首页 -->
 <template>
-    <div>
+    <div class="small--index-page">
         <!-- 顶层导航栏 -->
         <nav-top></nav-top>
 
