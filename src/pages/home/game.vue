@@ -16,11 +16,11 @@
                     <game-board></game-board>
                 </div>
 
+                <!-- 按钮列表 -->
+                <com-button-box style="margin-bottom: 4px;"></com-button-box>
+
                 <!-- 对战数据 -->
                 <com-battle-data style="margin-bottom: 14px;"></com-battle-data>
-
-                <!-- 按钮列表 -->
-                <com-button-box style="margin-bottom: 14px;"></com-button-box>
 
             </div>
 

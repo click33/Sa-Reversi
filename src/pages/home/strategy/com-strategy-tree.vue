@@ -51,15 +51,12 @@ import {nextTick, reactive} from "vue";
 import {useGameStore} from "../../../store/game";
 import {useSelectStore} from "../../../store/select";
 import {useDictStore} from "../../../store/dict";
-import {useSettingStore} from "../../../store/setting";
 import {__nextChessType, getXyStr} from "../../../algo/playing-chess/chess-funs";
 import {getBoardToString} from "../../../algo/playing-chess/board-funs";
-import ComStrategyTreeItem from "./com-strategy-tree-item.vue";
 import {copyProperty} from "../../../algo/playing-chess/common-util";
 const gameStore = useGameStore();
 const selectStore = useSelectStore();
 const dictStore = useDictStore();
-const settingStore = useSettingStore();
 
 
 // ------------------ 数据 ------------------

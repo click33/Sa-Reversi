@@ -18,13 +18,14 @@ export default {
         setTimeout(() => {
             const startTime = performance.now();
             // 计算策略树
-            const strategyTree = calcStrategyTree(boardData, downChessType, getQxDepth(downChessType));
+            const depth = getQxDepth(downChessType);
+            const strategyTree = calcStrategyTree(boardData, downChessType, depth);
             
             // const endTime0 = performance.now();
             // console.log('计算耗时：', parseInt(endTime0 - startTime))
             
             // 显示策略树 
-            showDepthStrategyTree(strategyTree, downChessType, this.name);
+            showDepthStrategyTree(strategyTree, downChessType, this.name + '-' + depth);
 
             setTimeout(() => {
                 // 计算耗时数据 
@@ -43,6 +44,7 @@ export default {
     }
 }
 
+// 获取应该的计算深度
 const getQxDepth = function (downChessType) {
     const selectStore = useSelectStore();
     let depth = selectStore[`${downChessType}QxDepth`];
@@ -51,3 +53,4 @@ const getQxDepth = function (downChessType) {
     }
     return depth;
 };
+

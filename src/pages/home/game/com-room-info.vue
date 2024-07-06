@@ -28,13 +28,13 @@
             <div class="info-item">
                 <div class="info-role">黑子：</div>
                 <p class="info-p-warning right-to-left-3" v-if="selectStore.blackRole === 'user' ">{{ selectStore.username }} （玩家）</p>
-                <p class="info-p-warning right-to-left-3" v-else>{{ dictStore.getRole( selectStore.blackRole ).name }} （AI）</p>
+                <p class="info-p-warning right-to-left-3" v-else>{{ dictStore.getRoleName( selectStore.blackRole, 'black' ) }} （AI）</p>
             </div>
             <!-- 一项信息 -->
             <div class="info-item">
                 <div class="info-role">白子：</div>
                 <p class="info-p-warning right-to-left-4" v-if="selectStore.whiteRole === 'user' ">{{ selectStore.username }} （玩家）</p>
-                <p class="info-p-warning right-to-left-4" v-else>{{ dictStore.getRole( selectStore.whiteRole ).name }} （AI）</p>
+                <p class="info-p-warning right-to-left-4" v-else>{{ dictStore.getRoleName( selectStore.whiteRole, 'white' ) }} （AI）</p>
             </div>
             <!-- 一项信息 -->
             <div class="info-item">

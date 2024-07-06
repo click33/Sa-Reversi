@@ -5,11 +5,11 @@
             <div class="role-name-box">
                 <div class="role-name role-name-black">
                     <span v-if="selectStore.blackRole === 'user'">【玩家】{{ selectStore.username }}</span>
-                    <span v-else>【AI】{{ dictStore.getRole( selectStore.blackRole ).name }}</span>
+                    <span v-else>【AI】{{ dictStore.getRoleName( selectStore.blackRole, 'black' ) }}</span>
                 </div>
                 <div class="role-name role-name-white">
                     <span v-if="selectStore.whiteRole === 'user'">【玩家】{{ selectStore.username }}</span>
-                    <span v-else>【AI】{{ dictStore.getRole( selectStore.whiteRole ).name }}</span>
+                    <span v-else>【AI】{{ dictStore.getRoleName( selectStore.whiteRole, 'white' ) }}</span>
                 </div>
                 <div style="clear: both;"></div>
             </div>

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import roleList from "../algo/role-list";
+import {useSelectStore} from "./select";
 
 /**
  * 字典数据
@@ -30,9 +31,18 @@ export const useDictStore = defineStore({
         }
     },
     actions: {
-        // 根据等级获取等级名称
+        // 根据角色id获取角色
         getRole(roleId) {
             return this.roleList.find(item => item.id === roleId);
+        },
+        // 根据角色id获取角色名称
+        getRoleName(roleId, chessType) {
+            const role = this.roleList.find(item => item.id === roleId);
+            if(roleId === 'qixian' && chessType) {
+                const selectStore = useSelectStore();
+                return role.name + '-' + selectStore[`${chessType}QxDepth`];
+            }
+            return role.name;
         },
     }
 })
