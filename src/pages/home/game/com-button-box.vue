@@ -164,7 +164,7 @@ onMounted(() => {
         :deep{
             // 抽屉里不显示动画 
             .right-to-left-1,.right-to-left-2,.right-to-left-3,.right-to-left-4,.right-to-left-5,
-            .right-to-left-6,.right-to-left-6,.right-to-left-7,.right-to-left-8,.right-to-left-9{
+            .right-to-left-6,.right-to-left-7,.right-to-left-8,.right-to-left-9,.right-to-left-10{
                 animation-delay: 0ms;
             }
         }

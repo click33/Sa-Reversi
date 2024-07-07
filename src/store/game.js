@@ -300,7 +300,7 @@ export const useGameStore = defineStore({
                 // sleepTime = sleepTime - 20;
                 // sleepTime = sleepTime < 100 ? 100 : sleepTime;
                 this.startChessListToBoardData_withAnim(i, callback, sleepTime);
-            }, sleepTime)
+            }, useSelectStore().getSleep(sleepTime) )
         },
 
         // ------------------------------ 一些基础信息获取 ------------------------------ 
@@ -501,7 +501,7 @@ export const useGameStore = defineStore({
                 
                 i++;
                 this.changeChessArrType_withAnim(tranArr, i, callback);
-            }, 200)
+            }, useSelectStore().getSleep(200) )
         },
 
         // 计算棋盘所有可落子位置 
@@ -709,7 +709,7 @@ export const useGameStore = defineStore({
                         setTimeout( () => {
                             this.currentPlayerType = nextPlayerType;
                             this.status = 'judge';
-                        }, 400);
+                        }, useSelectStore().getSleep(400));
                     }
                 });
             });

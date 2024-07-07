@@ -12,6 +12,8 @@
 
 <script setup name="enemy-finger">
 import { onMounted, reactive } from "vue";
+import {useSelectStore} from "../../../store/select";
+const selectStore = useSelectStore();
 
 // 组件形参 
 const prop = defineProps({
@@ -47,6 +49,9 @@ const state = reactive({
 
 // 在指定位置放置棋子
 const down = (x, y, type, fingerAnimType, moveSuccessCallback) => {
+    if(!fingerAnimType || fingerAnimType === 'default') {
+        fingerAnimType = selectStore.downChessAnim;
+    }
     if(fingerAnimType === 'none') {
         return moveSuccessCallback();
     }
@@ -106,7 +111,7 @@ const down = (x, y, type, fingerAnimType, moveSuccessCallback) => {
                 if(prop.camp === 'enemy') {
                     state.boxStyle.top = `0vh`;
                 }
-            }, 100);
+            }, selectStore.getSleep(100));
         });
     });
     
@@ -115,15 +120,22 @@ const down = (x, y, type, fingerAnimType, moveSuccessCallback) => {
 
 // 移动小手到棋盘格子上 
 const moveFingerToTd = (camp, top, left, fingerAnimType, callback) => {
-    // 动画类型 direct=正常，一步到位，yx=先y轴后x轴，mix=混合，think=思考，fast=快速，shake=晃来晃去，slow=慢速，throw=甩几下 
-    const animArray = ['direct', 'yx', 'mix', 'think', 'fast', 'shake', 'slow', 'throw'];
-    const animArray2 = ['shake', 'slow', 'throw'];
-    let animType = animArray[Math.floor(Math.random() * animArray.length)];
-    // 如果本次和上一次都属于慢速里的几个，则指定为 direct，避免节奏太慢 
-    if(animArray2.includes(animType) && animArray2.includes(state.animType)) {
-        animType = 'direct';
+    const downChessAnim = selectStore.downChessAnim;
+    if(downChessAnim === 'random') {
+        // 动画类型 direct=正常，一步到位，yx=先y轴后x轴，mix=混合，think=思考，fast=快速，shake=晃来晃去，slow=慢速，throw=甩几下 
+        const animArray = ['direct', 'yx', 'mix', 'think', 'fast', 'shake', 'slow', 'throw'];
+        const animArray2 = ['shake', 'slow', 'throw'];
+        let animType = animArray[Math.floor(Math.random() * animArray.length)];
+        // 如果本次和上一次都属于慢速里的几个，则指定为 direct，避免节奏太慢 
+        if(animArray2.includes(animType) && animArray2.includes(state.animType)) {
+            animType = 'direct';
+        }
+        state.animType = animType;
+    } else if(downChessAnim === 'none') {
+        return callback();
+    } else {
+        state.animType = downChessAnim;
     }
-    state.animType = animType;
     // state.animType = 'fast';
     
     // 正常，一步到位
@@ -177,7 +189,7 @@ const moveFingerToTd = (camp, top, left, fingerAnimType, callback) => {
         state.boxStyle.transitionDuration = '200ms';
         state.boxStyle.top = `${top}px`;
         state.boxStyle.left = `${left}px`;
-        setTimeout(callback, 200);
+        setTimeout(callback, 150);
     }
     
     // 晃来晃去 
@@ -207,13 +219,11 @@ const moveFingerToTd = (camp, top, left, fingerAnimType, callback) => {
         // state.boxStyle.transitionDuration = '400ms';
         state.boxStyle.transitionDuration = '300ms';
         slowIterator(top, left, () => {
-            setTimeout(() => {
-                state.boxStyle.transitionDuration = '200ms';
-                state.boxStyle.top = `${top}px`;
-                state.boxStyle.left = `${left}px`;
-                setTimeout(callback, 200);
-            }, 200)
-        }, 2)
+            state.boxStyle.transitionDuration = '200ms';
+            state.boxStyle.top = `${top}px`;
+            state.boxStyle.left = `${left}px`;
+            setTimeout(callback, 200);
+        }, 3)
     }
 
     // 甩几下 
@@ -264,7 +274,7 @@ const slowIterator  = (top, left, callback, freq) => {
     state.boxStyle.left = `calc(${left}px + ${sa.randomNum(-10, 10)}vw)`;
     setTimeout(() => {
         slowIterator(top, left, callback, freq);
-    }, 1000);
+    }, 900);
 }
 
 // throw 函数，迭代器
@@ -293,9 +303,7 @@ defineExpose({
 
 // 组件加载时触发
 onMounted(() => { 
-    // setTimeout(() => {
-    //     state.boxStyle.left = '800px';
-    // } , 1000);
+    
 })
 
 </script>

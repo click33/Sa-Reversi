@@ -102,6 +102,27 @@
                     <p class="option-intro">此为开发调试选项，如无必要请勿勾选，会破坏游戏规则</p>
                 </div>
             </el-form-item>
+            
+            <el-form-item label="落子动画：" class="option-item right-to-left-7">
+                <div class="right-to-left-9">
+                    <el-radio-group v-model="selectStore.downChessAnim">
+                        <template v-for="(value, key) in dictStore.downChessAnimS">
+                            <el-radio-button :label="value" :value="key" />
+                        </template>
+                    </el-radio-group>
+                </div>
+            </el-form-item>
+
+            <el-form-item label="游戏节奏：" class="option-item right-to-left-8">
+                <div class="right-to-left-10">
+                    <el-radio-group v-model="selectStore.pace">
+                        <template v-for="item in dictStore.paceArray">
+                            <el-radio-button :label="item.name" :value="item.value" />
+                        </template>
+                    </el-radio-group>
+                </div>
+            </el-form-item>
+
         </div>
     </div>
 </template>

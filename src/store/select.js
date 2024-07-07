@@ -35,6 +35,8 @@ export const useSelectStore = defineStore({
             tipsDownScore: false,  // 提示落子得分 
             showChessPoint: false,  // 显示棋子坐标 
             theme: 'light',  // 主题：light、dark 
+            downChessAnim: 'random',  // 落子动画：random、none 
+            pace: 1, // 运转节奏，每次的定时器延时间隔乘以的系数：1为正常速度，<1会变快，>1会变慢 
         };
         const defaultSelectStoreString = JSON.stringify(defaultSelectStore);
 
@@ -96,6 +98,11 @@ export const useSelectStore = defineStore({
             for (const key in this.$state) {
                 this.$state[key] = cacheSelectStore[key];
             }
+        },
+        
+        // 获取一个定时器延时时间乘以 pace 系数后的值 
+        getSleep: function (ms) {
+            return ms * this.pace;
         }
     }
 })
