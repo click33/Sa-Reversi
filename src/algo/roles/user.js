@@ -15,6 +15,7 @@ export default {
         // 提示落子位置 
         const gameStore = useGameStore();
         gameStore.showCanDownByConfig();
+        gameStore.userDown = true;
         
         // 显示策略树
         // showTranStrategyTree(canDownArr, downChessType, this.name);

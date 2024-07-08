@@ -41,13 +41,15 @@
                 <div class="info-role">状态：</div>
                 <p class="info-p-success right-to-left-5">
                     <span v-if=" gameStore.status === 'notStarted' ">未开始</span>
-                    <span v-if=" gameStore.status === 'startDown' ">初始落子化...</span>
-                    <span v-if=" gameStore.status === 'end' ">对局结束</span>
-                    <span v-if=" gameStore.status === 'judge' ">系统判断中...</span>
-                    <span v-if=" gameStore.status === 'waitBlack' ">等待黑棋落子...</span>
-                    <span v-if=" gameStore.status === 'waitWhite' ">等待白棋落子...</span>
-                    <span v-if=" gameStore.status === 'blackDown' ">黑棋落子中...</span>
-                    <span v-if=" gameStore.status === 'whiteDown' ">白棋落子中...</span>
+                    <span v-else-if=" gameStore.status === 'startDown' ">初始落子化...</span>
+                    <span v-else-if=" gameStore.status === 'end' ">对局结束</span>
+                    <span v-else-if=" gameStore.status === 'judge' ">系统判断中...</span>
+<!--                    <span v-else-if=" gameStore.status === 'waitBlack' ">等待黑棋落子...</span>-->
+<!--                    <span v-else-if=" gameStore.status === 'waitWhite' ">等待白棋落子...</span>-->
+                    <span v-else-if=" gameStore.status === 'blackDown' ">黑棋落子中...</span>
+                    <span v-else-if=" gameStore.status === 'whiteDown' ">白棋落子中...</span>
+                    <span v-else-if=" gameStore.status === 'pause' && gameStore.currentPlayerType === 'black' ">暂停中，等待黑棋落子...</span>
+                    <span v-else-if=" gameStore.status === 'pause' && gameStore.currentPlayerType === 'white' ">暂停中，等待白棋落子...</span>
                     <span> ({{ gameStore.status }}) </span>
                 </p>
             </div>

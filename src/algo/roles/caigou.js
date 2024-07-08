@@ -27,6 +27,6 @@ export default {
         // 菜狗 固定选择第一个落子方案，得分最低 
         setTimeout(() => {
             downChessFunction(canDownArr[0], downChessType);
-        }, 1)
+        }, 4)
     }
 }
