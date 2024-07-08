@@ -34,7 +34,15 @@ html,body,#app,.app-theme{height: 100%;}
     }
     .nav-bottom{background-color: transparent !important;}
     .small--index-page{.con-panel-2 h1{color: #FFF;}}
-    .small--select-page .con-panel-2{background-color: #DCDEE6}
+    .small--select-page .con-panel-scroll{background-color: #DCDEE6}
+    
+    .small--game-page{
+        .board-box{ background: rgba(0, 219, 118, 0.8); }
+        .small-com-battle-data{ background: rgba(0, 219, 118, 0.7); }
+        .small-com-room-info{ background: rgba(39, 40, 34, 0.8)}
+        .small-message-box{ background: rgba(39, 40, 34, 0.8)}
+    }
+    
 }
 
 .app-theme{animation: bg-move 60s 0.2s linear infinite normal;} 

@@ -30,14 +30,14 @@ export const useDictStore = defineStore({
             // 落子动画
             downChessAnimS: {
                 'random': '随机', // 随机 
-                'direct': '正常', // 正常，一步到位 
+                'direct': '直入', // 正常，一步到位 
                 'yx': '平移',     // 先y轴后x轴 
                 'mix': '混合',    // 混合
                 'think': '思考',  // 思考
-                'fast': '快速',   // 快速 
-                'shake': '摇晃',  // 晃来晃去，
-                'slow': '慢速',   // 慢速
+                'shake': '闪',  // 晃来晃去，
                 'throw': '甩',   // 甩几下
+                'fast': '极快',   // 快速 
+                'slow': '缓慢',   // 慢速
                 'none': '无动画',   // 无动画 
             },
             // 程序运转节奏 

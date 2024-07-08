@@ -6,7 +6,7 @@
             <el-button type="primary" @click="stepForward" :disabled="gameStore.stepIndex === gameStore.stepList.length - 1">前进 →</el-button>
             <el-button type="primary" @click="stepForward_withAnim" :disabled="gameStore.stepIndex === gameStore.stepList.length - 1">带动画前进 →</el-button>
             <el-button type="primary" @click="aiDownChess">AI 走棋</el-button>
-            <el-button type="primary" @click="openStrategyTree">显示策略树</el-button>
+            <el-button type="primary" @click="openStrategyTree">策略树</el-button>
             <el-button type="primary" @click="openSelectWin">对局设置</el-button>
         </div>
 

@@ -138,7 +138,7 @@ onUnmounted(() => {
     //background-color: #FFF;
     .game-qp-box{
         height: 600px;
-        background-color: #FFF;
+        //background-color: #FFF;
     }
     .com-room-info{
         margin-bottom: 20px;
