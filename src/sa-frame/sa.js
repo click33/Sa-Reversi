@@ -5,6 +5,8 @@ import {useAppStore} from "../store/app";
 import {nextTick} from "vue";
 import mitt from "@/mitt";
 import { useMessageStore } from "../store/message";
+import {getBoardToString} from "../algo/playing-chess/board-funs";
+import {useGameStore} from "../store/game";
 
 // =========================== sa对象封装一系列工具方法 ===========================
 var sa = {
@@ -450,11 +452,22 @@ window.sa = sa;
         mitt.emit('f5CurrView');
     }
     
-    // 
+    // 发送一条消息
     me.sendMessage = function(role, type, text) {
         useMessageStore().sendMessage(role, type, text);
     }
 
+    // 打印记录中所有回合的棋盘信息
+    me.printStepList = function() {
+        const stepList = useGameStore().stepList;
+        stepList.forEach(item => {
+            console.log('回合：' + item.index);
+            console.log(getBoardToString(item.boardData));
+        });
+        
+        
+    }
+    
 })();
 
 

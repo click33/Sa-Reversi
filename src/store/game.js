@@ -575,17 +575,17 @@ export const useGameStore = defineStore({
         
         // 增加一个落子步骤 
         addStep: function (x, y, type, nextPlayerType, role) {
+            // 如果后面有着法，则清空后面的着法  
+            while (this.stepIndex <  this.stepList.length - 1) {
+                this.stepList.splice(this.stepIndex + 1, 1);
+            }
+
             this.stepIndex++;
             
             // 镜像一下棋盘数据 
             const boardData = __copyBoardData(this.boardData);
             const step = createStep(this.stepIndex, x, y, type, nextPlayerType, role, boardData);
             this.stepList.push(step);
-            
-            // 如果后面有着法，则清空后面的着法  
-            while (this.stepIndex <  this.stepList.length - 1) {
-                this.stepList.splice(this.stepIndex + 1, 1);
-            }
             
         },
 
