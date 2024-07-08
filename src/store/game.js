@@ -460,8 +460,8 @@ export const useGameStore = defineStore({
                 return;
             }
             
-            // 落子运算 
-            // this.status = 'tran';
+            // 状态切换为正在落子 
+            this.status = downType === 'black' ? 'blackDown' : 'whiteDown';
             
             // 清除提示信息：可落子提示、上一次的翻转落子样式、上一次的落子高亮提示 
             this.clearAllTips();
