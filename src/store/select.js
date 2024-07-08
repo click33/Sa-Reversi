@@ -90,12 +90,17 @@ export const useSelectStore = defineStore({
         
         // 恢复默认
         resetSelectStore: function () {
+
             const cacheSelectStoreString = localStorage.getItem('cache-layout-select-store');
             if(!cacheSelectStoreString) {
                 return ElMessage({type:'warning', message: '未能读取到缓存数据，请尝试刷新页面'})
             }
             const cacheSelectStore = JSON.parse(cacheSelectStoreString);
             for (const key in this.$state) {
+                // 除了 theme、username 之外，其他配置项恢复默认值
+                if(['theme', 'username'].indexOf(key) > -1) {
+                    continue;
+                }
                 this.$state[key] = cacheSelectStore[key];
             }
         },

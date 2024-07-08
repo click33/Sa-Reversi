@@ -35,8 +35,9 @@
             </div>
             <template #footer>
                 <div style="text-align: left;">
-                    <el-button type="primary" color="#337be2" style="width: 150px" @click="state.isOpenSelectWin = false">保存</el-button>
-                    <el-button type="primary" plain @click="newGame">以此配置开始新游戏</el-button>
+                    <el-button type="primary" color="#337be2" @click="state.isOpenSelectWin = false">保存设置</el-button>
+                    <el-button type="primary" plain @click="newGame">开始新游戏</el-button>
+                    <el-button type="primary" plain @click="reset">恢复默认</el-button>
                 </div>
             </template>
         </el-drawer>
@@ -123,6 +124,12 @@ const aiDownChess = () => {
 const newGame = () => {
     location.reload(true);
 }
+
+// 恢复默认
+const reset = () => {
+    selectStore.resetSelectStore();
+}
+
 
 // ------------------ 生命周期 ------------------
 onMounted(() => {

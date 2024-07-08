@@ -13,6 +13,7 @@
                 </div>
                 <div class="option-item play-button-box right-to-left-7" style="margin-top: 40px;">
                     <el-button class="play-button right-to-left-9" type="primary" color="#337be2" size="large" @click="play">开始游戏</el-button>
+                    <el-button class="play-button right-to-left-10" type="primary" color="#337be2" plain size="large" @click="selectStore.resetSelectStore()">恢复默认</el-button>
                 </div>
             </el-scrollbar>
         </div>
@@ -29,7 +30,9 @@ import NavBottom from '/@/pages-components/nav/nav-bottom.vue';
 import router from "../../router";
 import {useGameStore} from "../../store/game";
 import ComSelect from "./select/com-select";
-let gameStore = useGameStore();
+import {useSelectStore} from "../../store/select";
+const gameStore = useGameStore();
+const selectStore = useSelectStore();
 
 // 点击开始游戏，跳转到对战页面
 const play = () => {
@@ -85,7 +88,7 @@ const play = () => {
 }
 .play-button{
     width: 500px;
-    max-width: 70%;
+    max-width: 30%;
 }
 
 </style>
