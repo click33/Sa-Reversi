@@ -30,7 +30,7 @@
             :size="state.selectWinSize"
             :with-header="false"
         >
-            <div class="select-drawer-box small--select-page">
+            <div class="select-drawer-box small--select-page none-anim">
                 <com-select mode="drawer"></com-select>
             </div>
             <template #footer>
@@ -153,21 +153,13 @@ onMounted(() => {
         }
     }
 
-    :deep{
-        .el-drawer__body{padding: 0px;background-color: #DDDEE5;}
-        .el-drawer__footer{ padding: 20px;background-color: #f5f5f5;}
-    }
+    :deep(.el-drawer__body){padding: 0px;background-color: #DDDEE5;}
+    :deep(.el-drawer__footer){ padding: 20px;background-color: #f5f5f5;}
+    
     .select-drawer-box{
         width: 100%;
         padding: 2em;
         overflow: hidden;
-        :deep{
-            // 抽屉里不显示动画 
-            .right-to-left-1,.right-to-left-2,.right-to-left-3,.right-to-left-4,.right-to-left-5,
-            .right-to-left-6,.right-to-left-7,.right-to-left-8,.right-to-left-9,.right-to-left-10{
-                animation-delay: 0ms;
-            }
-        }
     }
     
     

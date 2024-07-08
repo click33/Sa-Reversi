@@ -290,7 +290,7 @@ body {
         // select 页面 
         .small--select-page{
             .con-panel-scroll{
-                height: calc(100vh - 60px - 90px - 50px);
+                height: calc(100vh - 60px - 50px);
                 background-color: rgba(255, 255,255, 0.5);
             }
             .con-panel-2{padding: 1.5em;}
@@ -299,7 +299,7 @@ body {
             .xy-count-slider{ width: 100% !important; margin-left: 0 !important; margin-top: 14px; }
             .el-slider__marks .el-slider__marks-text{
                 &:last-child{display: none;}
-            }
+            } 
         }
         
         // game 页面

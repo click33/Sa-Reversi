@@ -145,10 +145,7 @@ const props = defineProps({
 })
 
 
-// 监听 gameStore，用户改动时，缓存下来
-watch(selectStore, () => {
-    selectStore.setSelectStoreToLocal();
-})
+
 watch(() => selectStore.xyCount, () => {
     selectStore.xCount = selectStore.xyCount;
     selectStore.yCount = selectStore.xyCount;

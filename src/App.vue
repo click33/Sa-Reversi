@@ -13,6 +13,11 @@ import OsLoading from './pages-components/com/os-loading.vue';
 import {useSelectStore} from "./store/select";
 const selectStore = useSelectStore();
 
+// 监听 gameStore，用户改动时，缓存下来
+watch(selectStore, () => {
+    selectStore.setSelectStoreToLocal();
+})
+
 </script>
 
 <style lang="scss">

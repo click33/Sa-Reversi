@@ -70,7 +70,6 @@ const play = () => {
 .con-panel-2{
     padding: 50px 100px;
     position: static;
-    
 }
 
 // 开始按钮 
