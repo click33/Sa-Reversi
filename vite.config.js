@@ -1,5 +1,4 @@
 import {defineConfig, loadEnv} from 'vite'
-import VueDevTools from 'vite-plugin-vue-devtools'
 import vue from '@vitejs/plugin-vue'
 import legacy from '@vitejs/plugin-legacy'
 import VueSetupExtend from 'vite-plugin-vue-setup-extend'
@@ -20,8 +19,6 @@ export default defineConfig(mode => {
         },
         // 插件列表
         plugins: [
-            // vue 开发者工具插件 
-            VueDevTools(),
             vue(),
             legacy({
                 targets: ['defaults', 'not IE 11']

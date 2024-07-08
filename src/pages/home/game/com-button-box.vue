@@ -74,11 +74,21 @@ const openStrategyTree = () => {
     if(document.body.clientWidth < 768) {
         return sa.msg('屏幕太小了，显示不开，来电脑端体验吧');
     }
-    gameStore.showStrategyTreeWin = true;
-    nextTick(() => {
-        comStore.strategyTree = proxy.$refs['strategyTree'];
-    })
+    gameStore.showStrategyTreeWin = ! gameStore.showStrategyTreeWin;
+    isSaveStrategyTreeCom();
 }
+
+// 判断是否应该保存全局组件句柄
+const isSaveStrategyTreeCom = () => {
+    if(gameStore.showStrategyTreeWin) {
+        nextTick(() => {
+            comStore.strategyTree = proxy.$refs['strategyTree'];
+        })
+    } else {
+        comStore.strategyTree = null;
+    }
+}
+
 
 // 打开配置窗口  
 const openSelectWin = () => {
@@ -135,11 +145,8 @@ const reset = () => {
 onMounted(() => {
     // openStrategyTree();
 
-    // 保存全局组件句柄 
-    // nextTick(() => {
-    //     comStore.strategyTree = proxy.$refs['strategyTree'];
-    // })
-
+    isSaveStrategyTreeCom();
+    
 });
 
 

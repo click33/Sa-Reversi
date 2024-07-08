@@ -192,6 +192,13 @@ defineExpose({
     showCostTime
 })
 
+
+// 组件注销时
+onUnmounted(() => {
+    // console.log('策略树组件注销了...');
+})
+
+
 </script>
 
 <style scoped lang="scss">
