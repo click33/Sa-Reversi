@@ -27,4 +27,5 @@ export const copyArray = function (array) {
 // 随机打乱数组内元素顺序 
 export const chaosArray = function (array) {
     array.sort((a, b) => Math.random() - 0.5);
+    return array;
 };

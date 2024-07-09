@@ -18,27 +18,43 @@
                         <span v-else>, 最大可得分: {{ data.subjectMaxScore }}</span>
                         <span v-if="data.showType === 'depth'"> (计算耗时: {{ data.costTime / 1000 }} s)</span>
                     </p>
-                    <p class="tree-content-item" :class=" 'tci-' + data.id " v-else>
-                        <span>{{ (data.type === 'black' ? '黑子' : '白子') }} {{ getXyStr(data) }}</span>
-                        <template v-if="data.showType === 'tran'">
-                            <span>, 回收: {{ data.tranCount }} 枚</span>
-                        </template>
-                        <template v-else-if="data.showType === 'score'">
-                            <span>, 回收: {{ data.tranCount }} 枚 </span>
-                            <span>, 评分: {{ data.score }} </span>
-                        </template>
-                        <template v-else-if="data.showType === 'depth'">
-                            <span>, 变化 {{ data.subStrategyCount }}</span>
-                            <span>, 评分: {{ data.weLeadScore }} </span>
-                            <span>, {{getSubjectName(data)}}最高得分: {{ data.subjectMaxScore }}</span>
-                        </template>
-                        <span class="min-max-tips" v-if="data.isMin && !data.isMax"> min</span>
-                        <span class="min-max-tips" v-if="data.isMax"> max</span>
-                        <span class="cz-btn">
+                    <template v-else>
+                        <!-- 计算中 -->
+                        <p v-if="data.calcStatus === 'calc'" class="tree-content-item tree-content-item-call">
+                            <span>{{ (data.type === 'black' ? '黑子' : '白子') }} {{ getXyStr(data) }}</span>
+                            <span>，变化：计算中...</span>
+                            <span>，评分: 计算中...</span>
+<!--                            <span>，耗时: {{ data.costTime }} 秒</span>-->
+                        </p>
+                        <!-- 计算失败 -->
+                        <p v-else-if="data.calcStatus === 'fail'" class="tree-content-item tree-content-item-fail">
+                            <span>{{ (data.type === 'black' ? '黑子' : '白子') }} {{ getXyStr(data) }}</span>
+                            <span>，计算失败：{{ data.errorMessage }}</span>
+                        </p>
+                        <!-- 计算成功 -->
+                        <p v-else class="tree-content-item" :class=" 'tci-' + data.id ">
+                            <span>{{ (data.type === 'black' ? '黑子' : '白子') }} {{ getXyStr(data) }}</span>
+                            <template v-if="data.showType === 'tran'">
+                                <span>, 回收: {{ data.tranCount }} 枚</span>
+                            </template>
+                            <template v-else-if="data.showType === 'score'">
+                                <span>, 回收: {{ data.tranCount }} 枚 </span>
+                                <span>, 评分: {{ data.score }} </span>
+                            </template>
+                            <template v-else-if="data.showType === 'depth'">
+                                <span>, 变化 {{ data.subStrategyCount }}</span>
+                                <span>, 评分: {{ data.weLeadScore }} </span>
+                                <span>, {{getSubjectName(data)}}最高得分: {{ data.subjectMaxScore }}</span>
+                            </template>
+                            <span class="min-max-tips" v-if="data.isMin && !data.isMax"> min</span>
+                            <span class="min-max-tips" v-if="data.isMax"> max</span>
+                            <span class="cz-btn">
                             <el-link type="primary" @click.stop="printStrategy(data)">data</el-link>
                             <el-link type="primary" style="margin-left: 6px;" @click.stop="printBoardData(data)">board</el-link>
                         </span>
-                    </p>
+                        </p>
+                        
+                    </template>
                 </template>
             </el-tree>
             <div style="height: 100px;"></div>
@@ -54,6 +70,7 @@ import {useDictStore} from "../../../store/dict";
 import {__nextChessType, getXyStr} from "../../../algo/playing-chess/chess-funs";
 import {getBoardToString} from "../../../algo/playing-chess/board-funs";
 import {copyProperty} from "../../../algo/playing-chess/common-util";
+import {__mockDownChess} from "../../../algo/playing-chess/board-calc";
 const gameStore = useGameStore();
 const selectStore = useSelectStore();
 const dictStore = useDictStore();
@@ -74,6 +91,8 @@ const state = reactive({
     strategyTree: [
         
     ],
+    // 耗时计算定时器句柄
+    // costTimeInterval: null
 });
 
 // ------------------ 方法 ------------------
@@ -92,12 +111,34 @@ const expandTree = (type) => {
         if(dom2 && dom2.parentElement.parentElement.classList.contains('is-expanded') === true) {
             dom2.click();
         }
+        
     });
 }
 
 // 打印指定策略树节点下的棋盘数据
 const printBoardData = (data) => {
     sa.msg('已将棋盘数据打印在f12控制台');
+    if(!data.downAfterBoard) {
+        const subjectType = data.subjectType;
+        const topItem = subjectType === 'black' ? state.strategyTree[0] : state.strategyTree[1];
+        let firstItem = null;
+        const firstXy = data.downAfterBoard_Step[0];
+        topItem.nextChessCanArray.forEach(item => {
+           if(item.x === firstXy.x && item.y === firstXy.y) {
+               firstItem = item;
+           } 
+        });
+        let downAfterBoard = firstItem.downAfterBoard;
+        let downChessType = firstItem.type;
+        data.downAfterBoard_Step.forEach((item, index) => {
+            if(index === 0) {
+                return;
+            }
+            downChessType = __nextChessType(downChessType);
+            downAfterBoard = __mockDownChess(downAfterBoard, item.x, item.y, downChessType).downAfterBoard;
+        });
+        data.downAfterBoard = downAfterBoard;
+    }
     console.log(getBoardToString(data.downAfterBoard));
 }
 
@@ -151,12 +192,28 @@ const loadNode = (node, resolve) => {
 // 刷新第一组节点数据
 const refreshFirstNode = (chessType) => {
     const strategyItem0 = copyProperty(gameStore.strategyTree[0], {});
-    strategyItem0.nextChessCanArray = [];
     strategyItem0.leaf = false;
+    // strategyItem0.nextChessCanArray = [];
+    const itemArr0 = [];
+    strategyItem0.nextChessCanArray.forEach(item => {
+        const item2 = copyProperty(item, {});
+        item2.nextChessCanArray = [];
+        item2.leaf = false;
+        itemArr0.push(item2);
+    })
+    strategyItem0.nextChessCanArray = itemArr0;
 
     const strategyItem1 = copyProperty(gameStore.strategyTree[1], {});
-    strategyItem1.nextChessCanArray = [];
     strategyItem1.leaf = false;
+    // strategyItem1.nextChessCanArray = [];
+    const itemArr1 = [];
+    strategyItem1.nextChessCanArray.forEach(item => {
+        const item2 = copyProperty(item, {});
+        item2.nextChessCanArray = [];
+        item2.leaf = false;
+        itemArr0.push(item2);
+    })
+    strategyItem1.nextChessCanArray = itemArr1;
 
     state.strategyTree = [strategyItem0, strategyItem1];
 }
@@ -193,9 +250,15 @@ defineExpose({
 })
 
 
+// 组件加载时
+onMounted(()=> {
+    
+    
+})
+
 // 组件注销时
 onUnmounted(() => {
-    // console.log('策略树组件注销了...');
+   
 })
 
 
@@ -234,7 +297,10 @@ onUnmounted(() => {
     .tree-content-item{
         width: 95%;
         font-size: 13px;
+        position: relative;
     }
+    .tree-content-item-call{color: #aaa;}
+    .tree-content-item-fail{color: #aaa;}
     
     // 每层不一样的颜色，让肉眼更容易分辨 
     :deep(.el-tree){
@@ -251,7 +317,7 @@ onUnmounted(() => {
     // 最大最小
     .min-max-tips{margin-left: 5px;color: #DA70D6;}
     // 
-    .cz-btn{position: absolute; right: 10px;}
+    .cz-btn{position: absolute; right: 0px;}
     
 }
 

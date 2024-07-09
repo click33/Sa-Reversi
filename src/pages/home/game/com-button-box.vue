@@ -11,7 +11,7 @@
         </div>
 
         <!-- 策略树窗口 -->
-        <lay-layer v-model="gameStore.showStrategyTreeWin"
+        <lay-layer v-model="selectStore.showStrategyTreeWin"
                    :title=" '策略树' + (gameStore.blackStrategyTreeInCall || gameStore.whiteStrategyTreeInCall ? ' 计算中...' : '') "
                    :maxmin="true"
                    :moveOut="true"
@@ -74,13 +74,13 @@ const openStrategyTree = () => {
     if(document.body.clientWidth < 768) {
         return sa.msg('屏幕太小了，显示不开，来电脑端体验吧');
     }
-    gameStore.showStrategyTreeWin = ! gameStore.showStrategyTreeWin;
+    selectStore.showStrategyTreeWin = ! selectStore.showStrategyTreeWin;
     isSaveStrategyTreeCom();
 }
 
 // 判断是否应该保存全局组件句柄
 const isSaveStrategyTreeCom = () => {
-    if(gameStore.showStrategyTreeWin) {
+    if(selectStore.showStrategyTreeWin) {
         nextTick(() => {
             comStore.strategyTree = proxy.$refs['strategyTree'];
         })
@@ -143,7 +143,7 @@ const reset = () => {
 
 // ------------------ 生命周期 ------------------
 onMounted(() => {
-    // openStrategyTree();
+    // gameStore.showStrategyTreeWin = true;
 
     isSaveStrategyTreeCom();
     

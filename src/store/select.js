@@ -37,6 +37,7 @@ export const useSelectStore = defineStore({
             theme: 'light',  // 主题：light、dark 
             downChessAnim: 'random',  // 落子动画：random、none 
             pace: 1, // 运转节奏，每次的定时器延时间隔乘以的系数：1为正常速度，<1会变快，>1会变慢 
+            showStrategyTreeWin: false,  // 显示策略树
         };
         const defaultSelectStoreString = JSON.stringify(defaultSelectStore);
 

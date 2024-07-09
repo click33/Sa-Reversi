@@ -3,11 +3,13 @@ import {useGameStore} from "../../store/game";
 import {useComStore} from "../../store/com";
 import {__mockDownChess} from "./board-calc";
 import {__copyBoardDataToBack, getBoardToString} from "./board-funs";
+import {useSelectStore} from "../../store/select";
 
 // 显示翻转棋子数量策略树
 export const showTranStrategyTree = (canDownArr, chessType, roleName) => {
     const gameStore = useGameStore();
-    if(gameStore.showStrategyTreeWin === false) {
+    const selectStore = useSelectStore();
+    if(selectStore.showStrategyTreeWin === false) {
         return;
     }
     
@@ -51,7 +53,8 @@ export const showTranStrategyTree = (canDownArr, chessType, roleName) => {
 // 显示打分策略树
 export const showScoreStrategyTree = (canDownArr, chessType, roleName) => {
     const gameStore = useGameStore();
-    if(gameStore.showStrategyTreeWin === false) {
+    const selectStore = useSelectStore();
+    if(selectStore.showStrategyTreeWin === false) {
         return;
     }
 
@@ -96,7 +99,8 @@ export const showScoreStrategyTree = (canDownArr, chessType, roleName) => {
 // 显示深度计算的策略树
 export const showDepthStrategyTree = (strategyTree, chessType, roleName) => {
     const gameStore = useGameStore();
-    if(gameStore.showStrategyTreeWin === false) {
+    const selectStore = useSelectStore();
+    if(selectStore.showStrategyTreeWin === false) {
         return;
     }
 
@@ -131,8 +135,9 @@ export const showDepthStrategyTree = (strategyTree, chessType, roleName) => {
 
 // 显示深度计算的策略树 - 的耗时 
 export const showDepthStrategyTreeCostTime = (chessType, costTime) => {
+    const selectStore = useSelectStore();
     const gameStore = useGameStore();
-    if(gameStore.showStrategyTreeWin === false) {
+    if(selectStore.showStrategyTreeWin === false) {
         return;
     }
     const comStore = useComStore();
