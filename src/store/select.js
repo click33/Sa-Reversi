@@ -21,9 +21,9 @@ export const useSelectStore = defineStore({
             whiteEdgeStrong: false,  // 白子占四边
             blackRandomFourStrong: false,  // 黑子随机四子
             whiteRandomFourStrong: false,  // 白子随机四子
-            blackQxDepth: 4,  // 黑子AI棋仙迭代深度 
-            whiteQxDepth: 4,  // 白子AI棋仙迭代深度 
-            helpQxDepth: 4,  // AI 帮走棋子时，AI棋仙迭代深度 
+            blackQxDepth: 5,  // 黑子AI棋仙迭代深度 
+            whiteQxDepth: 5,  // 白子AI棋仙迭代深度 
+            helpQxDepth: 5,  // AI 帮走棋子时，AI棋仙迭代深度 
             username: '', // 玩家昵称 
             xCount: 8,  // 棋盘行数
             yCount: 8,  // 棋盘列数

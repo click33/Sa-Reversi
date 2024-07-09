@@ -15,6 +15,19 @@ export default function (canDownChess, iterationDepth) {
 
         // 1、获取允许落哪些子
         let canDownArray = getCanDownArray(boardData, calcChessType);
+        // ------------------ 补充逻辑 ------------------
+        // 如果没有落子方案，说明对手无子可落，塞个 x=-1, y=-1 的特殊对象进去 
+        if(canDownArray.length === 0) {
+            const notDownChess = {
+                x: -1,
+                y: -1,
+                type: calcChessType,
+                tranCount: 0,
+            }
+            canDownArray.push(notDownChess);
+        }
+        // ------------------------------------------------
+        
         chaosArray(canDownArray);
 
         // 2、为每个落子策略，开始深度迭代 
@@ -30,10 +43,8 @@ export default function (canDownChess, iterationDepth) {
         canDownArray.sort((a, b) => a.subjectMaxScore - b.subjectMaxScore);
         const minItem = canDownArray[0];
         const maxItem = canDownArray[canDownArray.length - 1];
-        if(minItem && maxItem) {
-            minItem.isMin = true;
-            maxItem.isMax = true;
-        }
+        minItem.isMin = true;
+        maxItem.isMax = true;
 
         // 5、返回最终排序好的策略树 
         return canDownArray;
