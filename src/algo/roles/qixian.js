@@ -179,6 +179,10 @@ const repStrategy = strategyTree => {
 
     // 将最外层再次排序，从大到小  
     const canDownArray = strategyTree;
+    canDownArray.forEach(item => {
+        item.isMin = false;
+        item.isMax = false;
+    });
     canDownArray.sort((a, b) => a.subjectMaxScore - b.subjectMaxScore);
     const minItem = canDownArray[0];
     const maxItem = canDownArray[canDownArray.length - 1];
